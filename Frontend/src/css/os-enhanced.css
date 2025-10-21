@@ -1,0 +1,186 @@
+/* Modern OS-Style GUI Framework - Enhanced Version */
+:root {
+  /* Color System */
+  --os-primary: #0078d4;
+  --os-secondary: #106ebe;
+  --os-success: #107c10;
+  --os-warning: #ff8c00;
+  --os-error: #e81123;
+  
+  /* Backgrounds */
+  --os-bg-primary: #1e1e1e;
+  --os-bg-secondary: #252526;
+  --os-bg-tertiary: #2d2d30;
+  --os-bg-hover: #37373d;
+  
+  /* Text */
+  --os-text-primary: #cccccc;
+  --os-text-secondary: #969696;
+  --os-text-muted: #6a6a6a;
+  
+  /* Borders */
+  --os-border: #3e3e42;
+  --os-border-light: #454545;
+  
+  /* Shadows */
+  --os-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.14);
+  --os-shadow-md: 0 4px 8px rgba(0, 0, 0, 0.28);
+  --os-shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.36);
+  
+  /* Glassmorphism */
+  --os-glass-bg: rgba(255, 255, 255, 0.05);
+  --os-glass-border: rgba(255, 255, 255, 0.1);
+  
+  /* Transitions */
+  --os-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Reset and Base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--os-bg-primary);
+  color: var(--os-text-primary);
+  overflow: hidden;
+}
+
+/* OS Desktop Layout */
+.os-desktop {
+  height: 100vh;
+  display: grid;
+  grid-template-rows: 30px 1fr 24px;
+  grid-template-areas: 
+    "menubar"
+    "workspace"
+    "statusbar";
+}
+
+/* Menu Bar */
+.os-menu-bar {
+  grid-area: menubar;
+  background: var(--os-bg-secondary);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--os-border);
+}
+
+.os-app-menu {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.os-app-name {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.os-menu-items {
+  display: flex;
+  gap: 20px;
+  font-size: 13px;
+}
+
+.os-menu-items span {
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: var(--os-transition);
+}
+
+.os-menu-items span:hover {
+  background: var(--os-bg-hover);
+}
+
+/* Workspace */
+.os-workspace {
+  grid-area: workspace;
+  display: grid;
+  grid-template-columns: 240px 1fr 240px;
+  gap: 1px;
+  background: var(--os-border);
+}
+
+.os-sidebar,
+.os-panel-right {
+  background: var(--os-bg-secondary);
+  overflow-y: auto;
+}
+
+.os-editor-area {
+  background: var(--os-bg-primary);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Status Bar */
+.os-status-bar {
+  grid-area: statusbar;
+  background: var(--os-bg-secondary);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 12px;
+  border-top: 1px solid var(--os-border);
+  font-size: 12px;
+}
+
+/* Enhanced Code Editor */
+.os-code-editor {
+  font-family: 'Consolas', 'Monaco', 'Lucida Console', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  background: var(--os-bg-primary);
+  color: var(--os-text-primary);
+  border: none;
+  outline: none;
+  resize: none;
+  padding: 16px;
+}
+
+/* Glassmorphism Effects */
+.os-glass {
+  background: var(--os-glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--os-glass-border);
+  border-radius: 8px;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--os-bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--os-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--os-border-light);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .os-workspace {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
+  }
+  
+  .os-sidebar,
+  .os-panel-right {
+    display: none;
+  }
+}

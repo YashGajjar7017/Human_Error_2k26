@@ -1,0 +1,3 @@
+- [ ] Fix login form to use AJAX instead of form submission
+- [ ] Update login.html JavaScript to handle form submission properly
+- [ ] Test login functionality

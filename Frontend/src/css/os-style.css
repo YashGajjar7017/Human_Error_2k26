@@ -1,0 +1,97 @@
+/* Modern OS-Style GUI Framework */
+:root {
+  /* Color System */
+  --os-primary: #0078d4;
+  --os-secondary: #106ebe;
+  --os-success: #107c10;
+  --os-warning: #ff8c00;
+  --os-error: #e81123;
+  
+  /* Backgrounds */
+  --os-bg-primary: #1e1e1e;
+  --os-bg-secondary: #252526;
+  --os-bg-tertiary: #2d2d30;
+  --os-bg-hover: #37373d;
+  
+  /* Text */
+  --os-text-primary: #cccccc;
+  --os-text-secondary: #969696;
+  --os-text-muted: #6a6a6a;
+  
+  /* Borders */
+  --os-border: #3e3e42;
+  --os-border-light: #454545;
+  
+  /* Shadows */
+  --os-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.14);
+  --os-shadow-md: 0 4px 8px rgba(0, 0, 0, 0.28);
+  --os-shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.36);
+  
+  /* Glassmorphism */
+  --os-glass-bg: rgba(255, 255, 255, 0.05);
+  --os-glass-border: rgba(255, 255, 255, 0.1);
+  
+  /* Transitions */
+  --os-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Reset and Base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--os-bg-primary);
+  color: var(--os-text-primary);
+  overflow: hidden;
+}
+
+/* OS Desktop Layout */
+.os-desktop {
+  height: 100vh;
+  display: grid;
+  grid-template-rows: 30px 1fr 24px;
+  grid-template-areas: 
+    "menubar"
+    "workspace"
+    "statusbar";
+}
+
+/* Menu Bar */
+.os-menu-bar {
+  grid-area: menubar;
+  background: var(--os-bg-secondary);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--os<thinking>
+I have reviewed the current index.html and the main CSS file style.css. The HTML uses Bootstrap and custom CSS with a dark theme and some interactive elements like side navs, overlays, and code editors. The CSS is quite comprehensive but could be improved for a more modern, clean, and user-friendly GUI.
+
+Plan:
+- Improve the main layout for better responsiveness and usability.
+- Enhance the navbar with better spacing, colors, and hover effects.
+- Refine the code editor area with better fonts, colors, and spacing.
+- Improve side navigation and overlays for smoother transitions and better accessibility.
+- Add consistent theming with light/dark mode toggle.
+- Use modern CSS features like flexbox/grid for layout improvements.
+- Possibly add animations or transitions for UI elements.
+- Ensure the GUI is visually appealing and intuitive.
+
+Dependent files:
+- Frontend/views/index.html (for minor structural changes if needed)
+- Frontend/src/css/style.css (main CSS improvements)
+
+Follow-up steps:
+- After CSS improvements, test the UI in a browser.
+- Possibly add or update JavaScript for UI interactions if needed.
+
+Please confirm if I should proceed with this plan to improve the GUI and CSS styling for your project.
+</thinking>
+
+<ask_followup_question>
+<question>Shall I proceed with the plan to enhance the GUI and CSS styling based on the current index.html and style.css? Any specific preferences or features you want included?</question>
+</ask_followup_question>
