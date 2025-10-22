@@ -56,15 +56,14 @@ exports.signUp = (req, res) => {
 // Validation function
 const validateSignupData = (data) => {
     const errors = [];
-    
+
     if (!data.username?.trim()) errors.push("Username is required");
     if (!data.email?.trim()) errors.push("Email is required");
     if (!data.password || data.password.length < 6) errors.push("Password must be at least 6 characters");
-    if (data.password !== data.confirmPassword) errors.push("Passwords do not match");
-    
+
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (data.email && !emailRegex.test(data.email)) errors.push("Invalid email format");
-    
+
     return errors;
 };
 
@@ -95,22 +94,8 @@ exports.postSignUp = async (req, res) => {
         console.log('Backend response:', response.status, response.data);
 
         if (response.data.success) {
-            // Store user info for OTP verification
-            UserProfile.username = userData.username;
-            UserProfile.email = userData.email;
-            
-            res.cookie('Signup', true, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                maxAge: 24 * 60 * 60 * 1000
-            });
-            
-            res.status(201).json({ 
-                success: true, 
-                message: response.data.message || 'Account created successfully',
-                data: response.data.data,
-                redirectUrl: `/Account/Signup/OTP/${UserProfile.token}`
-            });
+            // After successful signup, redirect to login page
+            res.redirect('/Account/login');
         } else {
             res.status(400).json({ 
                 error: response.data.error || 'Signup failed'

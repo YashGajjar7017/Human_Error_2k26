@@ -44,7 +44,7 @@
                             <span class="focus-input100" data-placeholder="&#xf207;"></span>
                         </div>
 
-                        <div class="wrap-input100 validate-input" data-validate="Enter password">
+                        <div class="wrap-input100 validate-input" data-validate="Enter email">
                             <input class="input100" type="email" name="email" placeholder="Email" id="email">
                             <span class="focus-input100" data-placeholder="&#xf191;"></span>
                         </div>
@@ -53,7 +53,7 @@
                             <span class="focus-input100" data-placeholder="&#xf191;"></span>
                         </div>
                         <div class="wrap-input100 validate-input" data-validate="Enter password">
-                            <input class="input100" type="password" name="confirmPassword" placeholder="ConfirmPassword"
+                            <input class="input100" type="password" name="confirmPassword" placeholder="Confirm Password"
                                 id="confirmPassword">
                             <span class="focus-input100" data-placeholder="&#xf191;"></span>
                         </div>
@@ -65,15 +65,13 @@
                             </label>
                         </div>
                         <div class="container-login100-form-btn">
-                            <button class="login100-form-btn" id="login">
-                                <a href="/Account/sendOTP">
-                                    Send OTP
-                                </a>
+                            <button class="login100-form-btn" type="submit" id="signupBtn">
+                                Sign Up
                             </button>
                         </div>
                         <div class="text-center p-t-90">
                             <a class="txt1" href="/Account/login">
-                                Already login?
+                                Already have an account?
                             </a>
                         </div>
                     </form>
@@ -96,22 +94,65 @@
         <!-- <script src="/js/main.js"></script> -->
 
         <script>
-            // token generate
-            // let login = document.getElementById('login');
-            // login.addEventListener('click', function (e) {
+            document.addEventListener('DOMContentLoaded', function() {
+                const form = document.querySelector('.login100-form');
+                const signupBtn = document.getElementById('signupBtn');
 
-            //     e.preventDefault();
-            //     let tempname = document.getElementById('username').value;
-            //     console.log(tempname);
+                form.addEventListener('submit', async function(e) {
+                    e.preventDefault();
 
-            //     if (!tempname) {
-            //         localStorage.setItem('nameToken', tempname);
+                    const username = document.getElementById('username').value;
+                    const email = document.getElementById('email').value;
+                    const password = document.getElementById('password').value;
+                    const confirmPassword = document.getElementById('confirmPassword').value;
 
-            //     }
-            //     else {
-            //         localStorage.setItem('nameToken', '404');
-            //     }
-            // })
+                    // Basic validation
+                    if (!username || !email || !password || !confirmPassword) {
+                        alert('Please fill in all fields');
+                        return;
+                    }
+
+                    if (password !== confirmPassword) {
+                        alert('Passwords do not match');
+                        return;
+                    }
+
+                    // Disable button during submission
+                    signupBtn.disabled = true;
+                    signupBtn.textContent = 'Signing Up...';
+
+                    try {
+                        const response = await fetch('/Account/Signup', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                username: username,
+                                email: email,
+                                password: password,
+                                confirmPassword: confirmPassword
+                            })
+                        });
+
+                        const data = await response.json();
+
+                        if (data.success) {
+                            alert('Account created successfully! Redirecting to login...');
+                            window.location.href = data.redirectUrl || '/Account/login';
+                        } else {
+                            alert(data.error || 'Signup failed. Please try again.');
+                        }
+                    } catch (error) {
+                        console.error('Signup error:', error);
+                        alert('An error occurred during signup. Please try again.');
+                    } finally {
+                        // Re-enable button
+                        signupBtn.disabled = false;
+                        signupBtn.textContent = 'Sign Up';
+                    }
+                });
+            });
         </script>
     </body>
 </html>

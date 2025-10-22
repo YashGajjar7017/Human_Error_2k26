@@ -372,12 +372,12 @@ void main()
 
             // userData += username.innerHTML;
 
-            // login logic
+            // signup logic for new users
             if (!username) {
                 $('.user').show();
                 $('#logout').hide();
-                document.getElementById('username').innerText = 'Login';
-                document.getElementById('user').onclick = function() { window.location.href = '/login/index.html'; };
+                document.getElementById('username').innerText = 'Signup';
+                document.getElementById('user').onclick = function() { window.location.href = '/Account/Signup'; };
             }
             else {
                 $('.user').show();
