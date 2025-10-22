@@ -1,132 +1,168 @@
-const path = require('path');
-const fs = require('fs');
-const crypto = require('crypto');
-const rootDir = require('../util/path');
+const axios = require('axios');
 
-// Session management
+// API configuration
+const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:8000';
+
+// Session management using API calls
 class SessionManager {
     constructor() {
-        this.sessions = new Map();
-        this.sessionFile = path.join(rootDir, 'sessions.json');
-        this.loadSessions();
+        this.baseURL = `${API_BASE_URL}/api/sessions`;
     }
 
-    loadSessions() {
+    // Helper method to get auth headers
+    getAuthHeaders() {
+        const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+        return token ? { 'Authorization': `Bearer ${token}` } : {};
+    }
+
+    async createSession(settings = {}) {
         try {
-            if (fs.existsSync(this.sessionFile)) {
-                const data = fs.readFileSync(this.sessionFile, 'utf8');
-                const sessions = JSON.parse(data);
-                this.sessions = new Map(Object.entries(sessions));
-            }
+            const response = await axios.post(`${this.baseURL}/create`, { settings }, {
+                headers: this.getAuthHeaders()
+            });
+            return response.data.success ? response.data.data : null;
         } catch (error) {
-            console.error('Error loading sessions:', error);
-            this.sessions = new Map();
+            console.error('Error creating session:', error.response?.data || error.message);
+            throw error;
         }
     }
 
-    saveSessions() {
+    async getSession(sessionId) {
         try {
-            const sessions = Object.fromEntries(this.sessions);
-            fs.writeFileSync(this.sessionFile, JSON.stringify(sessions, null, 2));
-            return true;
+            const response = await axios.get(`${this.baseURL}/${sessionId}`);
+            return response.data.success ? response.data.data : null;
         } catch (error) {
-            console.error('Error saving sessions:', error);
-            return false;
-        }
-    }
-
-    createSession(creatorId, settings = {}) {
-        const sessionId = crypto.randomBytes(16).toString('hex');
-        const session = {
-            id: sessionId,
-            creatorId,
-            createdAt: new Date().toISOString(),
-            lastActivity: new Date().toISOString(),
-            participants: [creatorId],
-            settings: {
-                language: settings.language || 'javascript',
-                theme: settings.theme || 'dark',
-                readOnly: settings.readOnly || false,
-                ...settings
-            },
-            code: settings.initialCode || '',
-            isActive: true
-        };
-        
-        this.sessions.set(sessionId, session);
-        this.saveSessions();
-        return session;
-    }
-
-    getSession(sessionId) {
-        return this.sessions.get(sessionId) || null;
-    }
-
-    joinSession(sessionId, userId) {
-        const session = this.sessions.get(sessionId);
-        if (!session || !session.isActive) {
+            console.error('Error getting session:', error.response?.data || error.message);
             return null;
         }
-        
-        if (!session.participants.includes(userId)) {
-            session.participants.push(userId);
-            session.lastActivity = new Date().toISOString();
-            this.saveSessions();
+    }
+
+    async joinSession(sessionId) {
+        try {
+            const response = await axios.post(`${this.baseURL}/${sessionId}/join`, {}, {
+                headers: this.getAuthHeaders()
+            });
+            return response.data.success ? response.data.data : null;
+        } catch (error) {
+            console.error('Error joining session:', error.response?.data || error.message);
+            return null;
         }
-        
-        return session;
     }
 
     getShareableLink(sessionId) {
         return `/session/${sessionId}`;
     }
 
-    getActiveSessions() {
-        return Array.from(this.sessions.values()).filter(session => session.isActive);
-    }
-
-    leaveSession(sessionId, userId) {
-        const session = this.sessions.get(sessionId);
-        if (!session) return false;
-
-        session.participants = session.participants.filter(p => p !== userId);
-        session.lastActivity = new Date().toISOString();
-        
-        if (session.participants.length === 0) {
-            session.isActive = false;
+    async getActiveSessions() {
+        try {
+            const response = await axios.get(`${this.baseURL}/active`);
+            return response.data.success ? response.data.data : [];
+        } catch (error) {
+            console.error('Error getting active sessions:', error.response?.data || error.message);
+            return [];
         }
-        
-        this.saveSessions();
-        return true;
     }
 
-    updateSessionCode(sessionId, code, userId) {
-        const session = this.sessions.get(sessionId);
-        if (!session) return false;
-
-        const participant = session.participants.find(p => p === userId);
-        if (!participant || session.settings.readOnly) {
+    async leaveSession(sessionId) {
+        try {
+            const response = await axios.post(`${this.baseURL}/${sessionId}/leave`, {}, {
+                headers: this.getAuthHeaders()
+            });
+            return response.data.success;
+        } catch (error) {
+            console.error('Error leaving session:', error.response?.data || error.message);
             return false;
         }
-
-        session.code = code;
-        session.lastActivity = new Date().toISOString();
-        this.saveSessions();
-        return true;
     }
 
-    cleanupInactiveSessions(maxAgeHours = 24) {
-        const maxAge = maxAgeHours * 60 * 60 * 1000;
-        const now = new Date();
-        
-        for (const [sessionId, session] of this.sessions) {
-            const lastActivity = new Date(session.lastActivity);
-            if (now - lastActivity > maxAge) {
-                session.isActive = false;
-            }
+    async updateSessionCode(sessionId, code) {
+        try {
+            const response = await axios.put(`${this.baseURL}/${sessionId}/update`, { code }, {
+                headers: this.getAuthHeaders()
+            });
+            return response.data.success;
+        } catch (error) {
+            console.error('Error updating session code:', error.response?.data || error.message);
+            return false;
         }
-        
-        this.saveSessions();
+    }
+
+    async getSessionCode(sessionId) {
+        try {
+            const response = await axios.get(`${this.baseURL}/${sessionId}/code/get`);
+            return response.data.success ? response.data.data.code : '';
+        } catch (error) {
+            console.error('Error getting session code:', error.response?.data || error.message);
+            return '';
+        }
+    }
+
+    async saveSessionCode(sessionId, code) {
+        try {
+            const response = await axios.post(`${this.baseURL}/${sessionId}/code/save`, { code }, {
+                headers: this.getAuthHeaders()
+            });
+            return response.data.success;
+        } catch (error) {
+            console.error('Error saving session code:', error.response?.data || error.message);
+            return false;
+        }
+    }
+
+    async getParticipants(sessionId) {
+        try {
+            const response = await axios.get(`${this.baseURL}/${sessionId}/participants`);
+            return response.data.success ? response.data.data : [];
+        } catch (error) {
+            console.error('Error getting participants:', error.response?.data || error.message);
+            return [];
+        }
+    }
+
+    async sendChatMessage(sessionId, message) {
+        try {
+            const response = await axios.post(`${this.baseURL}/${sessionId}/chat/message`, { message }, {
+                headers: this.getAuthHeaders()
+            });
+            return response.data.success ? response.data.data : null;
+        } catch (error) {
+            console.error('Error sending chat message:', error.response?.data || error.message);
+            return null;
+        }
+    }
+
+    async getChatMessages(sessionId) {
+        try {
+            const response = await axios.get(`${this.baseURL}/${sessionId}/chat/messages`);
+            return response.data.success ? response.data.data : [];
+        } catch (error) {
+            console.error('Error getting chat messages:', error.response?.data || error.message);
+            return [];
+        }
+    }
+
+    async updateCursor(sessionId, cursorData) {
+        try {
+            const response = await axios.post(`${this.baseURL}/${sessionId}/cursor/update`, { cursorData }, {
+                headers: this.getAuthHeaders()
+            });
+            return response.data.success ? response.data.data : {};
+        } catch (error) {
+            console.error('Error updating cursor:', error.response?.data || error.message);
+            return {};
+        }
+    }
+
+    async endSession(sessionId) {
+        try {
+            const response = await axios.delete(`${this.baseURL}/${sessionId}/end`, {
+                headers: this.getAuthHeaders()
+            });
+            return response.data.success;
+        } catch (error) {
+            console.error('Error ending session:', error.response?.data || error.message);
+            return false;
+        }
     }
 }
 

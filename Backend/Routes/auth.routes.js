@@ -1,6 +1,7 @@
 const express = require('express');
 const authController = require('../controller/auth.controller');
 const { activeTokens } = require('../controller/loginApi.controller');
+const jwt = require('jsonwebtoken');
 
 const router = express.Router();
 

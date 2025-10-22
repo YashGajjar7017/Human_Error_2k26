@@ -1,165 +1,180 @@
-const path = require('path');
-const fs = require('fs');
 const crypto = require('crypto');
-const rootDir = require('../util/path');
+const Session = require('../models/Session.model');
 
-// Enhanced Session management with collaborative features
+// Enhanced Session management with collaborative features using MongoDB
 class SessionManager {
     constructor() {
-        this.sessions = new Map();
-        this.sessionFile = path.join(rootDir, 'sessions.json');
         this.chatMessages = new Map(); // sessionId -> messages[]
         this.cursors = new Map(); // sessionId -> {userId: {x, y}}
         this.webrtcSignals = new Map(); // sessionId -> signals[]
-        this.loadSessions();
     }
 
-    loadSessions() {
+    async createSession(creatorId, settings = {}) {
         try {
-            if (fs.existsSync(this.sessionFile)) {
-                const data = fs.readFileSync(this.sessionFile, 'utf8');
-                const sessions = JSON.parse(data);
-                this.sessions = new Map(Object.entries(sessions));
-            }
-        } catch (error) {
-            console.error('Error loading sessions:', error);
-            this.sessions = new Map();
-        }
-    }
+            const sessionId = crypto.randomBytes(16).toString('hex');
+            const joinCode = crypto.randomBytes(16).toString('hex');
 
-    saveSessions() {
-        try {
-            const sessions = Object.fromEntries(this.sessions);
-            fs.writeFileSync(this.sessionFile, JSON.stringify(sessions, null, 2));
-            return true;
-        } catch (error) {
-            console.error('Error saving sessions:', error);
-            return false;
-        }
-    }
-
-    createSession(creatorId, settings = {}) {
-        const sessionId = crypto.randomBytes(16).toString('hex');
-        const joinCode = crypto.randomBytes(16).toString('hex');
-        const session = {
-            id: sessionId,
-            joinCode,
-            creatorId,
-            createdAt: new Date().toISOString(),
-            lastActivity: new Date().toISOString(),
-            participants: [{
-                userId: creatorId,
-                joinedAt: new Date().toISOString(),
-                role: 'host'
-            }],
-            settings: {
+            const session = new Session({
+                sessionId,
+                joinCode,
+                creatorId,
+                title: settings.title || 'Collaborative Session',
                 language: settings.language || 'javascript',
                 theme: settings.theme || 'dark',
                 readOnly: settings.readOnly || false,
                 maxParticipants: settings.maxParticipants || 10,
                 allowJoin: settings.allowJoin !== false,
-                ...settings
-            },
-            code: settings.initialCode || '',
-            isActive: true,
-            version: 1
-        };
-        
-        this.sessions.set(sessionId, session);
-        this.chatMessages.set(sessionId, []);
-        this.cursors.set(sessionId, {});
-        this.saveSessions();
-        return session;
-    }
-
-    getSession(sessionId) {
-        return this.sessions.get(sessionId) || null;
-    }
-
-    getSessionByJoinCode(joinCode) {
-        for (const [sessionId, session] of this.sessions) {
-            if (session.joinCode === joinCode) {
-                return session;
-            }
-        }
-        return null;
-    }
-
-    joinSession(sessionId, userId, username) {
-        const session = this.sessions.get(sessionId);
-        if (!session) return null;
-
-        if (session.participants.length >= session.settings.maxParticipants) {
-            return { error: 'Session is full' };
-        }
-
-        if (!session.settings.allowJoin) {
-            return { error: 'Session is not accepting new participants' };
-        }
-
-        const existingParticipant = session.participants.find(p => p.userId === userId);
-        if (!existingParticipant) {
-            session.participants.push({
-                userId,
-                username,
-                joinedAt: new Date().toISOString(),
-                role: 'participant'
+                code: settings.initialCode || '',
+                participants: [{
+                    userId: creatorId,
+                    username: settings.creatorUsername || 'Host',
+                    role: 'host'
+                }]
             });
-            session.lastActivity = new Date().toISOString();
-            this.saveSessions();
-        }
 
-        return session;
+            await session.save();
+
+            // Initialize in-memory stores for real-time features
+            this.chatMessages.set(sessionId, []);
+            this.cursors.set(sessionId, {});
+            this.webrtcSignals.set(sessionId, []);
+
+            return session.toObject();
+        } catch (error) {
+            console.error('Error creating session:', error);
+            throw error;
+        }
     }
 
-    leaveSession(sessionId, userId) {
-        const session = this.sessions.get(sessionId);
-        if (!session) return false;
-
-        session.participants = session.participants.filter(p => p.userId !== userId);
-        session.lastActivity = new Date().toISOString();
-        
-        if (session.participants.length === 0) {
-            session.isActive = false;
+    async getSession(sessionId) {
+        try {
+            const session = await Session.findOne({ sessionId, isActive: true });
+            return session ? session.toObject() : null;
+        } catch (error) {
+            console.error('Error getting session:', error);
+            return null;
         }
-        
-        this.saveSessions();
-        return true;
     }
 
-    updateSessionCode(sessionId, code, userId) {
-        const session = this.sessions.get(sessionId);
-        if (!session) return false;
+    async getSessionByJoinCode(joinCode) {
+        try {
+            const session = await Session.findOne({ joinCode, isActive: true });
+            return session ? session.toObject() : null;
+        } catch (error) {
+            console.error('Error getting session by join code:', error);
+            return null;
+        }
+    }
 
-        const participant = session.participants.find(p => p.userId === userId);
-        if (!participant || (session.settings.readOnly && participant.role !== 'host')) {
+    async joinSession(sessionId, userId, username) {
+        try {
+            const session = await Session.findOne({ sessionId, isActive: true });
+            if (!session) return null;
+
+            if (session.participants.length >= session.maxParticipants) {
+                return { error: 'Session is full' };
+            }
+
+            if (!session.allowJoin) {
+                return { error: 'Session is not accepting new participants' };
+            }
+
+            const existingParticipant = session.participants.find(p => p.userId === userId);
+            if (!existingParticipant) {
+                session.participants.push({
+                    userId,
+                    username,
+                    role: 'participant'
+                });
+                session.lastActivity = new Date();
+                await session.save();
+            }
+
+            return session.toObject();
+        } catch (error) {
+            console.error('Error joining session:', error);
+            return null;
+        }
+    }
+
+    async leaveSession(sessionId, userId) {
+        try {
+            const session = await Session.findOne({ sessionId, isActive: true });
+            if (!session) return false;
+
+            session.participants = session.participants.filter(p => p.userId !== userId);
+            session.lastActivity = new Date();
+
+            if (session.participants.length === 0) {
+                session.isActive = false;
+                session.endedAt = new Date();
+            }
+
+            await session.save();
+            return true;
+        } catch (error) {
+            console.error('Error leaving session:', error);
             return false;
         }
-
-        session.code = code;
-        session.lastActivity = new Date().toISOString();
-        session.version += 1;
-        this.saveSessions();
-        return true;
     }
 
-    getAllSessions() {
-        return Array.from(this.sessions.values());
+    async updateSessionCode(sessionId, code, userId) {
+        try {
+            const session = await Session.findOne({ sessionId, isActive: true });
+            if (!session) return false;
+
+            const participant = session.participants.find(p => p.userId === userId);
+            if (!participant || (session.readOnly && participant.role !== 'host')) {
+                return false;
+            }
+
+            session.code = code;
+            session.lastActivity = new Date();
+            await session.save();
+            return true;
+        } catch (error) {
+            console.error('Error updating session code:', error);
+            return false;
+        }
     }
 
-    getActiveSessions() {
-        return Array.from(this.sessions.values()).filter(session => session.isActive);
+    async getAllSessions() {
+        try {
+            const sessions = await Session.find({});
+            return sessions.map(session => session.toObject());
+        } catch (error) {
+            console.error('Error getting all sessions:', error);
+            return [];
+        }
     }
 
-    deleteSession(sessionId, userId) {
-        const session = this.sessions.get(sessionId);
-        if (!session || session.creatorId !== userId) return false;
+    async getActiveSessions() {
+        try {
+            const sessions = await Session.find({ isActive: true });
+            return sessions.map(session => session.toObject());
+        } catch (error) {
+            console.error('Error getting active sessions:', error);
+            return [];
+        }
+    }
 
-        this.sessions.delete(sessionId);
-        this.chatMessages.delete(sessionId);
-        this.cursors.delete(sessionId);
-        this.saveSessions();
-        return true;
+    async deleteSession(sessionId, userId) {
+        try {
+            const session = await Session.findOne({ sessionId, creatorId: userId });
+            if (!session) return false;
+
+            await Session.findOneAndDelete({ sessionId });
+
+            // Clean up in-memory stores
+            this.chatMessages.delete(sessionId);
+            this.cursors.delete(sessionId);
+            this.webrtcSignals.delete(sessionId);
+
+            return true;
+        } catch (error) {
+            console.error('Error deleting session:', error);
+            return false;
+        }
     }
 
     // Chat functionality

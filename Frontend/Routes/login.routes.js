@@ -2,6 +2,7 @@ const express = require('express');
 const loginRoute = require('../controller/login.controller');
 const bodyParser = require('body-parser');
 const path = require('path');
+const jwt = require('jsonwebtoken');
 
 const app = express.Router();
 app.use(bodyParser.json());
