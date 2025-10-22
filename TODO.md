@@ -1,21 +1,15 @@
-# TODO: Fix Login POST Error
+# TODO: Fix Login Failure
 
-## Issue
-- Frontend login form POSTs to `/api/auth/login` (relative to frontend server on port 3000)
-- Backend auth route is on port 8000 at `/api/auth/login`
-- No proxy configured in frontend to forward API requests to backend
-- Result: "Cannot POST /api/auth/login" error
+## Completed Tasks
+- [x] Change auth.controller.js to use UserLogin model instead of User
+- [x] Update login function to use generateAccessToken and generateRefreshToken
+- [x] Change isEmailVerified to isVerified in login
+- [x] Update response structure to have token directly
+- [x] Update verifyEmail to set isVerified on user
+- [x] Remove verification check in login for now
 
-## Plan
-1. **Add proxy middleware to Frontend/index.js** to forward `/api/*` requests to backend server (http://localhost:8000)
-2. **Test login functionality** after proxy setup
-3. **Verify backend login endpoint** is working correctly
-
-## Files to Edit
-- Frontend/index.js: Add proxy middleware for /api/* routes
-
-## Followup Steps
-- Start both frontend (port 3000) and backend (port 8000) servers
-- Test login form submission
-- Check browser network tab for correct API calls
-- Verify successful login redirects user appropriately
+## Next Steps
+- [x] Update frontend fetch URLs to use relative paths instead of hardcoded localhost:3000
+- [ ] Test the login functionality
+- [ ] If still failing, check MongoDB connection
+- [ ] If still failing, add response.ok check in frontend

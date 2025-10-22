@@ -73,7 +73,7 @@
                     </div>
                     <div class="user d-flex align-items-center border border-white rounded p-1 bg-light" id="user" style="cursor: pointer;">
                         <img src="images/User_icon.png" alt="User" class="me-1" style="height: 40px; width: 40px;">
-                        <span class="text-dark fw-bold" id="username" style="width: 127px; text-align: center;"></span>
+                        <span class="text-dark fw-bold" id="username" style="width: 5vw; text-align: center;"></span>
                     </div>
                 </div>
             </div>
@@ -332,7 +332,7 @@ void main()
                 // For demo, assume simple login; in real app, validate credentials
                 if (username && password) {
                     // Send to backend to create session
-                    fetch('http://localhost:8000/api/auth/login', {
+                    fetch('/api/auth/login', {
                         method: 'POST',
                         headers: {'Content-Type': 'application/json'},
                         body: JSON.stringify({username: username, password: password})
@@ -356,7 +356,7 @@ void main()
                 deleteCookie('username');
                 deleteCookie('token');
                 // Send to backend to destroy session
-                fetch('http://localhost:8000/api/auth/logout', {
+                fetch('/api/auth/logout', {
                     method: 'POST',
                     headers: {'Authorization': 'Bearer ' + getCookie('token')}
                 })
@@ -383,7 +383,7 @@ void main()
                 $('.user').show();
                 $('#logout').show();
                 // Fetch user session from backend
-                fetch('http://localhost:8000/api/auth/session', {
+                fetch('/api/auth/session', {
                     method: 'GET',
                     headers: {'Authorization': 'Bearer ' + getCookie('token')}
                 })

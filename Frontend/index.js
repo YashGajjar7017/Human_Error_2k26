@@ -50,7 +50,7 @@ app.use(express.static(path.join(__dirname, 'src')));
 
 // Proxy API requests to backend server
 app.use('/api', createProxyMiddleware({
-    target: 'http://localhost:8000',
+    target: 'http://localhost:3000',
     changeOrigin: true,
     pathRewrite: {
         '^/api': '/api' // Keep /api prefix
@@ -59,11 +59,11 @@ app.use('/api', createProxyMiddleware({
 
 // |-----------Routes handler-------------|
 app.use(engineExp);
+app.use(loginRoutes);
 app.use(usrData);
 app.use(classroom);
 app.use(shopRoutes);
 app.use(mailServer);
-app.use(loginRoutes);
 app.use(signUpRoutes);
 app.use(pdfSaver);
 app.use('/admin', adminData);

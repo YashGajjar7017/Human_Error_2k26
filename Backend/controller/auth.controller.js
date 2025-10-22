@@ -1,5 +1,4 @@
-const User = require('../models/User.model');
-const UserLogin = require('../models/UserLogin.models.js');
+const User = require('../models/UserLogin.models.js');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
@@ -155,16 +154,8 @@ exports.login = async (req, res) => {
             });
         }
 
-        // Check if email is verified
-        if (!user.isEmailVerified) {
-            return res.status(403).json({
-                success: false,
-                message: 'Please verify your email before logging in'
-            });
-        }
-
         // Generate tokens
-        const token = user.generateToken();
+        const token = user.generateAccessToken();
         const refreshToken = user.generateRefreshToken();
 
         // Update refresh token in database
@@ -174,14 +165,11 @@ exports.login = async (req, res) => {
         res.status(200).json({
             success: true,
             message: 'Login successful',
-            data: {
-                user: {
-                    id: user._id,
-                    username: user.username,
-                    email: user.email
-                },
-                token,
-                refreshToken
+            token,
+            user: {
+                id: user._id,
+                username: user.username,
+                email: user.email
             }
         });
 
@@ -560,7 +548,7 @@ exports.verifyOTP = (req, res, next) => {
 };
 
 // Route: Verify email
-exports.verifyEmail = (req, res) => {
+exports.verifyEmail = async (req, res) => {
     const { email, code } = req.body;
 
     if (!email || !code) {
@@ -569,6 +557,12 @@ exports.verifyEmail = (req, res) => {
 
     if (emailVerificationCodes[email] === code) {
         delete emailVerificationCodes[email]; // Clear the code after successful verification
+        // Update user isVerified
+        const user = await User.findOne({ email });
+        if (user) {
+            user.isVerified = true;
+            await user.save();
+        }
         return res.status(200).json({ message: 'Email verified successfully' });
     } else {
         return res.status(400).json({ message: 'Invalid verification code' });
