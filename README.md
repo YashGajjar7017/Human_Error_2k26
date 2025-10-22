@@ -29,3 +29,9 @@ Update 20 : 16 Novemeber (Aplha preview part 3)
 Update 21 : 1 January 2026 (Realase 1.1)
 Update 22 : 13 feburay 2026 (Testing)
 ```
+<hr>
+This is the latest update of the 
+<br>
+```
+Lience aggrement to Yash Production Pvt. LTD. | 2025-2026
+```
