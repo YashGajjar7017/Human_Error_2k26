@@ -1,31 +1,21 @@
-# Session Fix TODO
+# TODO: Fix Login POST Error
 
-## Backend Session Controller Migration
-- [x] Update Backend/controller/session.controller.js to use MongoDB Session model instead of file-based storage
-- [x] Replace file operations with MongoDB queries for session CRUD operations
-- [x] Update session creation, retrieval, joining, and management methods
-- [x] Ensure proper error handling and data validation
+## Issue
+- Frontend login form POSTs to `/api/auth/login` (relative to frontend server on port 3000)
+- Backend auth route is on port 8000 at `/api/auth/login`
+- No proxy configured in frontend to forward API requests to backend
+- Result: "Cannot POST /api/auth/login" error
 
-## Frontend Session Controller Update
-- [x] Update Frontend/controller/session.controller.js to use API calls instead of local file storage
-- [x] Replace local session management with HTTP requests to backend session endpoints
-- [x] Update all controller methods to use axios/fetch for API communication
-- [x] Add proper error handling for API responses
+## Plan
+1. **Add proxy middleware to Frontend/index.js** to forward `/api/*` requests to backend server (http://localhost:8000)
+2. **Test login functionality** after proxy setup
+3. **Verify backend login endpoint** is working correctly
 
-## Authentication Integration
-- [x] Ensure session routes use authentication middleware where required
-- [x] Update session creation to require authenticated users
-- [x] Add session token validation for protected session operations
-- [x] Integrate user authentication with session participation
+## Files to Edit
+- Frontend/index.js: Add proxy middleware for /api/* routes
 
-## Code Cleanup
-- [x] Remove duplicate session management logic
-- [x] Standardize session data structures between frontend and backend
-- [x] Update any references to old file-based session storage
-- [x] Ensure consistent session ID and join code generation
-
-## Testing and Verification
-- [ ] Test session creation, joining, and management
-- [ ] Verify authentication integration works properly
-- [ ] Test session persistence across server restarts
-- [ ] Ensure frontend-backend session synchronization
+## Followup Steps
+- Start both frontend (port 3000) and backend (port 8000) servers
+- Test login form submission
+- Check browser network tab for correct API calls
+- Verify successful login redirects user appropriately

@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
 const path = require('path');
+const { createProxyMiddleware } = require('http-proxy-middleware');
 const storeData = new session.MemoryStore();
 const PORT = process.env.PORT || 3000;
 
@@ -46,6 +47,15 @@ app.use(express.static(path.join(__dirname, 'Lib')));
 app.use(express.static(path.join(__dirname, 'other')));
 app.use(express.static(path.join(__dirname, 'Public')));
 app.use(express.static(path.join(__dirname, 'src')));
+
+// Proxy API requests to backend server
+app.use('/api', createProxyMiddleware({
+    target: 'http://localhost:8000',
+    changeOrigin: true,
+    pathRewrite: {
+        '^/api': '/api' // Keep /api prefix
+    }
+}));
 
 // |-----------Routes handler-------------|
 app.use(engineExp);
