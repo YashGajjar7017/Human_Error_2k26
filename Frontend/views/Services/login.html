@@ -86,8 +86,13 @@
 	document.getElementById('loginForm').addEventListener('submit', async function(e) {
 		e.preventDefault();
 
+		const loginBtn = document.getElementById('loginBtn');
 		const username = document.getElementById('username').value;
 		const password = document.getElementById('password').value;
+
+		// Disable button and show loading state
+		loginBtn.disabled = true;
+		loginBtn.textContent = 'Logging in...';
 
 		try {
 			const response = await fetch('/api/auth/login', {
@@ -109,10 +114,16 @@
 				window.location.href = '/';
 			} else {
 				alert(data.message || 'Login failed');
+				// Re-enable button
+				loginBtn.disabled = false;
+				loginBtn.textContent = 'Login';
 			}
 		} catch (error) {
 			console.error('Login error:', error);
 			alert('An error occurred during login. Please try again.');
+			// Re-enable button
+			loginBtn.disabled = false;
+			loginBtn.textContent = 'Login';
 		}
 	});
 </script>

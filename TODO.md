@@ -1,3 +1,0 @@
-- [x] Change index.html to show "Signup" and redirect to signup page when user icon is clicked for unauthenticated users
-- [x] Modify signup.controller.js to redirect to login page after successful signup instead of OTP
-- [x] Update Signup.html to properly handle form submission via JavaScript and redirect based on response

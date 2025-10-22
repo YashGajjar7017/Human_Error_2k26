@@ -4,7 +4,7 @@ require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
 // const MONGODB_URL_Cloud = 'mongodb+srv://yashacker:Iamyash@reactdb.d04du.mongodb.net';
 const MONGODB_URL_Local = 'mongodb://localhost:27017';
-const MONGODB_URL = process.env.MONGODB_URL_Cloud || 'mongodb+srv://yashacker:Iamyash@reactdb.d04du.mongodb.net';
+const MONGODB_URL = process.env.MONGODB_URL || 'mongodb+srv://yashacker:Iamyash@reactdb.d04du.mongodb.net';
 const DB_NAME = process.env.DB_NAME || "node_compiler_db";
 
 // Suppress Mongoose deprecation warnings
