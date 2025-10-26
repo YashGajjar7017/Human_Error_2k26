@@ -124,6 +124,18 @@ exports.register = async (req, res) => {
 // Login user
 exports.login = async (req, res) => {
     try {
+        console.log('Login request received. Request body:', req.body);
+        console.log('Request headers:', req.headers);
+
+        // Restrict login to only work from http://localhost:3000/other/login/index.html
+        const referer = req.get('Referer');
+        if (!referer || !referer.startsWith('http://localhost:3000/other/login/index.html')) {
+            return res.status(403).json({
+                success: false,
+                message: 'Access denied. Login only allowed from the specified URL.'
+            });
+        }
+
         const { username, password } = req.body;
 
         if (!username || !password) {

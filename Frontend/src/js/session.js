@@ -18,6 +18,30 @@ class CollaborativeSession {
         return 'user_' + Math.random().toString(36).substr(2, 9);
     }
 
+    getAuthHeaders() {
+        const token = this.getAuthToken();
+        return token ? { 'Authorization': `Bearer ${token}` } : {};
+    }
+
+    getAuthToken() {
+        // Try to get token from localStorage first, then sessionStorage, then cookie
+        let token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
+
+        if (!token) {
+            // Try to get from cookie
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                const [name, value] = cookie.trim().split('=');
+                if (name === 'auth_token') {
+                    token = decodeURIComponent(value);
+                    break;
+                }
+            }
+        }
+
+        return token;
+    }
+
     async init() {
         this.setupEditor();
         this.setupEventListeners();
@@ -88,7 +112,8 @@ class CollaborativeSession {
                 response = await fetch(`/api/session/${sessionCode}/join`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        ...this.getAuthHeaders()
                     },
                     body: JSON.stringify({
                         userId: this.userId,
@@ -100,7 +125,8 @@ class CollaborativeSession {
                 response = await fetch('/api/session/create', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        ...this.getAuthHeaders()
                     },
                     body: JSON.stringify({
                         creatorId: this.userId,
@@ -219,12 +245,13 @@ class CollaborativeSession {
 
     async broadcastCodeChange() {
         if (!this.sessionId) return;
-        
+
         try {
             await fetch(`/api/session/${this.sessionId}/code/save`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    ...this.getAuthHeaders()
                 },
                 body: JSON.stringify({
                     code: this.editor.getValue(),
@@ -238,13 +265,14 @@ class CollaborativeSession {
 
     async broadcastCursorPosition() {
         if (!this.sessionId) return;
-        
+
         const cursor = this.editor.getCursor();
         try {
             await fetch(`/api/session/${this.sessionId}/cursor/update`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    ...this.getAuthHeaders()
                 },
                 body: JSON.stringify({
                     userId: this.userId,
@@ -262,21 +290,22 @@ class CollaborativeSession {
     async sendMessage() {
         const input = document.getElementById('chatInput');
         const message = input.value.trim();
-        
+
         if (!message || !this.sessionId) return;
-        
+
         try {
             await fetch(`/api/session/${this.sessionId}/chat/message`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    ...this.getAuthHeaders()
                 },
                 body: JSON.stringify({
                     userId: this.userId,
                     message: message
                 })
             });
-            
+
             input.value = '';
         } catch (error) {
             console.error('Error sending message:', error);
@@ -322,7 +351,8 @@ class CollaborativeSession {
                 await fetch(`/api/session/${this.sessionId}/leave`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        ...this.getAuthHeaders()
                     },
                     body: JSON.stringify({
                         userId: this.userId
@@ -332,7 +362,7 @@ class CollaborativeSession {
                 console.error('Error leaving session:', error);
             }
         }
-        
+
         window.location.reload();
     }
 

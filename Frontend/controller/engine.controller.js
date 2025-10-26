@@ -146,8 +146,13 @@ exports.features = (req, res) => {
 };
 
 exports.session = (req, res) => {
-    const token = generateToken(20);
-    res.redirect(`/Session/join/token=${token}`);
+    // Check if user is authenticated
+    if (!req.session.authenticated || !req.session.user) {
+        return res.redirect('/Account/login');
+    }
+
+    // Show start page first, then redirect to compiler page
+    res.redirect('/start');
 };
 
 exports.sessionToken = (req, res) => {

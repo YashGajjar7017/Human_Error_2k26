@@ -65,7 +65,7 @@ exports.Postlogin = async (req, res) => {
     }
 
     try {
-        const response = await FetchData('http://localhost:8000/api/auth/login', { username, password });
+        const response = await FetchData('api/auth/login', { username, password });
 
         if (response.success) {
             req.session.authenticated = true;
@@ -75,6 +75,13 @@ exports.Postlogin = async (req, res) => {
                 email: response.user.email,
                 token: response.token
             };
+
+            // Set token in cookie for client-side access
+            res.cookie('auth_token', response.token, {
+                httpOnly: false, // Allow client-side access
+                secure: false, // Set to true in production with HTTPS
+                maxAge: 24 * 60 * 60 * 1000 // 24 hours
+            });
 
             res.json({
                 success: true,
