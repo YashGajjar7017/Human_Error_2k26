@@ -7,7 +7,7 @@ This is latest version of complier 2026 & it was only beta 1.1.0 testing priview
 ```
 
 | UPDATE NO. | Date Commit       | Fixes Type |
-
+| --- | --- | --- |
 | Update 1   | 23 Janaury 2021   | (Bug fixex) |
 | Update 2   | 2 March 2021      | (Bug fixex) |
 | Update 3   | 7 April 2021      |             |
