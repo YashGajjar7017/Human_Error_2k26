@@ -83,6 +83,10 @@ userLogin.pre('save', async function (next) {
   if (!this.isModified('password')) {
     return next();
   }
+  // Skip hashing if password is already hashed (starts with bcrypt prefix)
+  if (this.password.startsWith('$2a$') || this.password.startsWith('$2b$') || this.password.startsWith('$2y$')) {
+    return next();
+  }
   this.password = await bcrypt.hash(this.password, 10);
   next();
 });
