@@ -1,22 +1,22 @@
-# TODO: Restrict Login to Specific URL
+# TODO: Implement CI/CD Pipelines
 
 ## Information Gathered
-- Frontend login page located at `Frontend/other/login/index.html`, served at `http://localhost:3000/login/index.html`.
-- Login API endpoint: POST `/api/auth/login`, handled by `exports.login` in `Backend/controller/auth.controller.js`.
-- Frontend proxies API requests to backend via `http://localhost:8000`.
-- Multiple login functions exist in `auth.controller.js` (e.g., `login`, `usrLogin`), but the frontend uses `/api/auth/login`.
+- Project is a Node.js application with Backend and Frontend directories, each with package.json.
+- Existing pipeline files: .Pipelines.Yaml (empty), .pipelines/onebranch-pull-request.yml (empty), indicating Azure DevOps OneBranch setup.
+- Docker Compose file present, suggesting containerization.
+- No existing tests or build scripts specified, but assume npm install, build, test.
 
 ## Plan
-- Modify `exports.login` in `Backend/controller/auth.controller.js` to check the `Referer` header.
-- If the `Referer` does not match `http://localhost:3000/login/index.html`, return a 403 Forbidden response.
-- Ensure the check is added at the beginning of the function before any authentication logic.
+- Update .pipelines/onebranch-pull-request.yml with a OneBranch pipeline for pull requests.
+- Include stages: Install dependencies, build, test for Backend and Frontend, and build Docker images.
+- Use Node.js 16 or latest, npm for package management.
+- Trigger on pull requests to main branch.
 
 ## Dependent Files to Edit
-- `Backend/controller/auth.controller.js`: Add referer check in `exports.login`.
+- .pipelines/onebranch-pull-request.yml: Add full pipeline configuration.
 
 ## Followup Steps
-- Test login functionality by accessing from `http://localhost:3000/login/index.html` (should work).
-- Test login from other URLs or direct API calls (should fail with 403).
-- Verify no other login endpoints need similar restrictions.
-- If needed, apply similar checks to other login functions like `usrLogin`.
-* fix & add new files to .devcontainer & make it running
+- Commit and push changes to trigger the pipeline.
+- Monitor pipeline runs for errors and adjust as needed.
+- If deployment is required, add a separate pipeline or stage (e.g., for Azure).
+- Test locally if possible before pushing.

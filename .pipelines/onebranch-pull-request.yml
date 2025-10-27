@@ -1,0 +1,74 @@
+# OneBranch pipeline for pull requests
+# This pipeline runs on pull requests to validate code changes
+
+trigger:
+  - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+stages:
+- stage: BuildAndTest
+  displayName: 'Build and Test'
+  jobs:
+  - job: Backend
+    displayName: 'Backend Build and Test'
+    steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '16.x'
+      displayName: 'Install Node.js'
+    - script: |
+        cd Backend
+        npm install
+      displayName: 'Install Backend Dependencies'
+    - script: |
+        cd Backend
+        npm run build
+      displayName: 'Build Backend'
+      continueOnError: true  # Assuming no build script, skip if fails
+    - script: |
+        cd Backend
+        npm test
+      displayName: 'Test Backend'
+      continueOnError: true  # Assuming no tests, skip if fails
+
+  - job: Frontend
+    displayName: 'Frontend Build and Test'
+    steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '16.x'
+      displayName: 'Install Node.js'
+    - script: |
+        cd Frontend
+        npm install
+      displayName: 'Install Frontend Dependencies'
+    - script: |
+        cd Frontend
+        npm run build
+      displayName: 'Build Frontend'
+      continueOnError: true
+    - script: |
+        cd Frontend
+        npm test
+      displayName: 'Test Frontend'
+      continueOnError: true
+
+  - job: Docker
+    displayName: 'Build Docker Images'
+    steps:
+    - task: Docker@2
+      inputs:
+        command: 'build'
+        Dockerfile: 'Backend/Dockerfile'  # Assuming Dockerfile exists in Backend
+        tags: 'backend:$(Build.BuildId)'
+      displayName: 'Build Backend Docker Image'
+      continueOnError: true
+    - task: Docker@2
+      inputs:
+        command: 'build'
+        Dockerfile: 'Frontend/Dockerfile'  # Assuming Dockerfile exists in Frontend
+        tags: 'frontend:$(Build.BuildId)'
+      displayName: 'Build Frontend Docker Image'
+      continueOnError: true

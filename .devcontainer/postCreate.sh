@@ -4,7 +4,7 @@
 conda init --all
 
 # Create conda environment
-conda env create -f ../environment.yml
+conda env create -f environment.yml
 
 # Activate environment in bashrc
 echo 'conda activate synapseml' >> ~/.bashrc
@@ -13,7 +13,7 @@ echo 'conda activate synapseml' >> ~/.bashrc
 /usr/local/sdkman/candidates/sbt/current/bin/sbt setup
 
 # Install Node.js dependencies for Backend
-cd ../Backend
+cd Backend
 npm install
 
 # Install Node.js dependencies for Frontend
@@ -23,7 +23,11 @@ npm install
 # Go back to root
 cd ..
 
+# Make start-services script executable
+chmod +x .devcontainer/start-services.sh
+
 # Set up Git (if needed)
 git config --global init.defaultBranch main
 
 echo "Dev container setup complete!"
+echo "To start services, run: .devcontainer/start-services.sh"

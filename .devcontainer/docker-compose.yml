@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+    ports:
+      - "8000:8000"
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=8000
+      - FRONTEND_PORT=3000
+      - MONGODB_URI=mongodb://mongodb:27017/human-error
+      - JWT_SECRET=your-super-secret-jwt-key-change-in-production
+      - ACCESS_TOKEN_SECRET=your-access-token-secret
+      - REFRESH_TOKEN_SECRET=your-refresh-token-secret
+      - ACCESS_TOKEN_EXPIRY=1h
+      - REFRESH_TOKEN_EXPIRY=7d
+      - EMAIL_USER=your-email@gmail.com
+      - EMAIL_PASS=your-app-password
+    depends_on:
+      - mongodb
+    volumes:
+      - ..:/workspaces:cached
+      - /workspaces/node_modules
+      - /workspaces/Backend/node_modules
+      - /workspaces/Frontend/node_modules
+    working_dir: /workspaces
+    command: sleep infinity
+    networks:
+      - dev-network
+
+  mongodb:
+    image: mongo:6.0
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=human-error
+    volumes:
+      - mongodb_data:/data/db
+      - ../.docker/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+    networks:
+      - dev-network
+
+volumes:
+  mongodb_data:
+
+networks:
+  dev-network:
+    driver: bridge

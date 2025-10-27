@@ -1,6 +1,10 @@
 {
 	"name": "Human Error Dev Container",
-	"image": "mcr.microsoft.com/devcontainers/base:jammy",
+	"dockerComposeFile": [
+		"docker-compose.yml"
+	],
+	"service": "app",
+	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
 	"features": {
 		"ghcr.io/devcontainers/features/node:1": {
 			"nodeGypDependencies": true,
