@@ -58,7 +58,7 @@ app.get('/Maintenance', (req, res) => {
 
 // Add GET route for /other/login/index.html to serve login page
 app.get('/other/login/index.html', (req, res) => {
-    res.sendFile(path.join(process.cwd(), 'Frontend/other/login/index.html'));
+    res.sendFile(path.join(__dirname, '../Frontend/other/login/index.html'));
 });
 
 // Add GET route for /Account/Signup to fix route not found error

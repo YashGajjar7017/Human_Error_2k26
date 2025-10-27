@@ -47,6 +47,7 @@ app.use(express.static(path.join(__dirname, 'Lib')));
 app.use(express.static(path.join(__dirname, 'other')));
 app.use(express.static(path.join(__dirname, 'Public')));
 app.use(express.static(path.join(__dirname, 'src')));
+app.use(express.static(path.join(__dirname, 'views')));
 
 // Proxy API requests to backend server
 app.use('/api', createProxyMiddleware({

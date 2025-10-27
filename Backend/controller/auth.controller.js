@@ -1,4 +1,4 @@
-const User = require('../models/UserLogin.models.js');
+const User = require('../models/UserSignUp.models.js');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
@@ -127,12 +127,18 @@ exports.login = async (req, res) => {
         console.log('Login request received. Request body:', req.body);
         console.log('Request headers:', req.headers);
 
-        // Restrict login to only work from http://localhost:3000/other/login/index.html
+        // Allow login from both localhost:3000 and localhost:8000 for development
         const referer = req.get('Referer');
-        if (!referer || !referer.startsWith('http://localhost:3000/other/login/index.html')) {
+        const allowedOrigins = [
+            'http://localhost:3000/other/login/index.html',
+            'http://localhost:8000/other/login/index.html'
+        ];
+        const isAllowed = !referer || allowedOrigins.some(origin => referer.startsWith(origin));
+
+        if (!isAllowed) {
             return res.status(403).json({
                 success: false,
-                message: 'Access denied. Login only allowed from the specified URL.'
+                message: 'Access denied. Login only allowed from authorized URLs.'
             });
         }
 
@@ -388,7 +394,7 @@ exports.usrLogin = async (req, res, next) => {
 
     try {
         // Find user by username
-        const user = await UserLogin.findOne({ username });
+        const user = await User.findOne({ username });
 
         if (!user) {
             return res.status(401).json({ message: 'Invalid username or password' });
@@ -437,7 +443,7 @@ exports.regUser = async (req, res) => {
 
     try {
         // Check if user already exists
-        const existingUser = await UserLogin.findOne({
+        const existingUser = await User.findOne({
             $or: [{ email }, { username }]
         });
 
@@ -451,7 +457,7 @@ exports.regUser = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // Create new user
-        const newUser = new UserLogin({
+        const newUser = new User({
             username,
             email,
             password: hashedPassword

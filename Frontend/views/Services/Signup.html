@@ -30,7 +30,7 @@
         <div class="limiter">
             <div class="container-login100" style="background-image: url('images/login/bg-01.jpg');">
                 <div class="wrap-login100">
-                    <form class="login100-form validate-form" method="POST" action="/Account/Signup/">
+                    <form class="login100-form validate-form" id="signupForm">
                         <span class="login100-form-logo">
                             <i class="zmdi zmdi-landscape"></i>
                         </span>
@@ -44,7 +44,7 @@
                             <span class="focus-input100" data-placeholder="&#xf207;"></span>
                         </div>
 
-                        <div class="wrap-input100 validate-input" data-validate="Enter password">
+                        <div class="wrap-input100 validate-input" data-validate="Enter email">
                             <input class="input100" type="email" name="email" placeholder="Email" id="email">
                             <span class="focus-input100" data-placeholder="&#xf191;"></span>
                         </div>
@@ -52,8 +52,8 @@
                             <input class="input100" type="password" name="password" placeholder="Password" id="password">
                             <span class="focus-input100" data-placeholder="&#xf191;"></span>
                         </div>
-                        <div class="wrap-input100 validate-input" data-validate="Enter password">
-                            <input class="input100" type="password" name="confirmPassword" placeholder="ConfirmPassword"
+                        <div class="wrap-input100 validate-input" data-validate="Confirm password">
+                            <input class="input100" type="password" name="confirmPassword" placeholder="Confirm Password"
                                 id="confirmPassword">
                             <span class="focus-input100" data-placeholder="&#xf191;"></span>
                         </div>
@@ -65,15 +65,13 @@
                             </label>
                         </div>
                         <div class="container-login100-form-btn">
-                            <button class="login100-form-btn" id="login">
-                                <a href="/Account/sendOTP">
-                                    Send OTP
-                                </a>
+                            <button class="login100-form-btn" type="submit" id="signup">
+                                Sign Up
                             </button>
                         </div>
                         <div class="text-center p-t-90">
-                            <a class="txt1" href="/Account/login">
-                                Already login?
+                            <a class="txt1" href="/other/login/index.html">
+                                Already have an account? Login
                             </a>
                         </div>
                     </form>
@@ -96,22 +94,52 @@
         <!-- <script src="/js/main.js"></script> -->
 
         <script>
-            // token generate
-            // let login = document.getElementById('login');
-            // login.addEventListener('click', function (e) {
+            document.getElementById('signupForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
 
-            //     e.preventDefault();
-            //     let tempname = document.getElementById('username').value;
-            //     console.log(tempname);
+                const username = document.getElementById('username').value;
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
 
-            //     if (!tempname) {
-            //         localStorage.setItem('nameToken', tempname);
+                if (!username || !email || !password || !confirmPassword) {
+                    alert('Please fill in all fields');
+                    return;
+                }
 
-            //     }
-            //     else {
-            //         localStorage.setItem('nameToken', '404');
-            //     }
-            // })
+                if (password !== confirmPassword) {
+                    alert('Passwords do not match');
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/api/account/Account/Signup', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            username,
+                            email,
+                            password,
+                            confirmPassword
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        alert('Registration successful! Please check your email for verification.');
+                        // Redirect to login page
+                        window.location.href = '/other/login/index.html';
+                    } else {
+                        alert(data.error || 'Registration failed');
+                    }
+                } catch (error) {
+                    console.error('Signup error:', error);
+                    alert('Registration failed. Please try again.');
+                }
+            });
         </script>
     </body>
 </html>

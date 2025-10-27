@@ -22,11 +22,11 @@ const userSignUp = new mongoose.Schema({
         unique: false,
         required: true
     },
-    confirmPassword: {
-        type: String,
-        unique: false,
-        required: true
-    },
+    // confirmPassword: {
+    //     type: String,
+    //     unique: false,
+    //     required: true
+    // },
     otp: {
         type: String,
         default: null
@@ -51,8 +51,13 @@ userSignUp.pre("save", async function (next) {
     next()
 });
 
-// making custom user method 
+// making custom user method
 userSignUp.methods.isPasswordCorrect = async function (password) {
+    return await bcrypt.compare(password, this.password);
+};
+
+// Compare password method (alias for consistency)
+userSignUp.methods.comparePassword = async function (password) {
     return await bcrypt.compare(password, this.password);
 };
 

@@ -116,10 +116,11 @@
 
 			const data = await response.json();
 
-			if (response.ok) {
+			if (data.success) {
 				// Store user data
+				localStorage.setItem('token', data.token);
+				localStorage.setItem('user', JSON.stringify(data.user));
 				sessionStorage.setItem('nameToken', username);
-				sessionStorage.setItem('passToken', password);
 				document.cookie = `username=${username}; path=/`;
 
 				// Redirect to home page

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const GDBCompiler = require('../../Execution_Engine/gdb-setup');
+const GDBCompiler = require('../../Engine_Execution/gdb-setup');
 const multer = require('multer');
 const path = require('path');
 
