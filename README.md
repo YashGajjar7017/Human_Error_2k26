@@ -15,7 +15,6 @@ This is latest version of complier 2026 & it was only beta 1.1.0 testing priview
 
 /* Complier is web-page that hold's user data into machine language without required lot of tools on your local device. just need a intenet & a computer that you can right the code for you ..!*/
 
-```
 <table border="1" cellspacing="0" cellpadding="8">
   <thead>
     <tr>
@@ -51,7 +50,6 @@ This is latest version of complier 2026 & it was only beta 1.1.0 testing priview
   </tbody>
 </table>
 
-```
 <hr>
 This is the latest update of the 
 <br>
