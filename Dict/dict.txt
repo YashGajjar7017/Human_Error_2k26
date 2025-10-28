@@ -1,0 +1,39 @@
+# Dictionary for Human Compiler 2026
+
+## Programming Languages
+- JavaScript: A high-level, interpreted programming language
+- TypeScript: A superset of JavaScript that adds static typing
+- C: A general-purpose programming language
+- C++: An extension of C with object-oriented features
+- Python: A high-level programming language known for readability
+- Elixir: A functional programming language for building scalable applications
+
+## Development Tools
+- Node.js: JavaScript runtime built on Chrome's V8 engine
+- Express.js: Web application framework for Node.js
+- MongoDB: NoSQL document database
+- Docker: Platform for developing, shipping, and running applications
+- Git: Distributed version control system
+- npm: Package manager for JavaScript
+
+## CI/CD Concepts
+- Continuous Integration: Practice of merging code changes frequently
+- Continuous Deployment: Automated release of software to production
+- Pipeline: Automated process for building, testing, and deploying code
+- Build: Process of converting source code into executable software
+- Test: Verification that software meets requirements
+- Deploy: Process of making software available for use
+
+## Web Technologies
+- HTML: Markup language for creating web pages
+- CSS: Style sheet language for describing presentation
+- REST API: Architectural style for designing networked applications
+- WebSocket: Protocol for full-duplex communication over TCP
+- CORS: Mechanism for relaxing same-origin policy
+
+## Security
+- Authentication: Process of verifying user identity
+- Authorization: Process of determining user permissions
+- JWT: JSON Web Token for secure information exchange
+- Encryption: Process of converting data into coded format
+- Hashing: One-way function for data integrity verification
