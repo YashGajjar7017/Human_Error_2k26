@@ -1,14 +1,16 @@
 const jwt = require('jsonwebtoken');
-const UserLogin = require('../models/UserLogin.models.js');
-const UserSignUp = require('../models/UserSignUp.models.js');
+const User = require('../models/User.model');
 const bcrypt = require('bcryptjs');
+const fs = require('fs');
+const path = require('path');
+const maintenanceController = require('./maintenance.controller');
 
 // Admin Dashboard
 exports.homePage = async (req, res) => {
   try {
-    const totalUsers = await UserSignUp.countDocuments();
-    const activeUsers = await UserLogin.countDocuments();
-    const newUsersToday = await UserSignUp.countDocuments({
+    const totalUsers = await User.countDocuments();
+    const activeUsers = await User.countDocuments({ lastLogin: { $ne: null } });
+    const newUsersToday = await User.countDocuments({
       createdAt: { $gte: new Date(Date.now() - 24 * 60 * 60 * 1000) }
     });
 
@@ -30,7 +32,7 @@ exports.homePage = async (req, res) => {
 // Get all users for admin
 exports.getAllUsers = async (req, res) => {
   try {
-    const users = await UserSignUp.find().select('-password');
+    const users = await User.find().select('-password');
     
     res.status(200).json({
       success: true,
@@ -53,7 +55,7 @@ exports.getUserById = async (req, res) => {
   try {
     const { id } = req.params;
     
-    const user = await UserSignUp.findById(id).select('-password');
+    const user = await User.findById(id).select('-password');
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -74,7 +76,7 @@ exports.updateUser = async (req, res) => {
     const { id } = req.params;
     const { username, email } = req.body;
 
-    const updatedUser = await UserSignUp.findByIdAndUpdate(
+    const updatedUser = await User.findByIdAndUpdate(
       id,
       { username, email },
       { new: true, runValidators: true }
@@ -100,13 +102,12 @@ exports.deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const user = await UserSignUp.findByIdAndDelete(id);
+    const user = await User.findByIdAndDelete(id);
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Also delete from UserLogin
-    await UserLogin.findOneAndDelete({ email: user.email });
+    // User is now unified, no need to delete from separate collection
 
     res.status(200).json({
       success: true,
@@ -121,15 +122,15 @@ exports.deleteUser = async (req, res) => {
 // Get admin dashboard stats
 exports.getDashboardStats = async (req, res) => {
   try {
-    const totalUsers = await UserSignUp.countDocuments();
-    const activeUsers = await UserLogin.countDocuments();
-    const newUsersToday = await UserSignUp.countDocuments({
+    const totalUsers = await User.countDocuments();
+    const activeUsers = await User.countDocuments({ lastLogin: { $ne: null } });
+    const newUsersToday = await User.countDocuments({
       createdAt: { $gte: new Date(Date.now() - 24 * 60 * 60 * 1000) }
     });
-    const newUsersThisWeek = await UserSignUp.countDocuments({
+    const newUsersThisWeek = await User.countDocuments({
       createdAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) }
     });
-    const newUsersThisMonth = await UserSignUp.countDocuments({
+    const newUsersThisMonth = await User.countDocuments({
       createdAt: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) }
     });
 
@@ -148,3 +149,64 @@ exports.getDashboardStats = async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+
+// Admin XML Configuration Management
+const ADMIN_CONFIG_PATH = path.join(__dirname, '../admin.xml');
+
+// Get admin configuration
+exports.getAdminConfig = async (req, res) => {
+  try {
+    if (!fs.existsSync(ADMIN_CONFIG_PATH)) {
+      return res.status(404).json({ error: 'Admin configuration not found' });
+    }
+
+    const configData = fs.readFileSync(ADMIN_CONFIG_PATH, 'utf8');
+    res.set('Content-Type', 'application/xml');
+    res.send(configData);
+  } catch (error) {
+    console.error('Error reading admin config:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+// Update admin configuration
+exports.updateAdminConfig = async (req, res) => {
+  try {
+    const xmlData = req.body;
+
+    // Basic validation - ensure it's XML-like
+    if (!xmlData || typeof xmlData !== 'string' || !xmlData.includes('<admin-config>')) {
+      return res.status(400).json({ error: 'Invalid XML configuration' });
+    }
+
+    fs.writeFileSync(ADMIN_CONFIG_PATH, xmlData, 'utf8');
+
+    res.status(200).json({
+      success: true,
+      message: 'Admin configuration updated successfully'
+    });
+  } catch (error) {
+    console.error('Error updating admin config:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+// Maintenance Control Functions (Direct calls to maintenance controller)
+
+// Get maintenance status
+exports.getMaintenanceStatus = maintenanceController.getMaintenanceStatus;
+
+// Enable maintenance
+exports.enableMaintenance = maintenanceController.enableMaintenance;
+
+// Disable maintenance
+exports.disableMaintenance = maintenanceController.disableMaintenance;
+
+// Update maintenance message
+exports.updateMaintenanceMessage = maintenanceController.updateMaintenanceMessage;
+
+// Add allowed IP
+exports.addAllowedIP = maintenanceController.addAllowedIP;
+
+// Remove allowed IP
+exports.removeAllowedIP = maintenanceController.removeAllowedIP;

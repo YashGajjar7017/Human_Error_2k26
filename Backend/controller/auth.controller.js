@@ -1,4 +1,4 @@
-const User = require('../models/UserSignUp.models.js');
+const User = require('../models/User.model.js');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
@@ -12,8 +12,8 @@ const { mongoose, Schema } = require('mongoose');
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
+        user: process.env.EMAIL_USER || process.env.EMAILID,
+        pass: process.env.EMAIL_PASS || process.env.PASSWORD
     }
 });
 

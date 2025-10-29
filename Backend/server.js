@@ -3,6 +3,7 @@ const cors = require('cors');
 const path = require('path');
 const http = require('http');
 const socketIo = require('socket.io');
+
 const process = require('process');
 const port = process.env.PORT || 8000;
 
@@ -22,9 +23,15 @@ const io = socketIo(server, {
 // Cross-origin-res
 app.use(cors())
 
+// Import maintenance controller for middleware
+const maintenanceController = require('./controller/maintenance.controller');
+
 // Middleware to parse JSON bodies
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Maintenance middleware - check before other routes
+app.use(maintenanceController.maintenanceMiddleware);
 
 // Import all routes
 const authRoutes = require('./Routes/auth.routes');
@@ -39,8 +46,8 @@ const enhancedUserRoutes = require('./Routes/enhanced-user.routes');
 const analyticsRoutes = require('./Routes/analytics.routes');
 const notificationRoutes = require('./Routes/notification.routes');
 const enhancedWebrtcRoutes = require('./Routes/enhanced-webrtc.routes');
-const loginRoutes = require('./Routes/loginApi.routes');
 const maintenanceRoutes = require('./Routes/maintenance.routes');
+
 
 // DB Connect
 const DBConnect = require('./DB/DBHandler');
@@ -107,8 +114,8 @@ app.use('/api/compiler', compilerRoutes);
 app.use('/api/enhanced-users', enhancedUserRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/notifications', notificationRoutes);
-app.use('/api/login', loginRoutes);
 app.use('/api/maintenance', maintenanceRoutes);
+
 
 // Socket.IO for WebRTC signaling
 io.on('connection', (socket) => {
@@ -176,11 +183,14 @@ app.use((err, req, res, next) => {
     });
 });
 
+// Maintenance server is now integrated into the main server
+
 // Start the server
 server.listen(port, () => {
     console.log(`🚀 Server is running on port ${port}`);
     console.log(`📡 WebSocket server ready`);
     console.log(`🔗 Health check: http://localhost:${port}/health`);
+    console.log(`🔧 Maintenance mode integrated`);
 });
 
 module.exports = server;

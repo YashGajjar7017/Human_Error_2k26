@@ -7,7 +7,7 @@ const path = require('path');
 const rootDir = require('../util/path');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const User = require('../../Backend/models/UserSignUp.models');
+const User = require('../../Backend/models/User.model');
 const Service = require('../../Backend/models/serviceHandler.models');
 
 class AdminController {

@@ -1,5 +1,5 @@
 const Classroom = require('../models/Classroom.model');
-const UserSignUp = require('../models/UserSignUp.models');
+const UserSignUp = require('../models/User.model');
 
 // Create new classroom
 exports.createClassroom = async (req, res) => {

@@ -1,57 +1,29 @@
 const express = require('express');
 const authController = require('../controller/auth.controller');
-const { activeTokens } = require('../controller/loginApi.controller');
-const jwt = require('jsonwebtoken');
+const { auth } = require('../middleware/auth.middleware');
 
 const router = express.Router();
 
-// Middleware to verify JWT token
-const verifyToken = (req, res, next) => {
-    const token = req.header('Authorization') && req.header('Authorization').startsWith('Bearer ')
-        ? req.header('Authorization').replace('Bearer ', '')
-        : null;
-
-    if (!token) {
-        return res.status(403).json({ message: 'Access denied. No token provided.' });
-    }
-
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
-
-        // Check if the token is still active
-        if (!activeTokens[token]) {
-            return res.status(401).json({ message: 'Token not active' });
-        }
-
-        req.user = decoded;
-        next();
-    } catch (error) {
-        res.status(400).json({ message: 'Invalid or expired token' });
-    }
-};
-
-// Login endpoint
-router.post('/login', authController.login);
-
-// Logout endpoint
-router.post('/logout', verifyToken, authController.logout);
-
-// Session endpoint to get current user session
-router.get('/session', verifyToken, authController.getCurrentUser);
-
-// Register endpoint (if needed, or use existing signup)
+// Main auth routes
 router.post('/register', authController.register);
-
-// Additional auth routes
-router.post('/auth-token', authController.authToken);
-router.post('/usr-login', authController.usrLogin);
-router.post('/reg-user', authController.regUser);
-router.get('/user-accept', authController.userAccept);
-router.post('/reg-user-qr', authController.regUserQR);
-router.get('/user-protected', authController.UserProtected);
+router.post('/login', authController.login);
+router.post('/logout', auth, authController.logout);
+router.get('/me', auth, authController.getCurrentUser);
+router.post('/send-otp', authController.sendOTP);
 router.post('/verify-otp', authController.verifyOTP);
-router.post('/verify-email', authController.verifyEmail);
-router.post('/send-otp-email', authController.SendOTPEmail);
-router.get('/health-check', authController.healthCheck);
+
+// Health check
+router.get('/health', authController.healthCheck);
+
+// Legacy routes for backward compatibility (can be removed later)
+router.post('/usrLogin', authController.usrLogin);
+router.post('/regUser', authController.regUser);
+router.post('/authToken', authController.authToken);
+router.post('/verifyEmail', authController.verifyEmail);
+router.post('/SendOTPEmail', authController.SendOTPEmail);
+router.get('/userAccept', authController.userAccept);
+router.post('/regUserQR', authController.regUserQR);
+router.get('/UserProtected', authController.UserProtected);
+router.post('/verifyOTP', authController.verifyOTP);
 
 module.exports = router;

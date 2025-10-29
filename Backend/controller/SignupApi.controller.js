@@ -1,4 +1,4 @@
-const SignUPModel = require('../models/UserSignUp.models');
+const SignUPModel = require('../models/User.model');
 const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
 const mongoose = require('mongoose');

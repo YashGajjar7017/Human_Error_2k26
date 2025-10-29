@@ -340,11 +340,11 @@ void main()
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            setCookie('username', username, 7); // Set cookie for 7 days
+                            setCookie('username', data.user.username, 7); // Set cookie for 7 days
                             setCookie('token', data.token, 7); // Set token cookie
                             location.reload(); // Reload to update UI
                         } else {
-                            alert('Login failed');
+                            alert('Login failed: ' + data.message);
                         }
                     })
                     .catch(error => console.error('Error:', error));

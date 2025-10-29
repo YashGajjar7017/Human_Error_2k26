@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<admin-config>
+    <admins>
+        <admin id="1">
+            <username>admin</username>
+            <email>admin@example.com</email>
+            <permissions>
+                <permission>user_management</permission>
+                <permission>maintenance_control</permission>
+                <permission>system_config</permission>
+            </permissions>
+        </admin>
+    </admins>
+    <maintenance-policies>
+        <policy id="default">
+            <name>Default Maintenance Policy</name>
+            <description>Standard maintenance mode settings</description>
+            <settings>
+                <default-message>System is under maintenance. Please check back later.</default-message>
+                <max-duration-hours>24</max-duration-hours>
+                <auto-disable>true</auto-disable>
+                <notify-admins>true</notify-admins>
+            </settings>
+        </policy>
+    </maintenance-policies>
+    <user-controls>
+        <control id="user-access">
+            <name>User Access Control</name>
+            <enabled>true</enabled>
+            <settings>
+                <max-login-attempts>5</max-login-attempts>
+                <lockout-duration-minutes>30</lockout-duration-minutes>
+                <require-email-verification>true</require-email-verification>
+            </settings>
+        </control>
+    </user-controls>
+</admin-config>

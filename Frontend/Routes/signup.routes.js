@@ -12,6 +12,7 @@ router.use(express.json());
 router.get('/Account/Signup', signUpController.SignUpToken);
 router.get('/Account/Signup/:SignUpToken', signUpController.signUp);
 router.post('/Account/Signup', signUpController.postSignUp);
+router.post('/Account/Signup/Verify/:SignUpToken')
 
 // OTP Handler - aligned with backend routes
 router.get('/Account/sendOTP', signUpController.OTP);
