@@ -1,4 +1,5 @@
 # Human Error Code - Open Source ("Code - OSS")
+
 [![Feature Requests](https://img.shields.io/github/issues/microsoft/vscode/feature-request.svg)](https://github.com/microsoft/vscode/issues?q=is%3Aopen+is%3Aissue+label%3Afeature-request+sort%3Areactions-%2B1-desc)
 [![Bugs](https://img.shields.io/github/issues/microsoft/vscode/bug.svg)](https://github.com/microsoft/vscode/issues?utf8=✓&q=is%3Aissue+is%3Aopen+label%3Abug)
 [![Gitter](https://img.shields.io/badge/chat-on%20gitter-yellow.svg)](https://gitter.im/Microsoft/vscode)
@@ -11,9 +12,10 @@ This repository ("`Code - OSS`") is where we (Microsoft) develop the [Human Erro
 This is latest version of complier 2026 & it was only beta 1.1.0 testing priview only deveoplers<hr>
 
 ## Human Erorr
+
 <img width="1366" height="612" alt="image" src="https://github.com/user-attachments/assets/726f3978-9cad-4d1e-ac4f-26b85a32327e" /><hr>
 
-/* Complier is web-page that hold's user data into machine language without required lot of tools on your local device. just need a intenet & a computer that you can right the code for you ..!*/
+>_ Complier is web-page that hold's user data into machine language without required lot of tools on your local device. just need a intenet & a computer that you can right the code for you ..!_/
 
 <table border="1" cellspacing="0" cellpadding="8">
   <thead>
@@ -21,32 +23,33 @@ This is latest version of complier 2026 & it was only beta 1.1.0 testing priview
       <th>UPDATE NO.</th>
       <th>Date Commit</th>
       <th>Fixes Type</th>
+      <th>Update_Condition</th>
     </tr>
   </thead>
   <tbody>
-    <tr><td>Update 1</td><td>23 January 2021</td><td>(Bug fixes)</td></tr>
-    <tr><td>Update 2</td><td>2 March 2021</td><td>(Bug fixes)</td></tr>
-    <tr><td>Update 3</td><td>7 April 2021</td><td></td></tr>
-    <tr><td>Update 4</td><td>12 June 2021</td><td>(Bug fixes)</td></tr>
-    <tr><td>Update 5</td><td>8 November 2021</td><td>(Beta 0.1)</td></tr>
-    <tr><td>Update 6</td><td>1 January 2022</td><td>(Beta 0.1.1)</td></tr>
-    <tr><td>Update 7</td><td>12 June 2022</td><td>(Alpha Testing | temporary)</td></tr>
-    <tr><td>Update 8</td><td>27 July 2022</td><td>(Release 0.1)</td></tr>
-    <tr><td>Update 9</td><td>1 December 2022</td><td>(Integrated AI)</td></tr>
-    <tr><td>Update 10</td><td>23 March 2023</td><td>(Beta 0.2)</td></tr>
-    <tr><td>Update 11</td><td>25 August 2023</td><td>(Alpha preview Testing Integration)</td></tr>
-    <tr><td>Update 12</td><td>12 October 2023</td><td>(Beta 0.2.1)</td></tr>
-    <tr><td>Update 13</td><td>19 January 2024</td><td>(Beta 0.2.2)</td></tr>
-    <tr><td>Update 14</td><td>29 February 2024</td><td>(Beta 0.3)</td></tr>
-    <tr><td>Update 15</td><td>9 May 2024</td><td>(Testing)</td></tr>
-    <tr><td>Update 16</td><td>1 September 2024</td><td>(AI Integration Part 2 Testing)</td></tr>
-    <tr><td>Update 16</td><td>12 November 2024</td><td>(Testing Part 3)</td></tr>
-    <tr><td>Update 17</td><td>21 February 2025</td><td>(Alpha Preview Release 1)</td></tr>
-    <tr><td>Update 18</td><td>2 June 2025</td><td>(Beta Preview)</td></tr>
-    <tr><td>Update 19</td><td>7 July 2025</td><td>(Gamma Release)</td></tr>
-    <tr><td>Update 20</td><td>16 November</td><td>(Alpha Preview Part 3)</td></tr>
-    <tr><td>Update 21</td><td>1 January 2026</td><td>(Release 1.1)</td></tr>
-    <tr><td>Update 22</td><td>13 February 2026</td><td>(Testing)</td></tr>
+    <tr><td>Update 1</td><td>23 January 2021</td><td>(Bug fixes)</td><td>Critical<td></tr>
+    <tr><td>Update 2</td><td>2 March 2021</td><td>(Bug fixes)</td><td>Recommded</td></tr>
+    <tr><td>Update 3</td><td>7 April 2021</td>-----------<td></td><td>Security</td></tr>
+    <tr><td>Update 4</td><td>12 June 2021</td><td>(Bug fixes)</td><td></td></tr>
+    <tr><td>Update 5</td><td>8 November 2021</td><td>(Beta 0.1)</td><td></td></tr>
+    <tr><td>Update 6</td><td>1 January 2022</td><td>(Beta 0.1.1)</td><td>Security</td></tr>
+    <tr><td>Update 7</td><td>12 June 2022</td><td>(Alpha Testing | temporary)</td><td>Security</td></tr>
+    <tr><td>Update 8</td><td>27 July 2022</td><td>(Release 0.1)</td><td>Security</td></tr>
+    <tr><td>Update 9</td><td>1 December 2022</td><td>(Integrated AI)</td><td>Security</td></tr>
+    <tr><td>Update 10</td><td>23 March 2023</td><td>(Beta 0.2)</td><td>Security</td></tr>
+    <tr><td>Update 11</td><td>25 August 2023</td><td>(Alpha preview Testing Integration)</td><td>Security</td></tr>
+    <tr><td>Update 12</td><td>12 October 2023</td><td>(Beta 0.2.1)</td><td>Security</td></tr>
+    <tr><td>Update 13</td><td>19 January 2024</td><td>(Beta 0.2.2)</td><td>Security</td></tr>
+    <tr><td>Update 14</td><td>29 February 2024</td><td>(Beta 0.3)</td><td>Security</td></tr>
+    <tr><td>Update 15</td><td>9 May 2024</td><td>(Testing)</td><td>Security</td></tr>
+    <tr><td>Update 16</td><td>1 September 2024</td><td>(AI Integration Part 2 Testing)</td><td>Security</td></tr>
+    <tr><td>Update 16</td><td>12 November 2024</td><td>(Testing Part 3)</td><td>Security</td></tr>
+    <tr><td>Update 17</td><td>21 February 2025</td><td>(Alpha Preview Release 1)</td><td>Security</td></tr>
+    <tr><td>Update 18</td><td>2 June 2025</td><td>(Beta Preview)</td><td>Security</td></tr>
+    <tr><td>Update 19</td><td>7 July 2025</td><td>(Gamma Release)</td><td>Security</td></tr>
+    <tr><td>Update 20</td><td>16 November</td><td>(Alpha Preview Part 3)</td><td>Security</td></tr>
+    <tr><td>Update 21</td><td>1 January 2026</td><td>(Release 1.1)</td><td>Security</td></tr>
+    <tr><td>Update 22</td><td>13 February 2026</td><td>(Testing)</td><td>Security</td></tr>
   </tbody>
 </table>
 
@@ -68,28 +71,28 @@ Human Error is updated monthly with new features and bug fixes. You can download
 
 There are many ways in which you can participate in this project, for example:
 
-* [Submit bugs and feature requests](https://github.com/microsoft/vscode/issues), and help us verify as they are checked in
-* Review [source code changes](https://github.com/microsoft/vscode/pulls)
-* Review the [documentation](https://github.com/microsoft/vscode-docs) and make pull requests for anything from typos to additional and new content
+- [Submit bugs and feature requests](https://github.com/microsoft/vscode/issues), and help us verify as they are checked in
+- Review [source code changes](https://github.com/microsoft/vscode/pulls)
+- Review the [documentation](https://github.com/microsoft/vscode-docs) and make pull requests for anything from typos to additional and new content
 
 If you are interested in fixing issues and contributing directly to the code base,
 please see the document [How to Contribute](https://github.com/microsoft/vscode/wiki/How-to-Contribute), which covers the following:
 
-* [How to build and run from source](https://github.com/microsoft/vscode/wiki/How-to-Contribute)
-* [The development workflow, including debugging and running tests](https://github.com/microsoft/vscode/wiki/How-to-Contribute#debugging)
-* [Coding guidelines](https://github.com/microsoft/vscode/wiki/Coding-Guidelines)
-* [Submitting pull requests](https://github.com/microsoft/vscode/wiki/How-to-Contribute#pull-requests)
-* [Finding an issue to work on](https://github.com/microsoft/vscode/wiki/How-to-Contribute#where-to-contribute)
-* [Contributing to translations](https://aka.ms/vscodeloc)
+- [How to build and run from source](https://github.com/microsoft/vscode/wiki/How-to-Contribute)
+- [The development workflow, including debugging and running tests](https://github.com/microsoft/vscode/wiki/How-to-Contribute#debugging)
+- [Coding guidelines](https://github.com/microsoft/vscode/wiki/Coding-Guidelines)
+- [Submitting pull requests](https://github.com/microsoft/vscode/wiki/How-to-Contribute#pull-requests)
+- [Finding an issue to work on](https://github.com/microsoft/vscode/wiki/How-to-Contribute#where-to-contribute)
+- [Contributing to translations](https://aka.ms/vscodeloc)
 
 ## Feedback
 
-* Ask a question on [Stack Overflow](https://stackoverflow.com/questions/tagged/vscode)
-* [Request a new feature](CONTRIBUTING.md)
-* Upvote [popular feature requests](https://github.com/microsoft/vscode/issues?q=is%3Aopen+is%3Aissue+label%3Afeature-request+sort%3Areactions-%2B1-desc)
-* [File an issue](https://github.com/microsoft/vscode/issues)
-* Connect with the extension author community on [GitHub Discussions](https://github.com/microsoft/vscode-discussions/discussions) or [Slack](https://aka.ms/vscode-dev-community)
-* Follow [@code](https://twitter.com/code) and let us know what you think!
+- Ask a question on [Stack Overflow](https://stackoverflow.com/questions/tagged/vscode)
+- [Request a new feature](CONTRIBUTING.md)
+- Upvote [popular feature requests](https://github.com/microsoft/vscode/issues?q=is%3Aopen+is%3Aissue+label%3Afeature-request+sort%3Areactions-%2B1-desc)
+- [File an issue](https://github.com/microsoft/vscode/issues)
+- Connect with the extension author community on [GitHub Discussions](https://github.com/microsoft/vscode-discussions/discussions) or [Slack](https://aka.ms/vscode-dev-community)
+- Follow [@code](https://twitter.com/code) and let us know what you think!
 
 See our [wiki](https://github.com/microsoft/vscode/wiki/Feedback-Channels) for a description of each of these channels and information on some other available community-driven channels.
 
@@ -105,10 +108,11 @@ VS Code includes a set of built-in extensions located in the [extensions](extens
 
 This repository includes a Human Error Dev Containers / GitHub Codespaces development container.
 
-* For [Dev Containers](https://aka.ms/vscode-remote/download/containers), use the **Dev Containers: Clone Repository in Container Volume...** command which creates a Docker volume for better disk I/O on macOS and Windows.
-  * If you already have VS Code and Docker installed, you can also click [here](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/microsoft/vscode) to get started. This will cause VS Code to automatically install the Dev Containers extension if needed, clone the source code into a container volume, and spin up a dev container for use.
+- For [Dev Containers](https://aka.ms/vscode-remote/download/containers), use the **Dev Containers: Clone Repository in Container Volume...** command which creates a Docker volume for better disk I/O on macOS and Windows.
 
-* For Codespaces, install the [GitHub Codespaces](https://marketplace.visualstudio.com/items?itemName=GitHub.codespaces) extension in VS Code, and use the **Codespaces: Create New Codespace** command.
+  - If you already have VS Code and Docker installed, you can also click [here](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/microsoft/vscode) to get started. This will cause VS Code to automatically install the Dev Containers extension if needed, clone the source code into a container volume, and spin up a dev container for use.
+
+- For Codespaces, install the [GitHub Codespaces](https://marketplace.visualstudio.com/items?itemName=GitHub.codespaces) extension in VS Code, and use the **Codespaces: Create New Codespace** command.
 
 Docker / the Codespace should have at least **4 Cores and 6 GB of RAM (8 GB recommended)** to run a full build. See the [development container README](.devcontainer/README.md) for more information.
 
