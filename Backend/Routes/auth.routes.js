@@ -12,6 +12,10 @@ router.get('/me', auth, authController.getCurrentUser);
 router.post('/send-otp', authController.sendOTP);
 router.post('/verify-otp', authController.verifyOTP);
 
+// Popup login routes
+router.get('/popup', authController.servePopup);
+router.post('/popup-login', authController.popupLogin);
+
 // Health check
 router.get('/health', authController.healthCheck);
 

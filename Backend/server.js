@@ -3,8 +3,8 @@ const cors = require('cors');
 const path = require('path');
 const http = require('http');
 const socketIo = require('socket.io');
-
 const process = require('process');
+
 const port = process.env.PORT || 8000;
 
 // dotEnv config
@@ -27,8 +27,8 @@ app.use(cors())
 const maintenanceController = require('./controller/maintenance.controller');
 
 // Middleware to parse JSON bodies
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Maintenance middleware - check before other routes
 app.use(maintenanceController.maintenanceMiddleware);
@@ -58,53 +58,6 @@ app.use('/api/auth', authRoutes);
 app.use('/api/account', accountRoutes); // Fixed: Removed duplicate /auth/signup path
 app.use('/api/signup', signupRoutes);
 
-// Add GET route for /Maintenance to serve maintenance page
-app.get('/Maintenance', (req, res) => {
-    res.sendFile(path.join(__dirname, '../Frontend/views/Services/Maintenance.html'));
-});
-
-// Add GET route for /other/login/index.html to serve login page
-app.get('/other/login/index.html', (req, res) => {
-    res.sendFile(path.join(__dirname, '../Frontend/other/login/index.html'));
-});
-
-// Add GET route for /Account/Signup to fix route not found error
-app.get('/Account/Signup', (req, res) => {
-    res.json({
-        success: true,
-        message: 'Account Signup API',
-        endpoints: {
-            signup: {
-                method: 'POST',
-                path: '/api/account/Account/Signup',
-                description: 'Register a new user account',
-                body: {
-                    username: 'string (required)',
-                    email: 'string (required, valid email)',
-                    password: 'string (required, min 6 chars)',
-                    confirmPassword: 'string (required, must match password)'
-                }
-            },
-            sendOtp: {
-                method: 'POST',
-                path: '/api/account/Account/SignupOTP',
-                description: 'Send OTP to email for verification',
-                body: {
-                    email: 'string (required, valid email)'
-                }
-            },
-            verifyOtp: {
-                method: 'POST',
-                path: '/api/account/Account/verifyOTP',
-                description: 'Verify OTP sent to email',
-                body: {
-                    email: 'string (required, valid email)',
-                    otp: 'string (required, 6 digits)'
-                }
-            }
-        }
-    });
-});
 app.use('/api/admin', adminRoutes);
 app.use('/api/classrooms', classroomRoutes);
 app.use('/api/sessions', sessionRoutes);
@@ -115,7 +68,6 @@ app.use('/api/enhanced-users', enhancedUserRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/maintenance', maintenanceRoutes);
-
 
 // Socket.IO for WebRTC signaling
 io.on('connection', (socket) => {
@@ -152,9 +104,81 @@ process.on("unhandledRejection", (reason, promise) => {
     process.exit(1);
 });
 
-// Serve static files
-app.use('/compiler/temp', express.static(path.join(__dirname, 'compiler', 'temp')));
-app.use(express.static(path.join(__dirname, '../Frontend')));
+// Serve login popup
+app.get('/popup', (req, res) => {
+    const popupHtml = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Login | Human Error</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
+        .popup { max-width: 400px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; }
+        input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+        button { width: 100%; padding: 10px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .error { color: red; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="popup">
+        <h2>Login</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit">Login</button>
+        </form>
+        <div id="error" class="error"></div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('error');
+
+            try {
+                const response = await fetch('/api/auth/popup-login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Send success data to parent window
+                    window.opener.postMessage({
+                        type: 'LOGIN_SUCCESS',
+                        token: data.token,
+                        user: data.user
+                    }, '*');
+                    window.close();
+                } else {
+                    errorDiv.textContent = data.message || 'Login failed';
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                errorDiv.textContent = 'An error occurred during login. Please try again.';
+            }
+        });
+    </script>
+</body>
+</html>`;
+    res.send(popupHtml);
+});
 
 // Health check endpoint
 app.get('/health', (req, res) => {

@@ -377,7 +377,19 @@ void main()
                 $('.user').show();
                 $('#logout').hide();
                 document.getElementById('username').innerText = 'Login';
-                document.getElementById('user').onclick = function() { window.location.href = '/login/index.html'; };
+                document.getElementById('user').onclick = function() {
+                    // Open login popup instead of navigating
+                    const popup = window.open('http://localhost:8000/popup', 'loginPopup', 'width=700,height=500,align-item=center');
+                    // Listen for messages from popup
+                    window.addEventListener('message', function(event) {
+                        if (event.data.type === 'LOGIN_SUCCESS') {
+                            // Store token and user data
+                            setCookie('token', event.data.token, 7);
+                            setCookie('username', event.data.user.username, 7);
+                            location.reload(); // Reload to update UI
+                        }
+                    });
+                };
             }
             else {
                 $('.user').show();

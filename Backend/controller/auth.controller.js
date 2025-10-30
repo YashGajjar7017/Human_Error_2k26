@@ -127,24 +127,10 @@ exports.login = async (req, res) => {
         console.log('Login request received. Request body:', req.body);
         console.log('Request headers:', req.headers);
 
-        // Allow login from both localhost:3000 and localhost:8000 for development
-        const referer = req.get('Referer');
-        const allowedOrigins = [
-            'http://localhost:3000/other/login/index.html',
-            'http://localhost:8000/other/login/index.html'
-        ];
-        const isAllowed = !referer || allowedOrigins.some(origin => referer.startsWith(origin));
-
-        if (!isAllowed) {
-            return res.status(403).json({
-                success: false,
-                message: 'Access denied. Login only allowed from authorized URLs.'
-            });
-        }
-
         const { username, password } = req.body;
 
         if (!username || !password) {
+            console.log('Login failed: Missing username or password');
             return res.status(400).json({
                 success: false,
                 message: 'Username and password are required'
@@ -157,20 +143,26 @@ exports.login = async (req, res) => {
         });
 
         if (!user) {
+            console.log('Login failed: User not found for username/email:', username);
             return res.status(401).json({
                 success: false,
                 message: 'Invalid credentials'
             });
         }
 
+        console.log('User found:', user.username, user.email);
+
         // Check password
         const isPasswordValid = await user.comparePassword(password);
         if (!isPasswordValid) {
+            console.log('Login failed: Invalid password for user:', user.username);
             return res.status(401).json({
                 success: false,
                 message: 'Invalid credentials'
             });
         }
+
+        console.log('Password valid for user:', user.username);
 
         // Generate tokens
         const token = user.generateAccessToken();
@@ -179,6 +171,8 @@ exports.login = async (req, res) => {
         // Update refresh token in database
         user.refreshToken = refreshToken;
         await user.save();
+
+        console.log('Login successful for user:', user.username);
 
         res.status(200).json({
             success: true,
@@ -642,4 +636,152 @@ exports.healthCheck = (req, res) => {
         timestamp: new Date().toISOString(),
         service: 'login-api'
     });
+};
+
+// Serve popup login HTML
+exports.servePopup = (req, res) => {
+    const popupHtml = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Login | Human Error</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
+        .popup { max-width: 400px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; }
+        input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+        button { width: 100%; padding: 10px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .error { color: red; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="popup">
+        <h2>Login</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit">Login</button>
+        </form>
+        <div id="error" class="error"></div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('error');
+
+            try {
+                const response = await fetch('/api/auth/popup-login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Send success data to parent window
+                    window.opener.postMessage({
+                        type: 'LOGIN_SUCCESS',
+                        token: data.token,
+                        user: data.user
+                    }, '*');
+                    window.close();
+                } else {
+                    errorDiv.textContent = data.message || 'Login failed';
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                errorDiv.textContent = 'An error occurred during login. Please try again.';
+            }
+        });
+    </script>
+</body>
+</html>`;
+    res.send(popupHtml);
+};
+
+// Handle popup login
+exports.popupLogin = async (req, res) => {
+    try {
+        console.log('Popup login request received. Request body:', req.body);
+
+        const { username, password } = req.body;
+
+        if (!username || !password) {
+            console.log('Popup login failed: Missing username or password');
+            return res.status(400).json({
+                success: false,
+                message: 'Username and password are required'
+            });
+        }
+
+        // Find user by username or email
+        const user = await User.findOne({
+            $or: [{ username }, { email: username }]
+        });
+
+        if (!user) {
+            console.log('Popup login failed: User not found for username/email:', username);
+            return res.status(401).json({
+                success: false,
+                message: 'Invalid credentials'
+            });
+        }
+
+        console.log('User found:', user.username, user.email);
+
+        // Check password
+        const isPasswordValid = await user.comparePassword(password);
+        if (!isPasswordValid) {
+            console.log('Popup login failed: Invalid password for user:', user.username);
+            return res.status(401).json({
+                success: false,
+                message: 'Invalid credentials'
+            });
+        }
+
+        console.log('Password valid for user:', user.username);
+
+        // Generate tokens
+        const token = user.generateAccessToken();
+        const refreshToken = user.generateRefreshToken();
+
+        // Update refresh token in database
+        user.refreshToken = refreshToken;
+        await user.save();
+
+        console.log('Popup login successful for user:', user.username);
+
+        res.status(200).json({
+            success: true,
+            message: 'Login successful',
+            token,
+            user: {
+                id: user._id,
+                username: user.username,
+                email: user.email
+            }
+        });
+
+    } catch (error) {
+        console.error('Popup login error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Login failed. Please try again.'
+        });
+    }
 };

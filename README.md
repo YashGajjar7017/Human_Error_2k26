@@ -31,23 +31,23 @@ This is latest version of complier 2026 & it was only beta 1.1.0 testing priview
     <tr><td>Update 2</td><td>2 March 2021</td><td>(Bug fixes)</td><td>Recommded</td></tr>
     <tr><td>Update 3</td><td>7 April 2021</td><td></td><td>Security</td></tr>
     <tr><td>Update 4</td><td>12 June 2021</td><td>(Bug fixes)</td><td>Recommded</td></tr>
-    <tr><td>Update 5</td><td>8 November 2021</td><td>(Beta 0.1)</td><td>Recommded</td></tr>
+    <tr><td>Update 5</td><td>8 November 2021</td><td>(Beta 0.1)</td><td>Bug Fixes</td></tr>
     <tr><td>Update 6</td><td>1 January 2022</td><td>(Beta 0.1.1)</td><td>Security</td></tr>
     <tr><td>Update 7</td><td>12 June 2022</td><td>(Alpha Testing | temporary)</td><td>Critical</td></tr>
     <tr><td>Update 8</td><td>27 July 2022</td><td>(Release 0.1)</td><td>Security</td></tr>
     <tr><td>Update 9</td><td>1 December 2022</td><td>(Integrated AI)</td><td>Critical</td></tr>
     <tr><td>Update 10</td><td>23 March 2023</td><td>(Beta 0.2)</td><td>Critical</td></tr>
-    <tr><td>Update 11</td><td>25 August 2023</td><td>(Alpha preview Testing Integration)</td><td>Security</td></tr>
+    <tr><td>Update 11</td><td>25 August 2023</td><td>(Alpha preview Testing Integration)</td><td>Patch V0.1</td></tr>
     <tr><td>Update 12</td><td>12 October 2023</td><td>(Beta 0.2.1)</td><td>Security</td></tr>
     <tr><td>Update 13</td><td>19 January 2024</td><td>(Beta 0.2.2)</td><td>Critical</td></tr>
     <tr><td>Update 14</td><td>29 February 2024</td><td>(Beta 0.3)</td><td>Recommded</td></tr>
-    <tr><td>Update 15</td><td>9 May 2024</td><td>(Testing)</td><td>Recommded</td></tr>
+    <tr><td>Update 15</td><td>9 May 2024</td><td>(Testing)</td><td>Bug Fixes</td></tr>
     <tr><td>Update 16</td><td>1 September 2024</td><td>(AI Integration Part 2 Testing)</td><td>Skip</td></tr>
     <tr><td>Update 16</td><td>12 November 2024</td><td>(Testing Part 3)</td><td>Security</td></tr>
     <tr><td>Update 17</td><td>21 February 2025</td><td>(Alpha Preview Release 1)</td><td>Recommded</td></tr>
     <tr><td>Update 18</td><td>2 June 2025</td><td>(Beta Preview)</td><td>Security</td></tr>
     <tr><td>Update 19</td><td>7 July 2025</td><td>(Gamma Release)</td><td>Critical</td></tr>
-    <tr><td>Update 20</td><td>16 November</td><td>(Alpha Preview Part 3)</td><td>Critical</td></tr>
+    <tr><td>Update 20</td><td>16 November</td><td>(Alpha Preview Part 3)</td><td>Bug Fixes</td></tr>
     <tr><td>Update 21</td><td>1 January 2026</td><td>(Release 1.1)</td><td>Security</td></tr>
     <tr><td>Update 22</td><td>13 February 2026</td><td>(Testing)</td><td>Critical</td></tr>
   </tbody>
