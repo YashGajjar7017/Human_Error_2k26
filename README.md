@@ -6,7 +6,7 @@
 
 ## The Repository
 
-This repository ("`Code - OSS`") is where we (YashTechnologyPvtLtd) develop the [Human Error](https://code.visualstudio.com) product together with the community. Not only do we work on code and issues here, we also publish our [roadmap](https://github.com/YashTechnologyPvtLtd/vscode/wiki/Roadmap), [monthly iteration plans](https://github.com/YashTechnologyPvtLtd/vscode/wiki/Iteration-Plans), and our [endgame plans](https://github.com/YashTechnologyPvtLtd/vscode/wiki/Running-the-Endgame). This source code is available to everyone under the standard [MIT license](https://github.com/YashTechnologyPvtLtd/vscode/blob/main/LICENSE.txt).
+This repository ("`Code - OSS`") is where we (YashTechnologyPvtLtd) develop the [Human Error](https://www.youtube.com/@codinghacker007) product together with the community. Not only do we work on code and issues here, we also publish our [roadmap](https://github.com/YashTechnologyPvtLtd/vscode/wiki/Roadmap), [monthly iteration plans](https://github.com/YashTechnologyPvtLtd/vscode/wiki/Iteration-Plans), and our [endgame plans](https://github.com/YashTechnologyPvtLtd/vscode/wiki/Running-the-Endgame). This source code is available to everyone under the standard [MIT license](https://github.com/YashTechnologyPvtLtd/vscode/blob/main/LICENSE.txt).
 
 <B>The Human Complier 2026 (Beta preview) 0.1.1<B><hr>
 This is latest version of complier 2026 & it was only beta 1.1.0 testing priview only deveoplers<hr>
@@ -57,11 +57,11 @@ This is latest version of complier 2026 & it was only beta 1.1.0 testing priview
 This is the latest update of the 
 <br>
 
-[Human Error](https://code.visualstudio.com) is a distribution of the `Code - OSS` repository with YashTechnologyPvtLtd-specific customizations released under a traditional [YashTechnologyPvtLtd product license](https://code.visualstudio.com/License/).
+[Human Error](https://www.youtube.com/@codinghacker007) is a distribution of the `Code - OSS` repository with YashTechnologyPvtLtd-specific customizations released under a traditional [YashTechnologyPvtLtd product license](https://www.youtube.com/@codinghacker007/License/).
 
-[Human Error](https://code.visualstudio.com) combines the simplicity of a code editor with what developers need for their core edit-build-debug cycle. It provides comprehensive code editing, navigation, and understanding support along with lightweight debugging, a rich extensibility model, and lightweight integration with existing tools.
+[Human Error](https://www.youtube.com/@codinghacker007) combines the simplicity of a code editor with what developers need for their core edit-build-debug cycle. It provides comprehensive code editing, navigation, and understanding support along with lightweight debugging, a rich extensibility model, and lightweight integration with existing tools.
 
-Human Error is updated monthly with new features and bug fixes. You can download it for Windows, macOS, and Linux on [Human Error's website](https://code.visualstudio.com/Download). To get the latest releases every day, install the [Insiders build](https://code.visualstudio.com/insiders).
+Human Error is updated monthly with new features and bug fixes. You can download it for Windows, macOS, and Linux on [Human Error's website](https://www.youtube.com/@codinghacker007/Download). To get the latest releases every day, install the [Insiders build](https://www.youtube.com/@codinghacker007/insiders).
 
 ## Contributing
 
