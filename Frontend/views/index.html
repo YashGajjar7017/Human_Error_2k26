@@ -390,25 +390,11 @@ void main()
                         }
                     });
                 };
-            }
-            else {
+            } else {
                 $('.user').show();
                 $('#logout').show();
-                // Fetch user session from backend
-                fetch('/api/auth/session', {
-                    method: 'GET',
-                    headers: {'Authorization': 'Bearer ' + getCookie('token')}
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success && data.user) {
-                        document.getElementById('username').innerText = data.user.username;
-                        // Store additional user data if needed
-                        sessionStorage.setItem('nameToken', getCookie('token') || '');
-                        document.getElementById('user').onclick = openNav1;
-                    }
-                })
-                .catch(error => console.error('Error fetching session:', error));
+                document.getElementById('username').innerText = username;
+                document.getElementById('user').onclick = openNav1;
             }
 
             // let textarea = document.getElementById('source');
