@@ -71,9 +71,9 @@
                             <option value="Encrypt">Quantum #</option>
                         </select>
                     </div>
-                    <div class="user d-flex align-items-center border border-white rounded p-1 bg-light" id="user" style="cursor: pointer;">
+                    <div class="user d-flex align-items-center border border-white rounded p-1 bg-light sexy-login" id="user" style="cursor: pointer;">
                         <img src="images/User_icon.png" alt="User" class="me-1" style="height: 40px; width: 40px;">
-                        <span class="text-dark fw-bold" id="username" style="width: 5vw; text-align: center;"></span>
+                        <span class="text-light fw-bold" id="username" style="width: 5vw; text-align: center;"></span>
                     </div>
                 </div>
             </div>
@@ -128,7 +128,7 @@
         <a href="/questions" title="admin only">Ask your question</a>
         <a href="/404" title="admin only">Hire a Developer</a>
         <hr style="color: #fff;">
-        <a href="/logout" id="logout" style="border:1px solid black; width: 70%;margin-left: 10%;
+        <a href="javascript:void(0);" onclick="logout()" id="logout" style="border:1px solid black; width: 70%;margin-left: 10%;
             background-color: #fff;border-radius: 3px;color: black;padding-left: 4vw;">Logout</a>
 
         <a style="font-size: 13px;float: center;margin-top: 1vh;">Copyright to Yash Production</a>
@@ -303,10 +303,10 @@ void main()
 
             // Function to get a specific cookie by name
             function getCookie(name) {
-                let cookies = document.cookie;
+                let cookies = document.cookie.split('; ');
                 for (let cookie of cookies) {
                     let [key, value] = cookie.split('=');
-                    if (key === name) return value;
+                    if (key === name) return decodeURIComponent(value);
                 }
                 return null;
             }
@@ -387,6 +387,9 @@ void main()
                             setCookie('token', event.data.token, 7);
                             setCookie('username', event.data.user.username, 7);
                             location.reload(); // Reload to update UI
+                        } else if (event.data.type === 'LOGIN_FAILED_INVALID_CREDENTIALS') {
+                            // Redirect to signup page
+                            window.location.href = '/Account/Signup';
                         }
                     });
                 };
@@ -459,19 +462,6 @@ void main()
     function closeNav2() {
         document.getElementById("myNav").style.height = "0%";
     }
-
-    // Other functions
-    // function run() {
-    //     alert('Run functionality is not implemented yet.');
-    // }
-
-    // function debug() {
-    //     alert('Debug functionality is not implemented yet.');
-    // }
-
-    // function stop() {
-    //     alert('Stop functionality is not implemented yet.');
-    // }
 
     function downloadFile() {
         const link = document.createElement("a");

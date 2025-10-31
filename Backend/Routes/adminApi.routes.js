@@ -20,4 +20,10 @@ app.put('/maintenance/message', AuthController.updateMaintenanceMessage);
 app.post('/maintenance/allowed-ip/add', AuthController.addAllowedIP);
 app.delete('/maintenance/allowed-ip/remove', AuthController.removeAllowedIP);
 
+// Additional routes for frontend admin panel
+app.get('/dashboard', AuthController.homePage);
+app.get('/users', AuthController.getAllUsers);
+app.delete('/users/:id', AuthController.deleteUser);
+app.get('/maintenance/status', AuthController.getMaintenanceStatusForAdmin);
+
 module.exports = app

@@ -179,7 +179,7 @@ const handleOTP = async (req, res, endpoint) => {
             res.json({
                 success: true,
                 message: 'OTP verified successfully',
-                redirectUrl: `/Account/Compiler/User/${generateToken(30)}`
+                redirectUrl: `/Account/Dashboard`
             });
         } else {
             res.status(400).json({ 

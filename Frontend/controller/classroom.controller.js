@@ -13,17 +13,17 @@ function generateClassId(length) {
 }
 
 // timeout
-const Timer = setTimeout(() => {
-    // location.href('/classroom/classID')
-}, 2000);
+// const Timer = setTimeout(() => {
+//     window.location.href('/classroom/classID')
+// }, 2000);
 
 // classID generator
-exports.classID = function (req, res, next) {
+const classID = function (req, res, next) {
     res.redirect(`/classroom/${generateClassId(25)}`);
 }
 
 // classLoader
-exports.classroom = function (req, res, next) {
+const classroom = function (req, res, next) {
     const classID = req.params.classroom;
     const method = req.method;
     
@@ -41,7 +41,7 @@ exports.classroom = function (req, res, next) {
     // res.end()
 }
 
-exports.classroomVerify = function (req, res, next) {
+const classroomVerify = function (req, res, next) {
     if (req.baseUrl == true) {
 
     } else {
@@ -55,10 +55,12 @@ exports.classroomVerify = function (req, res, next) {
 };
 
 // classroom ID
-exports.class = function (req, res, next) {
+const Class = function (req, res, next) {
     res.set('Content-Type', 'text/html');
     res.statusCode = 200
     res.send('<h1>Getting class ID</h1>');
     console.log('you ID is req');
     req.baseUrl()
 };
+
+module.exports = {classID, classroom, classroomVerify, Class}

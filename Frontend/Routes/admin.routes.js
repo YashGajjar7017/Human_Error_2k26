@@ -1,49 +1,27 @@
-/**
- * Admin Routes - Routes for administrative operations
- * Maps HTTP endpoints to admin controller methods
- */
-
 const express = require('express');
 const path = require('path');
-const rootDir = require('../util/path');
 const AdminController = require('../controller/admin.controller');
-const AuthMiddleware = require('../middlewares/admin.middleware');
 
 const router = express.Router();
 
-// Public routes
-router.get('/login', (req, res) => {
-    res.sendFile(path.join(rootDir, 'views', 'admin', 'login.html'));
+// Serve admin panel
+router.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '../views/admin.html'));
 });
 
-router.post('/login', AdminController.adminLogin);
-
-// Protected routes - require admin authentication
-router.use(AuthMiddleware.isAdmin);
-
-// Dashboard
-router.get('/', AdminController.dashboard);
-router.get('/dashboard', AdminController.dashboard);
-
-// User management routes
-router.get('/users', AdminController.getUsers);
-router.post('/users', AuthMiddleware.validateUserCreation, AdminController.createUser);
-router.put('/users/:id', AuthMiddleware.validateUserId, AdminController.updateUser);
-router.delete('/users/:id', AuthMiddleware.validateUserId, AdminController.deleteUser);
-
-// Service management routes
-router.get('/services', AdminController.getServices);
-router.put('/services/:id/status', AuthMiddleware.validateServiceId, AuthMiddleware.validateServiceStatusUpdate, AdminController.updateServiceStatus);
-
-// System routes
-router.get('/logs', AdminController.getSystemLogs);
-router.post('/settings', AdminController.updateSettings);
-router.post('/backup', AdminController.createBackup);
-
-// Analytics
-router.get('/analytics', AdminController.getAnalytics);
-
-// Logout
-router.post('/logout', AdminController.adminLogout);
+// API routes for admin functionality
+router.get('/api/dashboard', AdminController.dashboard);
+router.get('/api/users', AdminController.getUsers);
+router.post('/api/users', AdminController.createUser);
+router.put('/api/users/:id', AdminController.updateUser);
+router.delete('/api/users/:id', AdminController.deleteUser);
+router.get('/api/services', AdminController.getServices);
+router.put('/api/services/:id/status', AdminController.updateServiceStatus);
+router.get('/api/logs', AdminController.getSystemLogs);
+router.put('/api/settings', AdminController.updateSettings);
+router.post('/api/backup', AdminController.createBackup);
+router.get('/api/analytics', AdminController.getAnalytics);
+router.post('/api/login', AdminController.adminLogin);
+router.post('/api/logout', AdminController.adminLogout);
 
 module.exports = router;

@@ -26,6 +26,12 @@ app.use(cors())
 // Import maintenance controller for middleware
 const maintenanceController = require('./controller/maintenance.controller');
 
+// Import session cleanup function
+const { cleanupInactiveSessions } = require('./middleware/session.middleware');
+
+// Serve static files from Frontend directory
+app.use(express.static(path.join(__dirname, '../Frontend')));
+
 // Middleware to parse JSON bodies
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
@@ -68,6 +74,8 @@ app.use('/api/enhanced-users', enhancedUserRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/maintenance', maintenanceRoutes);
+
+// Admin panel API routes are now handled by the adminRoutes router
 
 // Socket.IO for WebRTC signaling
 io.on('connection', (socket) => {
@@ -189,12 +197,17 @@ app.get('/health', (req, res) => {
     });
 });
 
-// 404 handler
-app.use(function (req, res, next) {
+// Catch-all handler for frontend routes
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../Frontend/views/index.html'));
+});
+
+// 404 handler for API routes
+app.use('/api/*', function (req, res, next) {
     res.status(404).json({
-        error: 'Route not found',
+        error: 'API Route not found',
         path: req.originalUrl,
-        message: 'The requested endpoint does not exist'
+        message: 'The requested API endpoint does not exist'
     });
 });
 
@@ -215,6 +228,20 @@ server.listen(port, () => {
     console.log(`📡 WebSocket server ready`);
     console.log(`🔗 Health check: http://localhost:${port}/health`);
     console.log(`🔧 Maintenance mode integrated`);
+
+    // Start periodic session cleanup (every 1 hour)
+    setInterval(async () => {
+        try {
+            const cleanedCount = await cleanupInactiveSessions();
+            if (cleanedCount > 0) {
+                console.log(`🧹 Cleaned up ${cleanedCount} inactive sessions`);
+            }
+        } catch (error) {
+            console.error('❌ Error during session cleanup:', error);
+        }
+    }, 60 * 60 * 1000); // 1 hour in milliseconds
+
+    console.log(`🕒 Session cleanup scheduled (every 1 hour)`);
 });
 
 module.exports = server;

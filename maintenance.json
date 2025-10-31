@@ -1,0 +1,12 @@
+{
+  "enabled": false,
+  "message": "System is under maintenance. Please check back later.",
+  "startTime": null,
+  "endTime": null,
+  "allowedIPs": [],
+  "allowedRoutes": [
+    "/health",
+    "/api/health",
+    "/maintenance/status"
+  ]
+}

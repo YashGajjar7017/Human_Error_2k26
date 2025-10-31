@@ -701,7 +701,15 @@ exports.servePopup = (req, res) => {
                     }, '*');
                     window.close();
                 } else {
-                    errorDiv.textContent = data.message || 'Login failed';
+                    if (data.message === 'Invalid credentials') {
+                        // Send message to parent to redirect to signup
+                        window.opener.postMessage({
+                            type: 'LOGIN_FAILED_INVALID_CREDENTIALS'
+                        }, '*');
+                        window.close();
+                    } else {
+                        errorDiv.textContent = data.message || 'Login failed';
+                    }
                 }
             } catch (error) {
                 console.error('Login error:', error);

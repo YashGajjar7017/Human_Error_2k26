@@ -253,8 +253,6 @@ class UIManager {
         }
     }
 
-
-
     displayResult(result) {
         let output = '';
 

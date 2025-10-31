@@ -62,12 +62,17 @@ app.use('/api', createProxyMiddleware({
 app.use(engineExp);
 app.use(loginRoutes);
 app.use(usrData);
-app.use(classroom);
+app.get(classroom);
 app.use(shopRoutes);
 app.use(mailServer);
 app.use(signUpRoutes);
 app.use(pdfSaver);
 app.use('/admin', adminData);
+
+// Admin panel route
+app.get('/admin-panel', (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'admin.html'));
+});
 
 // 404 error : putting at last after all the request are check
 app.use(function (req, res, next) {

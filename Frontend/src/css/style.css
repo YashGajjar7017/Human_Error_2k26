@@ -544,6 +544,37 @@ body.dark .search-field i {
     animation-iteration-count: infinite;
 }
 
+.sexy-login {
+    /* background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeaa7); */
+    background-image: linear-gradient(to top, #00c6fb 0%, #005bea 100%);
+    background-size: 400% 400%;
+    animation: sexyGlow 2s ease-in-out infinite;
+    border: 2px dotted black;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+}
+
+.sexy-login:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(255, 107, 107, 0.8);
+}
+
+@keyframes sexyGlow {
+    0% {
+        background-position: 0% 50%;
+        box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+    }
+    50% {
+        background-position: 100% 50%;
+        box-shadow: 0 0 30px rgba(78, 205, 196, 0.7);
+    }
+    100% {
+        background-position: 0% 50%;
+        box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+    }
+}
+
 #fontcont {
     margin-left: 2.5vw;
     margin-top: 1.2vh;

@@ -150,6 +150,23 @@ exports.getDashboardStats = async (req, res) => {
   }
 };
 
+// Get maintenance status for frontend admin panel
+exports.getMaintenanceStatusForAdmin = async (req, res) => {
+  try {
+    const maintenanceController = require('./maintenance.controller');
+    // Access the maintenance manager directly
+    const status = maintenanceController.maintenanceManager.getMaintenanceInfo();
+
+    res.status(200).json({
+      success: true,
+      maintenance: status
+    });
+  } catch (error) {
+    console.error('Error fetching maintenance status:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
 // Admin XML Configuration Management
 const ADMIN_CONFIG_PATH = path.join(__dirname, '../admin.xml');
 
