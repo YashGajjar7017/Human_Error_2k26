@@ -133,37 +133,37 @@ const sessionUtils = {
 };
 
 // Route handlers - cleaned and optimized
-exports.ComplierPage = (req, res) => {
+const ComplierPage = (req, res) => {
     res.sendFile(path.join(rootDir, 'views', 'index.html'));
 };
 
-exports.startPage = (req, res) => {
+const startPage = (req, res) => {
     res.sendFile(path.join(rootDir, 'other', 'start', 'index.html'));
 };
 
-exports.features = (req, res) => {
+const features = (req, res) => {
     res.send('<html><body><center><h2>Features are loading! but you can\'t wait for that</h2></center></body></html>');
 };
 
-exports.session = (req, res) => {
-    // Check if user is authenticated
-    if (!req.session.authenticated || !req.session.user) {
-        return res.redirect('/Account/login');
-    }
+// const session = (req, res) => {
+//     // Check if user is authenticated
+//     if (!req.session.authenticated || !req.session.user) {
+//         return res.redirect('/Account/login');
+//     }
 
-    // Show start page first, then redirect to compiler page
-    res.redirect('/start');
-};
+//     // Show start page first, then redirect to compiler page
+//     res.redirect('/start');
+// };
 
-exports.sessionToken = (req, res) => {
+const sessionToken = (req, res) => {
     res.sendFile(path.join(rootDir, 'views', 'Servcies', 'session.ejs'));
 };
 
-exports.sessionShare = (req, res) => {
+const sessionShare = (req, res) => {
     res.sendFile(path.join(rootDir, 'other', 'forgotPassword.html'));
 };
 
-exports.fileupload = (req, res) => {
+const fileupload = (req, res) => {
     res.send(`
         <body style="background:black;">
             <center>
@@ -177,11 +177,11 @@ exports.fileupload = (req, res) => {
     `);
 };
 
-exports.account = (req, res) => {
+const account = (req, res) => {
     res.redirect('/Account/login');
 };
 
-exports.accountNumber = (req, res) => {
+const accountNumber = (req, res) => {
     const { userState, NO } = req.params;
 
     if (NO.length === 30 && userState === 'true') {
@@ -194,7 +194,7 @@ exports.accountNumber = (req, res) => {
     }
 };
 
-exports.uploadFile = (req, res) => {
+const uploadFile = (req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/html' });
     res.write(`
         <form action="/upload" method="post" enctype="multipart/form-data">
@@ -238,10 +238,11 @@ exports.uploadFile = (req, res) => {
 };
 
 // Export reusable utilities for use in other modules
-module.exports.utils = {
-    fileReader,
-    cryptoUtils,
-    jwtUtils,
-    sessionUtils,
-    generateToken
-};
+// module.const utils = {
+//     fileReader,
+//     cryptoUtils,
+//     jwtUtils,
+//     sessionUtils,
+//     generateToken
+// };
+module.exports = {ComplierPage,startPage,features,session,sessionToken,sessionShare,fileupload,account,accountNumber,uploadFile,cryptoUtils,jwtUtils,sessionUtils}

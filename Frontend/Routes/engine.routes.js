@@ -1,5 +1,4 @@
 const express = require('express');
-const rootDir = require('../util/path');
 const WebHandler = require('../controller/engine.controller');
 
 const router = express.Router();

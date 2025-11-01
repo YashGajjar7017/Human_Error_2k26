@@ -132,22 +132,24 @@ exports.loginID = (req, res, next) => {
 exports.logout = async (req, res, next) => {
     try {
         const token = req.session?.user?.token;
-        
+
         if (token) {
             await FetchData('api/auth/logout', {}, {
                 'Authorization': `Bearer ${token}`
             });
         }
-        
+
         req.session.destroy((err) => {
             if (err) {
                 console.error('Session destruction error:', err);
             }
+            res.clearCookie('auth_token');
             res.redirect('/');
         });
     } catch (e) {
         console.log(`Logout error: ${e}`);
         req.session.destroy(() => {
+            res.clearCookie('auth_token');
             res.redirect('/');
         });
     }
@@ -183,9 +185,9 @@ exports.checkAuth = (req, res) => {
 
 exports.refreshToken = async (req, res) => {
     const { token } = req.body;
-    
+
     try {
-        const response = await FetchData('api/auth/verify-token', { token });
+        const response = await FetchData('api/auth/refresh-token', { token });
         res.json(response);
     } catch (error) {
         res.status(401).json({

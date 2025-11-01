@@ -9,13 +9,13 @@ router.use(bodyParser.json());
 router.use(express.json());
 
 // SignUP handler - aligned with backend routes
-router.get('/Account/Signup', signUpController.SignUpToken);
-router.get('/Account/Signup/:SignUpToken', signUpController.signUp);
-router.post('/Account/Signup', signUpController.postSignUp);
-router.post('/Account/Signup/Verify/:SignUpToken')
+router.get('/Signup', signUpController.SignUpToken);
+router.get('/Signup/:SignUpToken', signUpController.signUp);
+router.post('/Signup', signUpController.postSignUp);
+router.post('/Signup/Verify/:SignUpToken')
 
 // OTP Handler - aligned with backend routes
-router.get('/Account/sendOTP', signUpController.OTP);
-router.post('/Account/verifyOTP', signUpController.PostOTP);
+router.get('/sendOTP', signUpController.OTP);
+router.post('/verifyOTP', signUpController.PostOTP);
 
 module.exports = router;

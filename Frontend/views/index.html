@@ -41,6 +41,7 @@
                         <li class="nav-item"><a class="nav-link text-warning" href="javascript:void(0);" onclick="printPageArea('source')">Print</a></li>
                         <li class="nav-item"><a href="/upload/fileName=" class="nav-link text-white" id="inputfile">Upload</a></li>
                         <li class="nav-item"><a href="#" onclick="openNav3()" class="nav-link text-white">Share</a></li>
+                        <li class="nav-item" id="admin-link" style="display: none;"><a href="/admin-panel" class="nav-link text-danger">Admin</a></li>
                         <li class="nav-item"><a class="nav-link text-white" href="#"></a></li>
                 </div>
                 <div class="d-flex align-items-center ms-auto">
@@ -342,6 +343,7 @@ void main()
                         if (data.success) {
                             setCookie('username', data.user.username, 7); // Set cookie for 7 days
                             setCookie('token', data.token, 7); // Set token cookie
+                            setCookie('role', data.user.role, 7); // Set role cookie
                             location.reload(); // Reload to update UI
                         } else {
                             alert('Login failed: ' + data.message);
@@ -398,6 +400,20 @@ void main()
                 $('#logout').show();
                 document.getElementById('username').innerText = username;
                 document.getElementById('user').onclick = openNav1;
+
+                // Check user role and show/hide admin features
+                let userRole = getCookie('role');
+                if (userRole === 'admin') {
+                    // Show admin-only links
+                    document.querySelectorAll('[title="admin only"]').forEach(el => el.style.display = 'block');
+                    // Show admin link in navbar
+                    document.getElementById('admin-link').style.display = 'block';
+                } else {
+                    // Hide admin-only links
+                    document.querySelectorAll('[title="admin only"]').forEach(el => el.style.display = 'none');
+                    // Hide admin link in navbar
+                    document.getElementById('admin-link').style.display = 'none';
+                }
             }
 
             // let textarea = document.getElementById('source');

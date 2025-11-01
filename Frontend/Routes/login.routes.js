@@ -1,23 +1,21 @@
 const express = require('express');
 const loginRoute = require('../controller/login.controller');
 const bodyParser = require('body-parser');
-const path = require('path');
-const jwt = require('jsonwebtoken');
 
 const app = express.Router();
 app.use(bodyParser.json());
 
 // Login routes - aligned with backend API
-app.get('/Account/login', loginRoute.userIDGenerator);
-app.get('/Account/login/:usrID', loginRoute.Getlogin);
-app.post('/Account/login', loginRoute.Postlogin);
-app.post('/Account/auth/:usr/:pass/:auth', loginRoute.AuthUser);
-app.get('/Account/loginID/:loginID', loginRoute.loginID);
-app.get('/Account/logout', loginRoute.logout);
-app.get('/Account/check-auth', loginRoute.checkAuth);
-app.post('/Account/refresh-token', loginRoute.refreshToken);
+app.get('/login', loginRoute.userIDGenerator);
+app.get('/login/:usrID', loginRoute.Getlogin);
+app.post('/login', loginRoute.Postlogin);
+app.post('/auth/:usr/:pass/:auth', loginRoute.AuthUser);
+app.get('/loginID/:loginID', loginRoute.loginID);
+app.get('/logout', loginRoute.logout);
+app.get('/check-auth', loginRoute.checkAuth);
+app.post('/refresh-token', loginRoute.refreshToken);
 
 // Forgot password
-app.get('/Account/forgotPassword', loginRoute.forgotPass);
+app.get('/forgotPassword', loginRoute.forgotPass);
 
 module.exports = app;

@@ -1,7 +1,4 @@
-# Session Cleanup Implementation
-
-## Tasks
-- [x] Import cleanupInactiveSessions function in Backend/server.js
-- [x] Add periodic interval (every 1 hour) to call cleanupInactiveSessions
-- [x] Add logging for cleanup activity
-- [x] Test server startup and cleanup execution
+- [x] Update User model to include 'role' field with default 'user'
+- [x] Modify auth controller login to return user role in response and include in JWT
+- [x] Update frontend index.html to check user role and show/hide admin dashboard button
+- [ ] Test the functionality by logging in as admin and non-admin users

@@ -12,7 +12,6 @@ const engineExp = require('./Routes/engine.routes');
 const loginRoutes = require('./Routes/login.routes');
 const signUpRoutes = require('./Routes/signup.routes');
 const usrData = require('./Routes/User.routes');
-const shopRoutes = require('./Routes/shop.routes');
 const classroom = require('./Routes/classroom.routes');
 const mailServer = require('./Routes/MailServer.routes');
 const pdfSaver = require('./Routes/convertPDF.routes');
@@ -60,14 +59,13 @@ app.use('/api', createProxyMiddleware({
 
 // |-----------Routes handler-------------|
 app.use(engineExp);
-app.use(loginRoutes);
-app.use(usrData);
-app.get(classroom);
-app.use(shopRoutes);
-app.use(mailServer);
-app.use(signUpRoutes);
-app.use(pdfSaver);
+app.use('/Account',loginRoutes);
+app.use('/Account',signUpRoutes);
+app.use('/Account',usrData);
+app.use('/classroom',classroom);
 app.use('/admin', adminData);
+app.use('/Account',pdfSaver);
+app.use(mailServer);
 
 // Admin panel route
 app.get('/admin-panel', (req, res) => {

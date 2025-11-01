@@ -3,7 +3,7 @@ const express = require('express');
 
 const app = express.Router();
 
-app.get('/Account/pdf', (req, res, next) => {
+app.get('/pdf', (req, res, next) => {
     const PDFData = req.body;
     const doc = new jsPDF({
         data: PDFData,
