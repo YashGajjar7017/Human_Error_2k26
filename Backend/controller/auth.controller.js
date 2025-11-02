@@ -126,6 +126,7 @@ exports.login = async (req, res) => {
     try {
         console.log('Login request received. Request body:', req.body);
         console.log('Request headers:', req.headers);
+        console.log('Login request received:', { username: req.body.username, password: '***' });
 
         const { username, password } = req.body;
 
@@ -163,6 +164,15 @@ exports.login = async (req, res) => {
         }
 
         console.log('Password valid for user:', user.username);
+
+        // Check if email is verified
+        if (!user.emailVerified) {
+            console.log('Login failed: Email not verified for user:', user.username);
+            return res.status(401).json({
+                success: false,
+                message: 'Please verify your email address before logging in.'
+            });
+        }
 
         // Generate tokens
         const token = user.generateAccessToken();
@@ -273,7 +283,7 @@ exports.verifyOTP = async (req, res) => {
         }
 
         // Mark email as verified
-        user.isEmailVerified = true;
+        user.emailVerified = true;
         user.otp = null;
         user.otpExpiresAt = null;
         await user.save();
@@ -570,10 +580,10 @@ exports.verifyEmail = async (req, res) => {
 
     if (emailVerificationCodes[email] === code) {
         delete emailVerificationCodes[email]; // Clear the code after successful verification
-        // Update user isVerified
+        // Update user emailVerified
         const user = await User.findOne({ email });
         if (user) {
-            user.isVerified = true;
+            user.emailVerified = true;
             await user.save();
         }
         return res.status(200).json({ message: 'Email verified successfully' });
@@ -639,159 +649,4 @@ exports.healthCheck = (req, res) => {
     });
 };
 
-// Serve popup login HTML
-exports.servePopup = (req, res) => {
-    const popupHtml = `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>Login | Human Error</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
-        .popup { max-width: 400px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; }
-        input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
-        button { width: 100%; padding: 10px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
-        button:hover { background: #0056b3; }
-        .error { color: red; margin-top: 10px; }
-    </style>
-</head>
-<body>
-    <div class="popup">
-        <h2>Login</h2>
-        <form id="loginForm">
-            <div class="form-group">
-                <label for="username">Username:</label>
-                <input type="text" id="username" name="username" required>
-            </div>
-            <div class="form-group">
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
-            </div>
-            <button type="submit">Login</button>
-        </form>
-        <div id="error" class="error"></div>
-    </div>
 
-    <script>
-        document.getElementById('loginForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const errorDiv = document.getElementById('error');
-
-            try {
-                const response = await fetch('/api/auth/popup-login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password })
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    // Send success data to parent window
-                    window.opener.postMessage({
-                        type: 'LOGIN_SUCCESS',
-                        token: data.token,
-                        user: data.user
-                    }, '*');
-                    window.close();
-                } else {
-                    if (data.message === 'Invalid credentials') {
-                        // Send message to parent to redirect to signup
-                        window.opener.postMessage({
-                            type: 'LOGIN_FAILED_INVALID_CREDENTIALS'
-                        }, '*');
-                        window.close();
-                    } else {
-                        errorDiv.textContent = data.message || 'Login failed';
-                    }
-                }
-            } catch (error) {
-                console.error('Login error:', error);
-                errorDiv.textContent = 'An error occurred during login. Please try again.';
-            }
-        });
-    </script>
-</body>
-</html>`;
-    res.send(popupHtml);
-};
-
-// Handle popup login
-exports.popupLogin = async (req, res) => {
-    try {
-        console.log('Popup login request received. Request body:', req.body);
-
-        const { username, password } = req.body;
-
-        if (!username || !password) {
-            console.log('Popup login failed: Missing username or password');
-            return res.status(400).json({
-                success: false,
-                message: 'Username and password are required'
-            });
-        }
-
-        // Find user by username or email
-        const user = await User.findOne({
-            $or: [{ username }, { email: username }]
-        });
-
-        if (!user) {
-            console.log('Popup login failed: User not found for username/email:', username);
-            return res.status(401).json({
-                success: false,
-                message: 'Invalid credentials'
-            });
-        }
-
-        console.log('User found:', user.username, user.email);
-
-        // Check password
-        const isPasswordValid = await user.comparePassword(password);
-        if (!isPasswordValid) {
-            console.log('Popup login failed: Invalid password for user:', user.username);
-            return res.status(401).json({
-                success: false,
-                message: 'Invalid credentials'
-            });
-        }
-
-        console.log('Password valid for user:', user.username);
-
-        // Generate tokens
-        const token = user.generateAccessToken();
-        const refreshToken = user.generateRefreshToken();
-
-        // Update refresh token in database
-        user.refreshToken = refreshToken;
-        await user.save();
-
-        console.log('Popup login successful for user:', user.username);
-
-        res.status(200).json({
-            success: true,
-            message: 'Login successful',
-            token,
-            user: {
-                id: user._id,
-                username: user.username,
-                email: user.email,
-                role: user.role
-            }
-        });
-
-    } catch (error) {
-        console.error('Popup login error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Login failed. Please try again.'
-        });
-    }
-};

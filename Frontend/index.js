@@ -63,13 +63,22 @@ app.use('/Account',loginRoutes);
 app.use('/Account',signUpRoutes);
 app.use('/Account',usrData);
 app.use('/classroom',classroom);
-app.use('/admin', adminData);
-app.use('/Account',pdfSaver);
+app.use('/Admin/Api', adminData);
+app.use('/User',pdfSaver);
 app.use(mailServer);
 
-// Admin panel route
+// Home page route with dashboard access link
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'index.html'));
+});
+
+// Admin panel route - Protected for admin users only
 app.get('/admin-panel', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'admin.html'));
+    if (req.session.authenticated && req.session.user && req.session.user.role === 'admin') {
+        res.sendFile(path.join(__dirname, 'views', 'admin.html'));
+    } else {
+        res.redirect('/Account/login/123456789012345');
+    }
 });
 
 // 404 error : putting at last after all the request are check

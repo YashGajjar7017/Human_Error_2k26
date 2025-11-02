@@ -31,12 +31,12 @@ router.get('/update/:fileName', WebHandler.fileupload);
 router.post('/upload', WebHandler.uploadFile);
 
 // === ERROR HANDLING ===
-router.use((req, res) => {
-    res.status(404).json({
-        error: 'Route not found',
-        message: `Cannot ${req.method} ${req.path}`
-    });
-});
+// router.use((req, res) => {
+//     res.status(404).json({
+//         error: 'Route not found',
+//         message: `Cannot ${req.method} ${req.path}`
+//     });
+// });
 
 // === GLOBAL ERROR HANDLER ===
 router.use((err, req, res, next) => {

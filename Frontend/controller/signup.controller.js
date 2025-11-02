@@ -2,8 +2,7 @@ const path = require('path');
 const rootDir = require('../util/path');
 const axios = require('axios');
 
-// Backend configuration
-const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8000';
+// API configuration - using relative paths to go through proxy
 const API_PREFIX = '/api/signup';
 
 // Clean User Profile structure
@@ -81,8 +80,8 @@ exports.postSignUp = async (req, res) => {
             return res.status(400).json({ errors: validationErrors });
         }
 
-        // Call backend API
-        const response = await axios.post(`${BACKEND_URL}${API_PREFIX}/Account/Signup`, {
+        // Call backend API through proxy
+        const response = await axios.post(`${API_PREFIX}/Account/Signup`, {
             username: userData.username,
             email: userData.email,
             password: userData.password,
@@ -158,8 +157,8 @@ const handleOTP = async (req, res, endpoint) => {
             return res.status(400).json({ error: "Email is required for OTP verification" });
         }
 
-        // Call backend API for OTP verification
-        const response = await axios.post(`${BACKEND_URL}${API_PREFIX}/Account/verifyOTP`, {
+        // Call backend API for OTP verification through proxy
+        const response = await axios.post(`${API_PREFIX}/Account/verifyOTP`, {
             email: verificationEmail,
             otp: otpCode
         }, {
@@ -170,12 +169,21 @@ const handleOTP = async (req, res, endpoint) => {
         console.log('OTP verification response:', response.status, response.data);
 
         if (response.data.success) {
+            // Set session after successful OTP verification
+            req.session.authenticated = true;
+            req.session.user = {
+                username: UserProfile.username,
+                email: UserProfile.email,
+                id: response.data.user?.id || null,
+                token: response.data.token || null
+            };
+
             res.cookie('User_Session', true, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
                 maxAge: 7 * 24 * 60 * 60 * 1000
             });
-            
+
             res.json({
                 success: true,
                 message: 'OTP verified successfully',
@@ -232,8 +240,8 @@ exports.sendOTP = async (req, res) => {
 
         console.log('Sending OTP to:', email);
 
-        // Call backend API for sending OTP
-        const response = await axios.post(`${BACKEND_URL}${API_PREFIX}/Account/SignupOTP`, {
+        // Call backend API for sending OTP through proxy
+        const response = await axios.post(`${API_PREFIX}/Account/SignupOTP`, {
             email: email
         }, {
             headers: { 'Content-Type': 'application/json' },

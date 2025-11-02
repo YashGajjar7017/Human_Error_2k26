@@ -10,18 +10,18 @@ router.get('/', (req, res) => {
 });
 
 // API routes for admin functionality
-router.get('/api/dashboard', AdminController.dashboard);
-router.get('/api/users', AdminController.getUsers);
-router.post('/api/users', AdminController.createUser);
-router.put('/api/users/:id', AdminController.updateUser);
-router.delete('/api/users/:id', AdminController.deleteUser);
-router.get('/api/services', AdminController.getServices);
-router.put('/api/services/:id/status', AdminController.updateServiceStatus);
-router.get('/api/logs', AdminController.getSystemLogs);
-router.put('/api/settings', AdminController.updateSettings);
-router.post('/api/backup', AdminController.createBackup);
-router.get('/api/analytics', AdminController.getAnalytics);
-router.post('/api/login', AdminController.adminLogin);
-router.post('/api/logout', AdminController.adminLogout);
+router.get('/dashboard', AdminController.dashboard);
+router.get('/users', AdminController.getUsers);
+router.post('/users', AdminController.createUser);
+router.put('/users/:id', AdminController.updateUser);
+router.delete('/users/:id', AdminController.deleteUser);
+router.get('/services', AdminController.getServices);
+router.put('/services/:id/status', AdminController.updateServiceStatus);
+router.get('/logs', AdminController.getSystemLogs);
+router.put('/settings', AdminController.updateSettings);
+router.post('/backup', AdminController.createBackup);
+router.get('/analytics', AdminController.getAnalytics);
+router.post('/login', AdminController.adminLogin);
+router.post('/logout', AdminController.adminLogout);
 
 module.exports = router;

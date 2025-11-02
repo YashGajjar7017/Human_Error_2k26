@@ -41,6 +41,7 @@
                         <li class="nav-item"><a class="nav-link text-warning" href="javascript:void(0);" onclick="printPageArea('source')">Print</a></li>
                         <li class="nav-item"><a href="/upload/fileName=" class="nav-link text-white" id="inputfile">Upload</a></li>
                         <li class="nav-item"><a href="#" onclick="openNav3()" class="nav-link text-white">Share</a></li>
+                        <li class="nav-item"><a href="/Account/Dashboard" class="nav-link text-primary">Dashboard</a></li>
                         <li class="nav-item" id="admin-link" style="display: none;"><a href="/admin-panel" class="nav-link text-danger">Admin</a></li>
                         <li class="nav-item"><a class="nav-link text-white" href="#"></a></li>
                 </div>
@@ -290,6 +291,8 @@ void main()
     <div class="Maintenance" id="Maintenance"> </div>
     <!--to show maintaince break-->
 
+
+
     <!-- Script Here -->
     <script type="module" src="js/script.js" async></script>
     <script type="module" src="js/Engine.js" async></script>
@@ -328,30 +331,7 @@ void main()
                 document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/';
             }
 
-            // Login function
-            window.login = function(username, password) {
-                // For demo, assume simple login; in real app, validate credentials
-                if (username && password) {
-                    // Send to backend to create session
-                    fetch('/api/auth/login', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({username: username, password: password})
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            setCookie('username', data.user.username, 7); // Set cookie for 7 days
-                            setCookie('token', data.token, 7); // Set token cookie
-                            setCookie('role', data.user.role, 7); // Set role cookie
-                            location.reload(); // Reload to update UI
-                        } else {
-                            alert('Login failed: ' + data.message);
-                        }
-                    })
-                    .catch(error => console.error('Error:', error));
-                }
-            };
+
 
             // Logout function
             window.logout = function() {
@@ -380,20 +360,8 @@ void main()
                 $('#logout').hide();
                 document.getElementById('username').innerText = 'Login';
                 document.getElementById('user').onclick = function() {
-                    // Open login popup instead of navigating
-                    const popup = window.open('http://localhost:8000/popup', 'loginPopup', 'width=700,height=500,align-item=center');
-                    // Listen for messages from popup
-                    window.addEventListener('message', function(event) {
-                        if (event.data.type === 'LOGIN_SUCCESS') {
-                            // Store token and user data
-                            setCookie('token', event.data.token, 7);
-                            setCookie('username', event.data.user.username, 7);
-                            location.reload(); // Reload to update UI
-                        } else if (event.data.type === 'LOGIN_FAILED_INVALID_CREDENTIALS') {
-                            // Redirect to signup page
-                            window.location.href = '/Account/Signup';
-                        }
-                    });
+                    // Redirect to login page
+                    window.location.href = '/Account/login';
                 };
             } else {
                 $('.user').show();

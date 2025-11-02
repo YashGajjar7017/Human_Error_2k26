@@ -4,8 +4,8 @@ const rootDir = require('../util/path');
 const axios = require('axios');
 const session = require('express-session');
 
-// API configuration
-const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:8000';
+// API configuration - using relative paths to go through proxy
+const API_BASE_URL = '/api';
 
 // token class
 function AlphaNumericGenerator(length) {
@@ -53,26 +53,29 @@ exports.Getlogin = async (req, res, next) => {
     }
 };
 
-// Login Post - Updated to use backend API
+// Login Post - Use backend API for proper authentication
 exports.Postlogin = async (req, res) => {
     const { username, password } = req.body;
 
     if (!username || !password) {
-        return res.status(400).json({ 
-            success: false, 
-            message: 'Username and password are required' 
+        return res.status(400).json({
+            success: false,
+            message: 'Username and password are required'
         });
     }
 
     try {
-        const response = await FetchData('api/auth/login', { username, password });
+        // Call backend login API
+        const response = await FetchData('auth/login', { username, password });
 
         if (response.success) {
+            // Set session data
             req.session.authenticated = true;
             req.session.user = {
                 id: response.user.id,
                 username: response.user.username,
                 email: response.user.email,
+                role: response.user.role,
                 token: response.token
             };
 
@@ -85,14 +88,14 @@ exports.Postlogin = async (req, res) => {
 
             res.json({
                 success: true,
-                message: response.message,
-                user: response.user,
+                message: 'Login successful',
+                user: req.session.user,
                 token: response.token
             });
         } else {
             res.status(401).json({
                 success: false,
-                message: response.message || 'Invalid credentials'
+                message: response.message || 'Login failed'
             });
         }
     } catch (error) {
@@ -134,7 +137,7 @@ exports.logout = async (req, res, next) => {
         const token = req.session?.user?.token;
 
         if (token) {
-            await FetchData('api/auth/logout', {}, {
+            await FetchData('auth/logout', {}, {
                 'Authorization': `Bearer ${token}`
             });
         }
@@ -187,7 +190,7 @@ exports.refreshToken = async (req, res) => {
     const { token } = req.body;
 
     try {
-        const response = await FetchData('api/auth/refresh-token', { token });
+        const response = await FetchData('auth/refresh-token', { token });
         res.json(response);
     } catch (error) {
         res.status(401).json({

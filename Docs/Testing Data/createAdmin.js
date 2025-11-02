@@ -1,8 +1,14 @@
 const mongoose = require('mongoose');
-const User = require('./Backend/models/User.model.js');
+const User = require('./models/User.model');
+const path = require('path');
+// require('dotenv').config({ path: path.join(__dirname, 'Backend', '.env') });
 
-// Connect to MongoDB (adjust the connection string as needed)
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/yourdb', {
+// Connect to MongoDB (using same config as server)
+const MONGODB_URL = process.env.MONGODB_URL_Cloud || 'mongodb+srv://yashacker:Iamyash@reactdb.d04du.mongodb.net/?retryWrites=true&w=majority&appName=ReactDB';
+const DB_NAME = process.env.DB_NAME || "ReactDB";
+
+mongoose.connect(MONGODB_URL, {
+    dbName: DB_NAME,
     useNewUrlParser: true,
     useUnifiedTopology: true
 }).then(async () => {

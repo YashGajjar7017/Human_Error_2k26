@@ -14,8 +14,18 @@ const users = [
 
 // Dashboard
 exports.Dashboard = (req, res, next) => {
-    res.sendFile(path.join(rootDir, 'views', '/Services/Dashboard.html'));
-    // res.end()
+    if (req.session.authenticated && req.session.user) {
+        // Check if user is admin and redirect to admin dashboard
+        if (req.session.user.role === 'admin') {
+            res.redirect('/admin-panel');
+            return;
+        }
+        // Regular user dashboard
+        res.sendFile(path.join(rootDir, 'views', '/Services/Dashboard.html'));
+    } else {
+        // Redirect to login if not authenticated
+        res.redirect('/Account/login/123456789012345');
+    }
 };
 
 // regeister user
