@@ -14,7 +14,9 @@ const signUpRoutes = require('./Routes/signup.routes');
 const usrData = require('./Routes/User.routes');
 const classroom = require('./Routes/classroom.routes');
 const mailServer = require('./Routes/MailServer.routes');
-const pdfSaver = require('./Routes/convertPDF.routes');
+const pdfSaver = require('./Routes/FileServices.routes');
+const AccountHandling = require('./Routes/Account.routes');
+const SessionHandling = require('./Routes/Session.routes');
 
 // make an object of express
 const app = express();
@@ -43,7 +45,7 @@ app.use(session({
 
 // Static files
 app.use(express.static(path.join(__dirname, 'Lib')));
-app.use(express.static(path.join(__dirname, 'other')));
+app.use(express.static(path.join(__dirname, 'Services')));
 app.use(express.static(path.join(__dirname, 'Public')));
 app.use(express.static(path.join(__dirname, 'src')));
 app.use(express.static(path.join(__dirname, 'views')));
@@ -60,6 +62,8 @@ app.use('/api', createProxyMiddleware({
 // |-----------Routes handler-------------|
 app.use(engineExp);
 app.use('/Account',loginRoutes);
+app.use('/Account',AccountHandling);
+app.use('/Account',SessionHandling);
 app.use('/Account',signUpRoutes);
 app.use('/Account',usrData);
 app.use('/classroom',classroom);

@@ -9,26 +9,10 @@ require('dotenv').config();
 // express.json import
 router.use(express.json());
 
-// Route grouping for better organization
-
 // === MAIN ROUTES ===
 router.get('/', WebHandler.ComplierPage);
 router.get('/start', WebHandler.startPage);
 router.get('/features', WebHandler.features);
-
-// === ACCOUNT ROUTES ===
-router.get('/account', WebHandler.account);
-router.get('/account/user/:userState/:NO', WebHandler.accountNumber);
-router.get('/account/complier/user/:NO', WebHandler.ComplierPage);
-
-// === SESSION ROUTES ===
-router.get('/session', WebHandler.session);
-router.post('/session/join/token=*', WebHandler.sessionToken);
-router.post('/session/share', WebHandler.sessionShare);
-
-// === FILE MANAGEMENT ROUTES ===
-router.get('/update/:fileName', WebHandler.fileupload);
-router.post('/upload', WebHandler.uploadFile);
 
 // === ERROR HANDLING ===
 // router.use((req, res) => {
