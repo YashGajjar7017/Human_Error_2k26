@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics - Node Compiler</title>
+    <link rel="icon" type="image/x-icon" href="../Public/images/Human Error.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel='stylesheet' href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css'>
+    <link rel="stylesheet" href="css/analytics.css">
+</head>
+<body>
+    <div class="analytics-container">
+        <!-- Header -->
+        <header class="analytics-header">
+            <div class="header-content">
+                <h1><i class='bx bx-bar-chart'></i> Analytics Dashboard</h1>
+                <p>Track your coding progress and performance</p>
+            </div>
+            <div class="header-actions">
+                <select id="timeRange" class="form-select">
+                    <option value="7d">Last 7 days</option>
+                    <option value="30d">Last 30 days</option>
+                    <option value="90d">Last 90 days</option>
+                    <option value="1y">Last year</option>
+                </select>
+            </div>
+        </header>
+
+        <!-- Stats Cards -->
+        <div class="stats-section">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class='bx bx-code-alt'></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="totalCompilations">0</h3>
+                    <p>Total Compilations</p>
+                    <span class="stat-change" id="compilationsChange">+0%</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class='bx bx-check-circle'></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="successRate">0%</h3>
+                    <p>Success Rate</p>
+                    <span class="stat-change" id="successChange">+0%</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class='bx bx-time-five'></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="avgExecutionTime">0ms</h3>
+                    <p>Avg Execution Time</p>
+                    <span class="stat-change" id="timeChange">+0%</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class='bx bx-calendar'></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="activeDays">0</h3>
+                    <p>Active Days</p>
+                    <span class="stat-change" id="daysChange">+0%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="charts-section">
+            <div class="chart-container">
+                <div class="chart-header">
+                    <h3>Compilation Activity</h3>
+                    <div class="chart-controls">
+                        <button class="chart-toggle active" data-chart="line">Line</button>
+                        <button class="chart-toggle" data-chart="bar">Bar</button>
+                    </div>
+                </div>
+                <canvas id="activityChart"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-header">
+                    <h3>Language Distribution</h3>
+                </div>
+                <canvas id="languageChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Detailed Analytics -->
+        <div class="detailed-analytics">
+            <div class="analytics-table">
+                <h3>Recent Compilations</h3>
+                <div class="table-responsive">
+                    <table class="table table-striped" id="compilationsTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Language</th>
+                                <th>Status</th>
+                                <th>Execution Time</th>
+                                <th>Code Size</th>
+                            </tr>
+                        </thead>
+                        <tbody id="compilationsTableBody">
+                            <tr>
+                                <td colspan="5" class="text-center">Loading compilation history...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="analytics-table">
+                <h3>Error Analysis</h3>
+                <div class="error-stats">
+                    <div class="error-item">
+                        <h4>Syntax Errors</h4>
+                        <span id="syntaxErrors">0</span>
+                    </div>
+                    <div class="error-item">
+                        <h4>Runtime Errors</h4>
+                        <span id="runtimeErrors">0</span>
+                    </div>
+                    <div class="error-item">
+                        <h4>Compilation Errors</h4>
+                        <span id="compilationErrors">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Insights -->
+        <div class="insights-section">
+            <h3>Performance Insights</h3>
+            <div class="insights-grid">
+                <div class="insight-card">
+                    <div class="insight-icon">
+                        <i class='bx bx-trending-up'></i>
+                    </div>
+                    <div class="insight-content">
+                        <h4>Improvement Trend</h4>
+                        <p id="improvementTrend">Your compilation success rate has improved by 15% this month.</p>
+                    </div>
+                </div>
+
+                <div class="insight-card">
+                    <div class="insight-icon">
+                        <i class='bx bx-target'></i>
+                    </div>
+                    <div class="insight-content">
+                        <h4>Most Used Language</h4>
+                        <p id="mostUsedLanguage">JavaScript - 45% of your compilations</p>
+                    </div>
+                </div>
+
+                <div class="insight-card">
+                    <div class="insight-icon">
+                        <i class='bx bx-time'></i>
+                    </div>
+                    <div class="insight-content">
+                        <h4>Peak Coding Hours</h4>
+                        <p id="peakHours">2:00 PM - 4:00 PM</p>
+                    </div>
+                </div>
+
+                <div class="insight-card">
+                    <div class="insight-icon">
+                        <i class='bx bx-star'></i>
+                    </div>
+                    <div class="insight-content">
+                        <h4>Achievement Progress</h4>
+                        <p id="achievementProgress">3 more achievements to unlock!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/analytics.js"></script>
+</body>
+</html>

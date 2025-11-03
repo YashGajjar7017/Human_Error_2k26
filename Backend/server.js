@@ -59,6 +59,12 @@ const analyticsRoutes = require('./Routes/analytics.routes');
 const notificationRoutes = require('./Routes/notification.routes');
 const enhancedWebrtcRoutes = require('./Routes/enhanced-webrtc.routes');
 const maintenanceRoutes = require('./Routes/maintenance.routes');
+const filemanagerRoutes = require('./Routes/filemanager.routes');
+const snippetsRoutes = require('./Routes/snippets.routes');
+const projectsRoutes = require('./Routes/projects.routes');
+const collaborationRoutes = require('./Routes/collaboration.routes');
+const achievementsRoutes = require('./Routes/achievements.routes');
+const apiDocsRoutes = require('./Routes/api-docs.routes');
 
 
 // DB Connect
@@ -80,6 +86,12 @@ app.use('/api/enhanced-users', enhancedUserRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/maintenance', maintenanceRoutes);
+app.use('/api/files', filemanagerRoutes);
+app.use('/api/snippets', snippetsRoutes);
+app.use('/api/projects', projectsRoutes);
+app.use('/api/collaboration', collaborationRoutes);
+app.use('/api/achievements', achievementsRoutes);
+app.use('/api/docs', apiDocsRoutes);
 
 // Admin panel API routes are now handled by the adminRoutes router
 
@@ -130,9 +142,10 @@ app.get('/health', (req, res) => {
 });
 
 // Catch-all handler for frontend routes
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../Frontend/views/index.html'));
-});
+// app.get('*', (req, res) => {
+//     // res.sendFile(path.join(__dirname, '../Frontend/views/index.html'));
+//     res.sendStatus(404);
+// });
 
 // 404 handler for API routes
 app.use('/api/*', function (req, res, next) {

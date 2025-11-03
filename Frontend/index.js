@@ -17,6 +17,11 @@ const mailServer = require('./Routes/MailServer.routes');
 const pdfSaver = require('./Routes/FileServices.routes');
 const AccountHandling = require('./Routes/Account.routes');
 const SessionHandling = require('./Routes/Session.routes');
+const notificationsRoutes = require('./Routes/notifications.routes');
+const filesRoutes = require('./Routes/files.routes');
+const snippetsRoutes = require('./Routes/snippets.routes');
+const projectsRoutes = require('./Routes/projects.routes');
+const dashboardRoutes = require('./Routes/dashboard.routes');
 
 // make an object of express
 const app = express();
@@ -70,6 +75,11 @@ app.use('/classroom',classroom);
 app.use('/Admin/Api', adminData);
 app.use('/User',pdfSaver);
 app.use(mailServer);
+app.use('/notifications', notificationsRoutes);
+app.use('/files', filesRoutes);
+app.use('/snippets', snippetsRoutes);
+app.use('/projects', projectsRoutes);
+app.use('/dashboard', dashboardRoutes);
 
 // Home page route with dashboard access link
 app.get('/', (req, res) => {
