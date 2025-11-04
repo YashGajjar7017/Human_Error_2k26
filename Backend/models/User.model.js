@@ -42,6 +42,12 @@ const userSchema = new mongoose.Schema({
     refreshToken: {
         type: String
     },
+    resetToken: {
+        type: String
+    },
+    resetTokenExpiresAt: {
+        type: Date
+    },
     role: {
         type: String,
         enum: ['user', 'admin'],

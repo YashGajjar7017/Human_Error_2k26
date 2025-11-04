@@ -212,7 +212,7 @@ const handleOTP = async (req, res, endpoint) => {
 // OTP page handler
 exports.OTP = (req, res) => {
     try {
-        const filePath = path.join(rootDir, 'views', 'Services', 'otp.html');
+        const filePath = path.join(rootDir, 'views', 'otp.html');
         console.log('Serving OTP page from:', filePath);
         res.sendFile(filePath);
     } catch (error) {

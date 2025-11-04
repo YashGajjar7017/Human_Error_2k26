@@ -32,8 +32,21 @@ const { cleanupInactiveSessions } = require('./middleware/session.middleware');
 // Serve static files from Frontend directory
 app.use(express.static(path.join(__dirname, '../Frontend')));
 
-// Middleware to parse JSON bodies
-app.use(express.json({ limit: '10mb' }));
+// Middleware to parse JSON bodies with error handling
+app.use(express.json({
+    limit: '10mb',
+    verify: (req, res, buf, encoding) => {
+        if (buf && buf.length) {
+            try {
+                JSON.parse(buf);
+            } catch (e) {
+                const error = new Error('Invalid JSON');
+                error.status = 400;
+                throw error;
+            }
+        }
+    }
+}));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // API logging middleware
@@ -65,6 +78,8 @@ const projectsRoutes = require('./Routes/projects.routes');
 const collaborationRoutes = require('./Routes/collaboration.routes');
 const achievementsRoutes = require('./Routes/achievements.routes');
 const apiDocsRoutes = require('./Routes/api-docs.routes');
+const passwordResetRoutes = require('./Routes/passwordReset.routes');
+const otpRoutes = require('./Routes/otp.routes');
 
 
 // DB Connect
@@ -92,6 +107,8 @@ app.use('/api/projects', projectsRoutes);
 app.use('/api/collaboration', collaborationRoutes);
 app.use('/api/achievements', achievementsRoutes);
 app.use('/api/docs', apiDocsRoutes);
+app.use('/api/password-reset', passwordResetRoutes);
+app.use('/api/otp', otpRoutes);
 
 // Admin panel API routes are now handled by the adminRoutes router
 

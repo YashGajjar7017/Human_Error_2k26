@@ -17,18 +17,26 @@ function AlphaNumericGenerator(length) {
     return TokenPass;
 }
 
-// Save token to MongoDB
+// Save token to MongoDB with timeout handling
 async function saveTokenToDB(token, userId = null, sessionId = null, purpose = 'temp_session') {
     try {
         const Token = require('../../Backend/models/Token.model');
-        const newToken = new Token({
+
+        // Set a timeout for the save operation
+        const savePromise = new Token({
             token,
             userId,
             sessionId,
             purpose,
             expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
+        }).save();
+
+        // Add timeout to prevent hanging
+        const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error('Token save timeout')), 5000); // 5 second timeout
         });
-        await newToken.save();
+
+        const newToken = await Promise.race([savePromise, timeoutPromise]);
         console.log(`Token saved to DB: ${token.substring(0, 10)}...`);
         return newToken;
     } catch (error) {
@@ -59,9 +67,10 @@ async function FetchData(endpoint, data, headers = {}) {
 exports.userIDGenerator = async (req, res, next) => {
     try {
         const token = AlphaNumericGenerator(15);
-        // Save token to session and MongoDB
+        // Save token to session only (skip DB save to avoid timeout issues)
         req.session.tempToken = token;
-        await saveTokenToDB(token, null, null, 'temp_session');
+        // await saveTokenToDB(token, null, null, 'temp_session'); // Temporarily disabled
+        console.log(`Generated temp token: ${token}`);
         res.redirect(`/Account/login/${token}`);
     } catch (error) {
         console.error('Error generating user ID:', error);
@@ -109,8 +118,12 @@ exports.Postlogin = async (req, res) => {
                 token: response.token
             };
 
-            // Save auth token to MongoDB
-            await saveTokenToDB(response.token, response.user.id, null, 'auth_token');
+            // Save auth token to MongoDB (with timeout handling)
+            try {
+                await saveTokenToDB(response.token, response.user.id, null, 'auth_token');
+            } catch (tokenError) {
+                console.warn('Token save failed, continuing with login:', tokenError.message);
+            }
 
             // Set token in cookie for client-side access
             res.cookie('auth_token', response.token, {

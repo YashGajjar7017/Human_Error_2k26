@@ -153,8 +153,21 @@ exports.login = async (req, res) => {
 
         console.log('User found:', user.username, user.email);
 
-        // Check password
-        const isPasswordValid = await user.comparePassword(password);
+        // Check password - handle both hashed and unhashed passwords for backward compatibility
+        let isPasswordValid = false;
+        try {
+            isPasswordValid = await user.comparePassword(password);
+        } catch (error) {
+            // If comparison fails, check if password is stored in plain text (legacy users)
+            if (user.password === password) {
+                isPasswordValid = true;
+                // Hash the password for future logins
+                user.password = password;
+                await user.save();
+                console.log('Password hashed for legacy user:', user.username);
+            }
+        }
+
         if (!isPasswordValid) {
             console.log('Login failed: Invalid password for user:', user.username);
             return res.status(401).json({

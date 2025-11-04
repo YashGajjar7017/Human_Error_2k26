@@ -154,14 +154,15 @@
             }
 
             try {
-                const response = await fetch('/api/account/Account/verifyOTP', {
+                const response = await fetch('/api/otp/verify', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
                         email: email,
-                        otp: otp
+                        otp: otp,
+                        purpose: 'password_reset'
                     })
                 });
 
@@ -169,9 +170,11 @@
 
                 if (response.ok) {
                     alert('OTP verified successfully!');
-                    window.location.href = '/views/index.html';
+                    // Redirect to password reset page with token
+                    const resetToken = data.data.resetToken;
+                    window.location.href = `/resetPassword?token=${resetToken}`;
                 } else {
-                    alert(data.message || 'OTP verification failed');
+                    alert(data.error || 'OTP verification failed');
                 }
             } catch (error) {
                 console.error('OTP verification error:', error);

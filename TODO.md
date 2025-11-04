@@ -1,14 +1,18 @@
-# TODO: Add More Features to Engine Route & Controller
+# TODO: Fix Login and Email Issues
 
-## Steps to Complete
-- [x] Add new routes to engine.routes.js for unused handlers (sessionToken, sessionShare, fileupload, account, accountNumber, uploadFile)
-- [x] Test the updated routes by running the server and verifying endpoints
+## Current Issues
+- Login password validation failing for existing users (likely unhashed passwords)
+- Email sending failing during registration (invalid Gmail credentials)
 
-## Details
-- Add GET /sessionToken -> sessionToken
-- Add GET /sessionShare -> sessionShare
-- Add GET /fileupload -> fileupload
-- Add GET /account -> account
-- Add GET /account/:userState/:NO -> accountNumber
-- Add GET /upload -> uploadFile (form display)
-- Add POST /upload -> uploadFile (file upload)
+## Tasks
+- [ ] Update login logic to handle unhashed passwords for backward compatibility
+- [ ] Add email configuration instructions
+- [ ] Test login with existing user
+- [ ] Test registration with valid email credentials
+- [ ] Verify email sending works
+
+## Implementation Plan
+1. Modify auth.controller.js login method to check password format
+2. Create .env.example with proper email setup instructions
+3. Add migration logic for existing unhashed passwords
+4. Test the fixes
