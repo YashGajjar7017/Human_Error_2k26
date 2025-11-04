@@ -4,7 +4,7 @@ const router = express.Router();
 // Middleware to check if user is authenticated
 const requireAuth = (req, res, next) => {
     if (!req.session.authenticated) {
-        return res.redirect('/Account/login/123456789012345');
+        return res.redirect('/Account/Admin/login/');
     }
     next();
 };

@@ -9,6 +9,15 @@ router.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../views/admin.html'));
 });
 
+// Admin panel route - Protected for admin users only
+router.get('/admin-panel', (req, res) => {
+    if (req.session.authenticated && req.session.user && req.session.user.role === 'admin') {
+        res.sendFile(path.join(__dirname, 'views', 'admin.html'));
+    } else {
+        res.redirect('/Account/Admin/login');
+    }
+});
+
 // API routes for admin functionality
 router.get('/dashboard', AdminController.dashboard);
 router.get('/users', AdminController.getUsers);

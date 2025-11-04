@@ -17,6 +17,27 @@ function AlphaNumericGenerator(length) {
     return TokenPass;
 }
 
+// Save token to MongoDB
+async function saveTokenToDB(token, userId = null, sessionId = null, purpose = 'temp_session') {
+    try {
+        const Token = require('../../Backend/models/Token.model');
+        const newToken = new Token({
+            token,
+            userId,
+            sessionId,
+            purpose,
+            expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
+        });
+        await newToken.save();
+        console.log(`Token saved to DB: ${token.substring(0, 10)}...`);
+        return newToken;
+    } catch (error) {
+        console.error('Error saving token to DB:', error);
+        // Don't throw error, just log it to prevent blocking the login flow
+        return null;
+    }
+}
+
 // Fetch_Function: Updated to use proper API endpoints
 async function FetchData(endpoint, data, headers = {}) {
     try {
@@ -35,8 +56,17 @@ async function FetchData(endpoint, data, headers = {}) {
 }
 
 // Fetching Userdata from files:
-exports.userIDGenerator = (req, res, next) => {
-    res.redirect(`/Account/login/${AlphaNumericGenerator(15)}`);
+exports.userIDGenerator = async (req, res, next) => {
+    try {
+        const token = AlphaNumericGenerator(15);
+        // Save token to session and MongoDB
+        req.session.tempToken = token;
+        await saveTokenToDB(token, null, null, 'temp_session');
+        res.redirect(`/Account/login/${token}`);
+    } catch (error) {
+        console.error('Error generating user ID:', error);
+        res.status(500).json({ success: false, message: 'Failed to generate user ID' });
+    }
 };
 
 // Login - Serve login page
@@ -47,7 +77,7 @@ exports.Getlogin = async (req, res, next) => {
     res.setHeader('Content-Type', 'text/html');
 
     if (token.length === 15) {
-        res.sendFile(path.join(rootDir, 'views', '/Services/login.html'));
+        res.sendFile(path.join(__dirname, '../Services/login', 'index.html'));
     } else {
         res.redirect('/404');
     }
@@ -78,6 +108,9 @@ exports.Postlogin = async (req, res) => {
                 role: response.user.role,
                 token: response.token
             };
+
+            // Save auth token to MongoDB
+            await saveTokenToDB(response.token, response.user.id, null, 'auth_token');
 
             // Set token in cookie for client-side access
             res.cookie('auth_token', response.token, {
@@ -137,6 +170,14 @@ exports.logout = async (req, res, next) => {
         const token = req.session?.user?.token;
 
         if (token) {
+            // Deactivate token in MongoDB
+            const Token = require('../../Backend/models/Token.model');
+            await Token.findOneAndUpdate(
+                { token },
+                { isActive: false },
+                { new: true }
+            );
+
             await FetchData('auth/logout', {}, {
                 'Authorization': `Bearer ${token}`
             });
@@ -161,7 +202,7 @@ exports.logout = async (req, res, next) => {
 // Forgot password - Updated flow
 exports.forgotPass = (req, res, next) => {
     const OTP = req.params.OTP;
-    res.sendFile(path.join(rootDir, 'views', '/Services/forgotPassword.html'));
+    res.sendFile(path.join(rootDir, 'views', '/forgotPassword.html'));
     
     if (OTP) {
         setTimeout(() => {

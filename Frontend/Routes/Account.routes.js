@@ -11,6 +11,7 @@ router.use(express.json());
 
 // === ACCOUNT ROUTES ===
 router.get('/account', WebHandler.account);
+router.get('/account/:userState/:NO', WebHandler.accountNumber);
 router.get('/account/user/:userState/:NO', WebHandler.accountNumber);
 router.get('/account/complier/user/:NO', WebHandler.ComplierPage);
 

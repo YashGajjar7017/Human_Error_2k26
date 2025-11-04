@@ -13,5 +13,6 @@ router.use(express.json());
 router.get('/session', WebHandler.session);
 router.post('/session/join/token=*', WebHandler.sessionToken);
 router.post('/session/share', WebHandler.sessionShare);
+router.get('/sessionToken', WebHandler.sessionToken);
 
 module.exports = router;

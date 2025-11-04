@@ -1,0 +1,282 @@
+/* Futuristic Glassy Black Theme */
+body {
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+  background-attachment: fixed;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  overflow-x: hidden;
+}
+
+.limiter {
+  background: transparent;
+}
+
+.container-login100 {
+  background: transparent !important;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.container-login100::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 20% 80%,
+      rgba(120, 119, 198, 0.3) 0%,
+      transparent 50%),
+    radial-gradient(circle at 80% 20%,
+      rgba(255, 119, 198, 0.3) 0%,
+      transparent 50%),
+    radial-gradient(circle at 40% 40%,
+      rgba(120, 219, 255, 0.2) 0%,
+      transparent 50%);
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+
+  33% {
+    transform: translateY(-10px) rotate(1deg);
+  }
+
+  66% {
+    transform: translateY(10px) rotate(-1deg);
+  }
+}
+
+.wrap-login100 {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(25px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  padding: 40px;
+  width: 100%;
+  max-width: 400px;
+  position: relative;
+  z-index: 1;
+}
+
+.wrap-login100::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg,
+      #ff6b9d,
+      #c44569,
+      #6c5ce7,
+      #a29bfe,
+      #00cec9,
+      #55a3ff,
+      #ff6b9d);
+  border-radius: 22px;
+  z-index: -1;
+  animation: borderGlow 3s linear infinite;
+  filter: blur(1px);
+}
+
+@keyframes borderGlow {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.login100-form-logo {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  box-shadow: 0 0 30px rgba(102, 126, 234, 0.5);
+  animation: logoPulse 2s ease-in-out infinite;
+}
+
+@keyframes logoPulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 30px rgba(102, 126, 234, 0.5);
+  }
+
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 40px rgba(102, 126, 234, 0.8);
+  }
+}
+
+.login100-form-logo i {
+  color: white;
+  font-size: 35px;
+}
+
+.login100-form-title {
+  color: #ffffff !important;
+  font-size: 28px !important;
+  font-weight: 300 !important;
+  text-align: center;
+  margin-bottom: 30px !important;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+  background: linear-gradient(135deg, #ffffff 0%, #e0e6ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.wrap-input100 {
+  position: relative;
+  margin-bottom: 25px;
+}
+
+.input100 {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 12px !important;
+  color: #ffffff !important;
+  font-size: 16px !important;
+  padding: 15px 20px !important;
+  width: 100% !important;
+  transition: all 0.3s ease !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+.input100:focus {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: #667eea !important;
+  box-shadow: 0 0 20px rgba(102, 126, 234, 0.3) !important;
+  transform: translateY(-2px) !important;
+}
+
+.input100::placeholder {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.focus-input100 {
+  display: none !important;
+}
+
+.container-login100-form-btn {
+  margin-top: 30px;
+}
+
+.login100-form-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border: none !important;
+  border-radius: 12px !important;
+  color: white !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  padding: 15px 30px !important;
+  width: 100% !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1px !important;
+}
+
+.login100-form-btn:hover {
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6) !important;
+}
+
+.text-center a {
+  color: #667eea !important;
+  text-decoration: none !important;
+  font-weight: 500 !important;
+  transition: all 0.3s ease !important;
+  position: relative;
+}
+
+.text-center a:hover {
+  color: #764ba2 !important;
+  text-shadow: 0 0 10px rgba(102, 126, 234, 0.5) !important;
+}
+
+.text-center a::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  transition: width 0.3s ease;
+}
+
+.text-center a:hover::after {
+  width: 100%;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .wrap-login100 {
+    padding: 30px 20px;
+    margin: 20px;
+  }
+
+  .login100-form-title {
+    font-size: 24px !important;
+  }
+}
+
+/* Particle effect */
+.container-login100::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: radial-gradient(2px 2px at 20px 30px,
+      rgba(255, 255, 255, 0.1),
+      transparent),
+    radial-gradient(2px 2px at 40px 70px, rgba(255, 119, 198, 0.1), transparent),
+    radial-gradient(1px 1px at 90px 40px, rgba(120, 219, 255, 0.1), transparent),
+    radial-gradient(1px 1px at 130px 80px,
+      rgba(255, 255, 255, 0.1),
+      transparent),
+    radial-gradient(2px 2px at 160px 30px,
+      rgba(120, 119, 198, 0.1),
+      transparent);
+  background-repeat: repeat;
+  background-size: 200px 100px;
+  animation: particleFloat 20s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes particleFloat {
+  0% {
+    transform: translateX(0) translateY(0);
+  }
+
+  100% {
+    transform: translateX(-100px) translateY(-50px);
+  }
+}

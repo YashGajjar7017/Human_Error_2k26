@@ -14,14 +14,6 @@ router.get('/', WebHandler.ComplierPage);
 router.get('/start', WebHandler.startPage);
 router.get('/features', WebHandler.features);
 
-// === ERROR HANDLING ===
-// router.use((req, res) => {
-//     res.status(404).json({
-//         error: 'Route not found',
-//         message: `Cannot ${req.method} ${req.path}`
-//     });
-// });
-
 // === GLOBAL ERROR HANDLER ===
 router.use((err, req, res, next) => {
     console.error(err.stack);
@@ -30,5 +22,13 @@ router.use((err, req, res, next) => {
         message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong!'
     });
 });
+
+// === ERROR HANDLING ===
+// router.use((req, res) => {
+//     res.status(404).json({
+//         error: 'Route not found',
+//         message: `Cannot ${req.method} ${req.path}`
+//     });
+// });
 
 module.exports = router;

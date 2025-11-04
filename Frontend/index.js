@@ -49,8 +49,8 @@ app.use(session({
 }));
 
 // Static files
-app.use(express.static(path.join(__dirname, 'Lib')));
 app.use(express.static(path.join(__dirname, 'Services')));
+app.use(express.static(path.join(__dirname, 'Lib')));
 app.use(express.static(path.join(__dirname, 'Public')));
 app.use(express.static(path.join(__dirname, 'src')));
 app.use(express.static(path.join(__dirname, 'views')));
@@ -74,31 +74,22 @@ app.use('/Account',usrData);
 app.use('/classroom',classroom);
 app.use('/Admin/Api', adminData);
 app.use('/User',pdfSaver);
-app.use(mailServer);
 app.use('/notifications', notificationsRoutes);
 app.use('/files', filesRoutes);
 app.use('/snippets', snippetsRoutes);
 app.use('/projects', projectsRoutes);
 app.use('/dashboard', dashboardRoutes);
+app.use(mailServer);
 
 // Home page route with dashboard access link
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'index.html'));
 });
 
-// Admin panel route - Protected for admin users only
-app.get('/admin-panel', (req, res) => {
-    if (req.session.authenticated && req.session.user && req.session.user.role === 'admin') {
-        res.sendFile(path.join(__dirname, 'views', 'admin.html'));
-    } else {
-        res.redirect('/Account/login/123456789012345');
-    }
-});
-
 // 404 error : putting at last after all the request are check
 app.use(function (req, res, next) {
     res.setHeader('Content-Type', 'text/html');
-    res.status(404).sendFile(path.join(__dirname, 'other', '404.html'));
+    res.status(404).sendFile(path.join(__dirname, 'views', '404.html'));
 });
 
 // Start the server

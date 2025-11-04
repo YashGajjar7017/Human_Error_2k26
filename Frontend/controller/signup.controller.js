@@ -39,7 +39,7 @@ exports.signUp = (req, res) => {
         console.log('Received signup token:', SignUpToken);
         
         if (SignUpToken && SignUpToken.length === 15) {
-            const filePath = path.join(rootDir, 'views', 'Services', 'Signup.html');
+            const filePath = path.join(rootDir, 'views', 'Signup.html');
             console.log('Serving signup page from:', filePath);
             res.sendFile(filePath);
         } else {
