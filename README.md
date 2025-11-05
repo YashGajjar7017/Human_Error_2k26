@@ -48,8 +48,9 @@ This is latest version of complier 2026 & it was only beta 1.1.0 testing priview
     <tr><td>Update 18</td><td>2 June 2025</td><td>(Beta Preview)</td><td>Security</td></tr>
     <tr><td>Update 19</td><td>7 July 2025</td><td>(Gamma Release)</td><td>Critical</td></tr>
     <tr><td>Update 20</td><td>16 November</td><td>(Alpha Preview Part 3)</td><td>Bug Fixes</td></tr>
-    <tr><td>Update 21</td><td>1 January 2026</td><td>(Release 1.1)</td><td>Security</td></tr>
-    <tr><td>Update 22</td><td>13 February 2026</td><td>(Testing)</td><td>Critical</td></tr>
+    <tr><td>Update 21</td><td>1 December</td><td>Release Ver_0.1</td><td>Bug Issue</td></tr>
+    <tr><td>Update 22</td><td>1 January 2026</td><td>(Release 1.1)</td><td>Security</td></tr>
+    <tr><td>Update 23</td><td>13 February 2026</td><td>(Testing)</td><td>Critical</td></tr>
   </tbody>
 </table>
 
