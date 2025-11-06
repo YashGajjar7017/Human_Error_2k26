@@ -1,18 +1,11 @@
-# TODO: Fix Login and Email Issues
+# TODO: Shift Login & Signup Pages to Backend
 
-## Current Issues
-- Login password validation failing for existing users (likely unhashed passwords)
-- Email sending failing during registration (invalid Gmail credentials)
+## Steps to Complete
 
-## Tasks
-- [ ] Update login logic to handle unhashed passwords for backward compatibility
-- [ ] Add email configuration instructions
-- [ ] Test login with existing user
-- [ ] Test registration with valid email credentials
-- [ ] Verify email sending works
-
-## Implementation Plan
-1. Modify auth.controller.js login method to check password format
-2. Create .env.example with proper email setup instructions
-3. Add migration logic for existing unhashed passwords
-4. Test the fixes
+- [ ] Create Backend/controller/signup.controller.js: Move signup logic from Frontend/controller/signup.controller.js
+- [ ] Update Backend/server.js: Add routes for /login, /signup, /otp, /forgotPassword to serve HTML files
+- [ ] Update Frontend/index.js: Modify /Account routes to redirect to backend URLs
+- [ ] Disable Frontend/Routes/signup.routes.js: Comment out or remove routes
+- [ ] Disable Frontend/Routes/login.routes.js: Comment out or remove routes
+- [ ] Test redirects and form submissions
+- [ ] Verify API calls work correctly

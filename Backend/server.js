@@ -3,6 +3,7 @@ const cors = require('cors');
 const path = require('path');
 const http = require('http');
 const socketIo = require('socket.io');
+const session = require('express-session');
 const process = require('process');
 
 const port = process.env.PORT || 8000;
@@ -48,6 +49,15 @@ app.use(express.json({
     }
 }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Session middleware for signup pages
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'TokenCode@79182487',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false },
+    store: new session.MemoryStore()
+}));
 
 // API logging middleware
 app.use('/api', (req, res, next) => {
