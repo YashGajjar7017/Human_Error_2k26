@@ -48,7 +48,9 @@ app.use(express.json({
         }
     }
 }));
+
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+// app.use(express.urlencoded({ extended: true }));
 
 // Session middleware for signup pages
 app.use(session({
@@ -156,8 +158,6 @@ process.on("unhandledRejection", (reason, promise) => {
     console.error("Unhandled Rejection:", reason);
     process.exit(1);
 });
-
-
 
 // Health check endpoint
 app.get('/health', (req, res) => {
