@@ -21,6 +21,9 @@ const io = socketIo(server, {
     }
 });
 
+// Trust proxy to handle forwarded headers correctly
+app.set('trust proxy', true);
+
 // Cross-origin-res
 app.use(cors())
 

@@ -1,11 +1,8 @@
-# TODO: Shift Login & Signup Pages to Backend
+# TODO: Create Login Schema Model
 
 ## Steps to Complete
-
-- [ ] Create Backend/controller/signup.controller.js: Move signup logic from Frontend/controller/signup.controller.js
-- [ ] Update Backend/server.js: Add routes for /login, /signup, /otp, /forgotPassword to serve HTML files
-- [ ] Update Frontend/index.js: Modify /Account routes to redirect to backend URLs
-- [ ] Disable Frontend/Routes/signup.routes.js: Comment out or remove routes
-- [ ] Disable Frontend/Routes/login.routes.js: Comment out or remove routes
-- [ ] Test redirects and form submissions
-- [ ] Verify API calls work correctly
+- [x] Create Backend/models/Login.model.js with schema for login attempts (userId, timestamp, success, ipAddress, userAgent)
+- [x] Review Backend/controller/auth.controller.js to understand current login logic
+- [x] Update auth.controller.js to log login attempts using the new Login model
+- [x] Configure server.js to trust proxy for accurate IP address logging
+- [x] Test login functionality to ensure integration works correctly
