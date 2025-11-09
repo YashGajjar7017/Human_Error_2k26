@@ -37,7 +37,8 @@ const { cleanupInactiveSessions } = require('./middleware/session.middleware');
 app.use(express.static(path.join(__dirname, '../Frontend')));
 
 // Middleware to parse JSON bodies with error handling
-app.use(express.json({
+// Skip JSON parsing for the raw-login endpoint to allow our raw-body fallback handler
+const jsonParser = express.json({
     limit: '10mb',
     verify: (req, res, buf, encoding) => {
         if (buf && buf.length) {
@@ -50,7 +51,13 @@ app.use(express.json({
             }
         }
     }
-}));
+});
+
+app.use((req, res, next) => {
+    // Allow the raw login handler to take over parsing for this specific path
+    if (req.path === '/api/auth/login' && req.method === 'POST') return next();
+    return jsonParser(req, res, next);
+});
 
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // app.use(express.urlencoded({ extended: true }));
@@ -68,6 +75,50 @@ app.use(session({
 app.use('/api', (req, res, next) => {
     console.log(`API Request: ${req.method} ${req.originalUrl}`, req.body);
     next();
+});
+
+// Special raw-body login handler: some clients (incorrect fetch config or legacy forms)
+// send payloads without a proper Content-Type header which causes express.json to
+// either not parse the body or throw. This route parses the raw body for /api/auth/login
+// and delegates to the auth controller. It is mounted before the normal routes so it
+// takes precedence when needed.
+const rawBody = express.raw({ type: '*/*', limit: '10mb' });
+app.post('/api/auth/login', rawBody, async (req, res, next) => {
+    try {
+        const authController = require('./controller/auth.controller');
+        let parsedBody = {};
+        const raw = req.body && req.body.length ? req.body.toString('utf8') : '';
+
+        // Debug logging to help trace incoming payload issues
+        console.log('--- raw-login handler invoked ---');
+        console.log('Headers:', req.headers);
+        console.log('Raw length:', req.body ? req.body.length : 0);
+        console.log('Raw string (first 2000 chars):', raw.slice(0, 2000));
+
+        if (raw) {
+            // Try JSON
+            try {
+                parsedBody = JSON.parse(raw);
+            } catch (e) {
+                // Fallback: try URL-encoded (e.g., form submits or incorrect fetch)
+                const qs = require('querystring');
+                try {
+                    parsedBody = qs.parse(raw);
+                } catch (e2) {
+                    parsedBody = {};
+                }
+            }
+        }
+
+        console.log('Parsed body:', parsedBody);
+
+        // Attach parsed body and call controller
+        req.body = parsedBody;
+        return authController.login(req, res, next);
+    } catch (err) {
+        console.error('Raw login handler error:', err);
+        return res.status(500).json({ success: false, message: 'Login handler error' });
+    }
 });
 
 // Maintenance middleware - check before other routes

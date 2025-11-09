@@ -11,6 +11,11 @@ const DB_NAME = process.env.DB_NAME || "node_compiler_db";
 mongoose.set('strictQuery', false);
 
 async function connectDB() {
+    // Allow skipping DB connect for local testing by setting SKIP_DB=true
+    if (process.env.SKIP_DB === 'true') {
+        console.log('⚠️  SKIP_DB is true — skipping MongoDB connection (development mode)');
+        return;
+    }
     try {
         // Validate that we have a proper MongoDB URL
         if (!MONGODB_URL.startsWith('mongodb://') && !MONGODB_URL.startsWith('mongodb+srv://')) {
@@ -34,7 +39,10 @@ async function connectDB() {
     } catch (error) {
         console.error("❌ MongoDB connection failed:", error.message);
         console.error("💡 Please check your .env file and ensure MONGODB_URL is properly formatted");
-        process.exit(1);
+        // Do not exit the process automatically in development; allow server to start for debugging.
+        if (process.env.NODE_ENV === 'production') {
+            process.exit(1);
+        }
     }
 }
 
