@@ -5,15 +5,13 @@ const http = require('http');
 const socketIo = require('socket.io');
 const session = require('express-session');
 const process = require('process');
-
-const port = process.env.PORT || 8000;
-
-// dotEnv config
-require('dotenv').config();
-
-// make an object of express
+const { cleanupInactiveSessions } = require('./middleware/session.middleware');
+const maintenanceController = require('./controller/maintenance.controller');
 const app = express();
 const server = http.createServer(app);
+const port = process.env.PORT || 8000;
+
+// make an object of express
 const io = socketIo(server, {
     cors: {
         origin: "*",
@@ -21,17 +19,39 @@ const io = socketIo(server, {
     }
 });
 
+// Import all routes
+const authRoutes = require('./Routes/auth.routes');
+const signupRoutes = require('./Routes/SignupApi.routes');
+const accountRoutes = require('./Routes/account.routes');
+const adminRoutes = require('./Routes/adminApi.routes');
+const classroomRoutes = require('./Routes/classroomApi.routes');
+const sessionRoutes = require('./Routes/session.routes');
+const webrtcRoutes = require('./Routes/webrtc.routes');
+const compilerRoutes = require('./Routes/compiler.routes');
+const enhancedUserRoutes = require('./Routes/enhanced-user.routes');
+const analyticsRoutes = require('./Routes/analytics.routes');
+const notificationRoutes = require('./Routes/notification.routes');
+const enhancedWebrtcRoutes = require('./Routes/enhanced-webrtc.routes');
+const maintenanceRoutes = require('./Routes/maintenance.routes');
+const filemanagerRoutes = require('./Routes/filemanager.routes');
+const snippetsRoutes = require('./Routes/snippets.routes');
+const projectsRoutes = require('./Routes/projects.routes');
+const collaborationRoutes = require('./Routes/collaboration.routes');
+const achievementsRoutes = require('./Routes/achievements.routes');
+const apiDocsRoutes = require('./Routes/api-docs.routes');
+const passwordResetRoutes = require('./Routes/passwordReset.routes');
+const otpRoutes = require('./Routes/otp.routes');
+
+// DB Connect
+const DBConnect = require('./DB/DBHandler');
+// dotEnv config
+require('dotenv').config();
+
 // Trust proxy to handle forwarded headers correctly
 app.set('trust proxy', true);
 
 // Cross-origin-res
 app.use(cors())
-
-// Import maintenance controller for middleware
-const maintenanceController = require('./controller/maintenance.controller');
-
-// Import session cleanup function
-const { cleanupInactiveSessions } = require('./middleware/session.middleware');
 
 // Serve static files from Frontend directory
 app.use(express.static(path.join(__dirname, '../Frontend')));
@@ -52,6 +72,7 @@ const jsonParser = express.json({
         }
     }
 });
+// app.use(jsonParser);
 
 app.use((req, res, next) => {
     // Allow the raw login handler to take over parsing for this specific path
@@ -77,11 +98,6 @@ app.use('/api', (req, res, next) => {
     next();
 });
 
-// Special raw-body login handler: some clients (incorrect fetch config or legacy forms)
-// send payloads without a proper Content-Type header which causes express.json to
-// either not parse the body or throw. This route parses the raw body for /api/auth/login
-// and delegates to the auth controller. It is mounted before the normal routes so it
-// takes precedence when needed.
 const rawBody = express.raw({ type: '*/*', limit: '10mb' });
 app.post('/api/auth/login', rawBody, async (req, res, next) => {
     try {
@@ -124,39 +140,13 @@ app.post('/api/auth/login', rawBody, async (req, res, next) => {
 // Maintenance middleware - check before other routes
 app.use(maintenanceController.maintenanceMiddleware);
 
-// Import all routes
-const authRoutes = require('./Routes/auth.routes');
-const signupRoutes = require('./Routes/SignupApi.routes');
-const accountRoutes = require('./Routes/account.routes');
-const adminRoutes = require('./Routes/adminApi.routes');
-const classroomRoutes = require('./Routes/classroomApi.routes');
-const sessionRoutes = require('./Routes/session.routes');
-const webrtcRoutes = require('./Routes/webrtc.routes');
-const compilerRoutes = require('./Routes/compiler.routes');
-const enhancedUserRoutes = require('./Routes/enhanced-user.routes');
-const analyticsRoutes = require('./Routes/analytics.routes');
-const notificationRoutes = require('./Routes/notification.routes');
-const enhancedWebrtcRoutes = require('./Routes/enhanced-webrtc.routes');
-const maintenanceRoutes = require('./Routes/maintenance.routes');
-const filemanagerRoutes = require('./Routes/filemanager.routes');
-const snippetsRoutes = require('./Routes/snippets.routes');
-const projectsRoutes = require('./Routes/projects.routes');
-const collaborationRoutes = require('./Routes/collaboration.routes');
-const achievementsRoutes = require('./Routes/achievements.routes');
-const apiDocsRoutes = require('./Routes/api-docs.routes');
-const passwordResetRoutes = require('./Routes/passwordReset.routes');
-const otpRoutes = require('./Routes/otp.routes');
-
-
 // DB Connect
-const DBConnect = require('./DB/DBHandler');
 DBConnect();
 
 // Mount all routes with proper prefixes
 app.use('/api/auth', authRoutes);
 app.use('/api/account', accountRoutes); // Fixed: Removed duplicate /auth/signup path
 app.use('/api/signup', signupRoutes);
-
 app.use('/api/admin', adminRoutes);
 app.use('/api/classrooms', classroomRoutes);
 app.use('/api/sessions', sessionRoutes);
@@ -175,8 +165,6 @@ app.use('/api/achievements', achievementsRoutes);
 app.use('/api/docs', apiDocsRoutes);
 app.use('/api/password-reset', passwordResetRoutes);
 app.use('/api/otp', otpRoutes);
-
-// Admin panel API routes are now handled by the adminRoutes router
 
 // Socket.IO for WebRTC signaling
 io.on('connection', (socket) => {
