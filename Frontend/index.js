@@ -1,12 +1,10 @@
-import express, { Request, Response, NextFunction, Application } from 'express';
-import cors from 'cors';
-import session from 'express-session';
-import path from 'path';
-import { createProxyMiddleware } from 'http-proxy-middleware';
-import { config } from 'dotenv';
-
+const express = require('express');
+const cors = require('cors');
+const session = require('express-session');
+const path = require('path');
+const { createProxyMiddleware } = require('http-proxy-middleware');
 const storeData = new session.MemoryStore();
-const PORT: string | number = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;
 
 // const that express routes
 const adminData = require('./Routes/admin.routes');
@@ -84,12 +82,12 @@ app.use('/dashboard', dashboardRoutes);
 app.use(mailServer);
 
 // Home page route with dashboard access link
-app.get('/', (req: Request, res: Response) => {
+app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'index.html'));
 });
 
 // 404 error : putting at last after all the request are check
-app.use(function (req: Request, res: Response, next: NextFunction) {
+app.use(function (req, res, next) {
     res.setHeader('Content-Type', 'text/html');
     res.status(404).sendFile(path.join(__dirname, 'views', '404.html'));
 });
@@ -99,4 +97,4 @@ app.listen(PORT, () => {
     console.log(`Frontend server running on port ${PORT}`);
 });
 
-export default app;
+module.exports = app;

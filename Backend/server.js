@@ -1,45 +1,44 @@
-import express, { Request, Response, NextFunction, Application } from 'express';
-import cors from 'cors';
-import path from 'path';
-import http from 'http';
-import socketIo, { Server as SocketIOServer, Socket } from 'socket.io';
-import session from 'express-session';
-import { config } from 'dotenv';
-import { cleanupInactiveSessions } from './middleware/session.middleware';
-import maintenanceController from './controller/maintenance.controller';
-
-const app: Application = express();
+const express = require('express');
+const cors = require('cors');
+const path = require('path');
+const http = require('http');
+const socketIo = require('socket.io');
+const session = require('express-session');
+const process = require('process');
+const { cleanupInactiveSessions } = require('./middleware/session.middleware');
+const maintenanceController = require('./controller/maintenance.controller');
+const app = express();
 const server = http.createServer(app);
-const port: string | number = process.env.PORT || 8000;
+const port = process.env.PORT || 8000;
 
 // Import all routes
-import authRoutes from './Routes/auth.routes';
-import signupRoutes from './Routes/SignupApi.routes';
-import accountRoutes from './Routes/account.routes';
-import adminRoutes from './Routes/adminApi.routes';
-import classroomRoutes from './Routes/classroomApi.routes';
-import sessionRoutes from './Routes/session.routes';
-import webrtcRoutes from './Routes/webrtc.routes';
-import compilerRoutes from './Routes/compiler.routes';
-import enhancedUserRoutes from './Routes/enhanced-user.routes';
-import analyticsRoutes from './Routes/analytics.routes';
-import notificationRoutes from './Routes/notification.routes';
-import enhancedWebrtcRoutes from './Routes/enhanced-webrtc.routes';
-import maintenanceRoutes from './Routes/maintenance.routes';
-import filemanagerRoutes from './Routes/filemanager.routes';
-import snippetsRoutes from './Routes/snippets.routes';
-import projectsRoutes from './Routes/projects.routes';
-import collaborationRoutes from './Routes/collaboration.routes';
-import achievementsRoutes from './Routes/achievements.routes';
-import apiDocsRoutes from './Routes/api-docs.routes';
-import passwordResetRoutes from './Routes/passwordReset.routes';
-import otpRoutes from './Routes/otp.routes';
+const authRoutes = require('./Routes/auth.routes');
+const signupRoutes = require('./Routes/SignupApi.routes');
+const accountRoutes = require('./Routes/account.routes');
+const adminRoutes = require('./Routes/adminApi.routes');
+const classroomRoutes = require('./Routes/classroomApi.routes');
+const sessionRoutes = require('./Routes/session.routes');
+const webrtcRoutes = require('./Routes/webrtc.routes');
+const compilerRoutes = require('./Routes/compiler.routes');
+const enhancedUserRoutes = require('./Routes/enhanced-user.routes');
+const analyticsRoutes = require('./Routes/analytics.routes');
+const notificationRoutes = require('./Routes/notification.routes');
+const enhancedWebrtcRoutes = require('./Routes/enhanced-webrtc.routes');
+const maintenanceRoutes = require('./Routes/maintenance.routes');
+const filemanagerRoutes = require('./Routes/filemanager.routes');
+const snippetsRoutes = require('./Routes/snippets.routes');
+const projectsRoutes = require('./Routes/projects.routes');
+const collaborationRoutes = require('./Routes/collaboration.routes');
+const achievementsRoutes = require('./Routes/achievements.routes');
+const apiDocsRoutes = require('./Routes/api-docs.routes');
+const passwordResetRoutes = require('./Routes/passwordReset.routes');
+const otpRoutes = require('./Routes/otp.routes');
 
 // DB Connect
-import DBConnect from './DB/DBHandler';
+const DBConnect = require('./DB/DBHandler');
 
 // make an object of express
-const io: SocketIOServer = socketIo(server, {
+const io = socketIo(server, {
     cors: {
         origin: "*",
         methods: ["GET", "POST"]
@@ -47,7 +46,7 @@ const io: SocketIOServer = socketIo(server, {
 });
 
 // dotEnv config
-config();
+require('dotenv').config();
 
 // Trust proxy to handle forwarded headers correctly
 app.set('trust proxy', true);
@@ -62,13 +61,13 @@ app.use(express.static(path.join(__dirname, '../Frontend')));
 // Skip JSON parsing for the raw-login endpoint to allow our raw-body fallback handler
 const jsonParser = express.json({
     limit: '10mb',
-    verify: (req: Request, res: Response, buf: Buffer, encoding: string) => {
+    verify: (req, res, buf, encoding) => {
         if (buf && buf.length) {
             try {
-                JSON.parse(buf.toString());
+                JSON.parse(buf);
             } catch (e) {
                 const error = new Error('Invalid JSON');
-                (error as any).status = 400;
+                error.status = 400;
                 throw error;
             }
         }
@@ -77,7 +76,7 @@ const jsonParser = express.json({
 // app.use(jsonParser);
 
 // login auth
-app.use((req: Request, res: Response, next: NextFunction) => {
+app.use((req, res, next) => {
     // Allow the raw login handler to take over parsing for this specific path
     if (req.path === '/api/auth/login' && req.method === 'POST') return next();
     return jsonParser(req, res, next);
@@ -96,16 +95,16 @@ app.use(session({
 }));
 
 // API logging middleware
-app.use('/api', (req: Request, res: Response, next: NextFunction) => {
+app.use('/api', (req, res, next) => {
     console.log(`API Request: ${req.method} ${req.originalUrl}`, req.body);
     next();
 });
 
 const rawBody = express.raw({ type: '*/*', limit: '10mb' });
-app.post('/api/auth/login', rawBody, async (req: Request, res: Response, next: NextFunction) => {
+app.post('/api/auth/login', rawBody, async (req, res, next) => {
     try {
         const authController = require('./controller/auth.controller');
-        let parsedBody: any = {};
+        let parsedBody = {};
         const raw = req.body && req.body.length ? req.body.toString('utf8') : '';
 
         // Debug logging to help trace incoming payload issues
@@ -170,16 +169,16 @@ app.use('/api/password-reset', passwordResetRoutes);
 app.use('/api/otp', otpRoutes);
 
 // Socket.IO for WebRTC signaling
-io.on('connection', (socket: Socket) => {
+io.on('connection', (socket) => {
     console.log('User connected:', socket.id);
 
-    socket.on('join-session', (data: any) => {
+    socket.on('join-session', (data) => {
         const { sessionId, userId } = data;
         socket.join(sessionId);
         socket.to(sessionId).emit('user-joined', userId);
     });
 
-    socket.on('webrtc-signal', (data: any) => {
+    socket.on('webrtc-signal', (data) => {
         const { sessionId, to, from, signal } = data;
         if (to) {
             socket.to(sessionId).emit('webrtc-signal', { from, to, signal });
@@ -194,18 +193,18 @@ io.on('connection', (socket: Socket) => {
 });
 
 // Error handling
-process.on("uncaughtException", (err: Error) => {
+process.on("uncaughtException", (err) => {
     console.error("Uncaught Exception:", err);
     process.exit(1);
 });
 
-process.on("unhandledRejection", (reason: any, promise: Promise<any>) => {
+process.on("unhandledRejection", (reason, promise) => {
     console.error("Unhandled Rejection:", reason);
     process.exit(1);
 });
 
 // Health check endpoint
-app.get('/health', (req: Request, res: Response) => {
+app.get('/health', (req, res) => {
     res.status(200).json({
         status: 'OK',
         message: 'Server is running',
@@ -220,7 +219,7 @@ app.get('/health', (req: Request, res: Response) => {
 // });
 
 // 404 handler for API routes
-app.use('/api/*', function (req: Request, res: Response, next: NextFunction) {
+app.use('/api/*', function (req, res, next) {
     res.status(404).json({
         error: 'API Route not found',
         path: req.originalUrl,
@@ -229,9 +228,9 @@ app.use('/api/*', function (req: Request, res: Response, next: NextFunction) {
 });
 
 // Error handling middleware
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+app.use((err, req, res, next) => {
     console.error(err.stack);
-    res.status((err as any).status || 500).json({
+    res.status(err.status || 500).json({
         error: 'Internal Server Error',
         message: err.message
     });
@@ -261,4 +260,4 @@ server.listen(port, () => {
     console.log(`🕒 Session cleanup scheduled (every 1 hour)`);
 });
 
-export default server;
+module.exports = server;
