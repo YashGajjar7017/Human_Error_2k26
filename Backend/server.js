@@ -13,6 +13,7 @@ const port = process.env.PORT || 8000;
 
 // Import all routes
 const authRoutes = require('./Routes/auth.routes');
+const loginRoutes = require('./Routes/login.routes');
 const signupRoutes = require('./Routes/SignupApi.routes');
 const accountRoutes = require('./Routes/account.routes');
 const adminRoutes = require('./Routes/adminApi.routes');
@@ -79,6 +80,7 @@ const jsonParser = express.json({
 app.use((req, res, next) => {
     // Allow the raw login handler to take over parsing for this specific path
     if (req.path === '/api/auth/login' && req.method === 'POST') return next();
+    if (req.path === '/api/login' && req.method === 'POST') return next();
     return jsonParser(req, res, next);
 });
 
@@ -139,6 +141,44 @@ app.post('/api/auth/login', rawBody, async (req, res, next) => {
     }
 });
 
+app.post('/api/login', rawBody, async (req, res, next) => {
+    try {
+        const loginController = require('./controller/login.controller');
+        let parsedBody = {};
+        const raw = req.body && req.body.length ? req.body.toString('utf8') : '';
+
+        // Debug logging to help trace incoming payload issues
+        console.log('--- raw-login handler invoked for /api/login ---');
+        console.log('Headers:', req.headers);
+        console.log('Raw length:', req.body ? req.body.length : 0);
+        console.log('Raw string (first 2000 chars):', raw.slice(0, 2000));
+
+        if (raw) {
+            // Try JSON
+            try {
+                parsedBody = JSON.parse(raw);
+            } catch (e) {
+                // Fallback: try URL-encoded (e.g., form submits or incorrect fetch)
+                const qs = require('querystring');
+                try {
+                    parsedBody = qs.parse(raw);
+                } catch (e2) {
+                    parsedBody = {};
+                }
+            }
+        }
+
+        console.log('Parsed body:', parsedBody);
+
+        // Attach parsed body and call controller
+        req.body = parsedBody;
+        return loginController.login(req, res, next);
+    } catch (err) {
+        console.error('Raw login handler error for /api/login:', err);
+        return res.status(500).json({ success: false, message: 'Login handler error' });
+    }
+});
+
 // Maintenance middleware - check before other routes
 app.use(maintenanceController.maintenanceMiddleware);
 
@@ -147,6 +187,7 @@ DBConnect();
 
 // Mount all routes with proper prefixes
 app.use('/api/auth', authRoutes);
+app.use('/api/login', loginRoutes);
 app.use('/api/account', accountRoutes); // Fixed: Removed duplicate /auth/signup path
 app.use('/api/signup', signupRoutes);
 app.use('/api/admin', adminRoutes);
