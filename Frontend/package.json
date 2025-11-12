@@ -51,6 +51,7 @@
   },
   "devDependencies": {
     "import-path": "^1.0.15",
-    "nodemon": "^3.1.9"
+    "nodemon": "^3.1.9",
+    "purgecss": "^7.0.2"
   }
 }

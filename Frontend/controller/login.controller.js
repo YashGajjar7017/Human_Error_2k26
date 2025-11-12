@@ -34,7 +34,7 @@ async function saveTokenToDB(token, userId = null, sessionId = null, purpose = '
 
         // Add timeout to prevent hanging
         const timeoutPromise = new Promise((_, reject) => {
-            setTimeout(() => reject(new Error('Token save timeout')), 5000); // 5 second timeout
+            setTimeout(() => reject(new Error('Token save timeout')), 10000); // 10 second timeout
         });
 
         const newToken = await Promise.race([savePromise, timeoutPromise]);

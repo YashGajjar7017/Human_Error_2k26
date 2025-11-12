@@ -365,10 +365,16 @@
 
         // Load user data on page load
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize common dashboard features
+            initializeDashboard();
+            
+            // Then load user-specific data
             fetchUserData();
             checkAdminStatus();
         });
     </script>
+    <!-- Dashboard Helper Script -->
+    <script src="/JS/dashboard-helper.js"></script>
 </body>
 
 </html>

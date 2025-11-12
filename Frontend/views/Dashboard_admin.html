@@ -821,9 +821,15 @@
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize common dashboard features
+            initializeDashboard();
+            
+            // Then load admin-specific data
             refreshDashboard();
             loadAnalytics();
         });
     </script>
+    <!-- Dashboard Helper Script -->
+    <script src="/JS/dashboard-helper.js"></script>
 </body>
 </html>

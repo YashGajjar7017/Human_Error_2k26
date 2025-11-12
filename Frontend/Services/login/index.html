@@ -123,8 +123,24 @@
 				// Store user data
 				localStorage.setItem('token', data.token);
 				localStorage.setItem('user', JSON.stringify(data.user));
+				localStorage.setItem('role', data.user.role);
 				sessionStorage.setItem('nameToken', username);
-				document.cookie = `username=${username}; path=/`;
+				
+				// Set cookies with proper expiration
+				const expirationDate = new Date();
+				expirationDate.setTime(expirationDate.getTime() + (24 * 60 * 60 * 1000)); // 24 hours
+				const expires = "expires=" + expirationDate.toUTCString();
+				
+				document.cookie = `username=${username}; ${expires}; path=/`;
+				document.cookie = `role=${data.user.role}; ${expires}; path=/`;
+				
+				console.log('Login successful!');
+				console.log('Cookies set - username:', username, 'role:', data.user.role);
+				console.log('LocalStorage:', {
+					token: data.token,
+					user: data.user,
+					role: data.user.role
+				});
 
 				// Redirect to home page
 				console.log('Login successful, redirecting...');

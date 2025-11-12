@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const router = express.Router();
 
 // Middleware to check if user is authenticated
@@ -9,29 +10,43 @@ const requireAuth = (req, res, next) => {
     next();
 };
 
-// Dashboard home page
+// Common Dashboard route - routes to admin or user dashboard based on role
 router.get('/', requireAuth, (req, res) => {
-    res.sendFile(require('path').join(__dirname, '../views/dashboard.html'));
+    try {
+        const userRole = req.session.user?.role || 'user';
+        console.log(`Dashboard request for user: ${req.session.user?.username}, Role: ${userRole}`);
+        
+        if (userRole === 'admin') {
+            console.log('Serving admin dashboard');
+            res.sendFile(path.join(__dirname, '../views/Dashboard_admin.html'));
+        } else {
+            console.log('Serving user dashboard');
+            res.sendFile(path.join(__dirname, '../views/Dashboard_User.html'));
+        }
+    } catch (error) {
+        console.error('Dashboard route error:', error);
+        res.status(500).json({ error: 'Failed to load dashboard' });
+    }
 });
 
 // Analytics dashboard
 router.get('/analytics', requireAuth, (req, res) => {
-    res.sendFile(require('path').join(__dirname, '../views/analytics.html'));
+    res.sendFile(path.join(__dirname, '../views/analytics.html'));
 });
 
 // Achievements page
 router.get('/achievements', requireAuth, (req, res) => {
-    res.sendFile(require('path').join(__dirname, '../views/achievements.html'));
+    res.sendFile(path.join(__dirname, '../views/achievements.html'));
 });
 
 // Collaboration page
 router.get('/collaboration', requireAuth, (req, res) => {
-    res.sendFile(require('path').join(__dirname, '../views/collaboration.html'));
+    res.sendFile(path.join(__dirname, '../views/collaboration.html'));
 });
 
 // API documentation page
 router.get('/api-docs', requireAuth, (req, res) => {
-    res.sendFile(require('path').join(__dirname, '../views/api-docs.html'));
+    res.sendFile(path.join(__dirname, '../views/api-docs.html'));
 });
 
 // API proxy routes for dashboard features

@@ -9,10 +9,12 @@
     <title>Home | Yash's Machine</title>
 
     <!-- ================= Css =============== -->
-    <!-- <link rel='stylesheet' href='../css/boxicons/boxicons.min.css'> -->
+    <!-- <link rel='stylesheet' href='\CSS\boxicons\boxicons.min.css'> -->
     <link rel='stylesheet' href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css'>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="/CSS/navbar-glassy.css">
+    <link rel="stylesheet" href="/CSS/sidenav-glassy.css">
 
     <!-- ================= Js =============== -->
     <script src="js/Jquery/jquery.js"></script>
@@ -24,77 +26,94 @@
 
 <body>
     <div id="main">
-        <!-- navbar -->
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary p-2 rounded mt-1 mx-1" style="width: 99vw;">
+        <!-- Glassy Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-glassy fixed-top">
             <div class="container-fluid">
-                <a class="navbar-brand" href="#">Human Error</a>
+                <!-- Brand -->
+                <a class="navbar-brand" href="/">🖥️ Human Error</a>
+
+                <!-- Toggler Button for Mobile -->
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                     aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
+
+                <!-- Navbar Menu -->
                 <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
                     <ul class="navbar-nav">
-                        <li class="nav-item"><a href="#" class="run nav-link text-danger" onclick="run()">Run</a></li>
-                        <li class="nav-item"><a href="" class="nav-link text-info">Debug</a></li>
-                        <li class="nav-item"><a href="#" class="nav-link text-success" onclick="stop()">Stop</a></li>
-                        <li class="nav-item"><a href="#" class="nav-link text-warning" onclick="downloadFile()" id="download">Save</a></li>
-                        <li class="nav-item"><a class="nav-link text-warning" href="javascript:void(0);" onclick="printPageArea('source')">Print</a></li>
-                        <li class="nav-item"><a href="/upload/fileName=" class="nav-link text-white" id="inputfile">Upload</a></li>
-                        <li class="nav-item"><a href="#" onclick="openNav3()" class="nav-link text-white">Share</a></li>
-                        <li class="nav-item"><a href="/Account/Dashboard" class="nav-link text-primary">Dashboard</a></li>
-                        <li class="nav-item" id="admin-link" style="display: none;"><a href="/admin-panel" class="nav-link text-danger">Admin</a></li>
-                        <li class="nav-item"><a class="nav-link text-white" href="#"></a></li>
+                        <li class="nav-item"><a href="#" class="nav-link text-danger" onclick="run()" title="Execute Code"><i class='bx bxs-play-circle'></i> Run</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link text-info" title="Debug Code"><i class='bx bxs-bug'></i> Debug</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link text-success" onclick="stop()" title="Stop Execution"><i class='bx bxs-stop-circle'></i> Stop</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link text-warning" onclick="downloadFile()" id="download" title="Save Code"><i class='bx bxs-download'></i> Save</a></li>
+                        <li class="nav-item"><a class="nav-link text-warning" href="javascript:void(0);" onclick="printPageArea('source')" title="Print"><i class='bx bxs-printer'></i> Print</a></li>
+                        <li class="nav-item"><a href="/upload/fileName=" class="nav-link text-white" id="inputfile" title="Upload File"><i class='bx bxs-upload'></i> Upload</a></li>
+                        <li class="nav-item"><a href="#" onclick="openNav3()" class="nav-link text-white" title="Share Code"><i class='bx bxs-share-alt'></i> Share</a></li>
+                        
+                        <!-- Dashboard Button - SINGLE BUTTON FOR BOTH ROLES -->
+                        <li class="nav-item" id="dashboard-link" style="display: none;"><a href="/Account/Dashboard" class="nav-link" title="Go to Dashboard"><i class='bx bxs-dashboard'></i> Dashboard</a></li>
+                        
+                        <!-- Admin Panel Link - Only for Admin -->
+                        <li class="nav-item" id="admin-link" style="display: none;"><a href="/admin-panel" class="nav-link text-danger" title="Admin Panel"><i class='bx bxs-shield-alt-2'></i> Admin</a></li>
+                    </ul>
                 </div>
-                <div class="d-flex align-items-center ms-auto">
-                    <div class="darkLight-searchBox d-flex me-2">
-                        <div class="dark-light me-1">
-                            <i class='bx bx-moon moon'></i>
-                            <i class='bx bx-sun sun'></i>
-                        </div>
-                        <div class="searchToggle">
-                            <i class='bx bx-x cancel' onclick="closeNav()"></i>
-                            <i class='bx bx-search search' onclick="openNav()"></i>
-                        </div>
-                    </div>
-                    <div id="Languages" class="me-2">
-                        <select id="lang" class="form-select" onclick="LangSelector()">
-                            <option value="select" selected>--select--</option>
+
+                <!-- Right Section: Language, Theme, User -->
+                <div class="d-flex align-items-center ms-auto gap-3">
+                    <!-- Language Selector -->
+                    <div id="Languages">
+                        <select id="lang" class="form-select" onclick="LangSelector()" title="Select Programming Language">
+                            <option value="select" selected>🌐 Language</option>
                             <option value="C">C</option>
                             <option value="C++">C++</option>
                             <option value="Python">Python</option>
                             <option value="Java">Java</option>
-                            <option value="Html">Html, css, js</option>
+                            <option value="Html">HTML, CSS, JS</option>
                             <option value="Text">Text File</option>
                             <option value="VB">VB.Net*</option>
                             <option value="Node">NodeJS*</option>
                             <option value="Applet">Applet*</option>
                             <option value="Hacking">Kali Linux</option>
                             <option value="Encrypt">Encrypt Msg</option>
-                            <option value="Encrypt">Quantum #</option>
                         </select>
                     </div>
-                    <div class="user d-flex align-items-center border border-white rounded p-1 bg-light sexy-login" id="user" style="cursor: pointer;">
-                        <img src="images/User_icon.png" alt="User" class="me-1" style="height: 40px; width: 40px;">
-                        <span class="text-light fw-bold" id="username" style="width: 5vw; text-align: center;"></span>
+
+                    <!-- Dark/Light Mode & Search -->
+                    <div class="darkLight-searchBox d-flex align-items-center gap-2">
+                        <div class="dark-light" title="Toggle Dark/Light Mode">
+                            <i class='bx bx-moon moon'></i>
+                            <i class='bx bx-sun sun'></i>
+                        </div>
+                        <div class="searchToggle" title="Search Code">
+                            <i class='bx bx-x cancel' onclick="closeNav()" style="display: none;"></i>
+                            <i class='bx bx-search search' onclick="openNav()"></i>
+                        </div>
+                    </div>
+
+                    <!-- User Profile -->
+                    <div class="user d-flex align-items-center sexy-login" id="user" style="cursor: pointer;" title="User Menu" >
+                        <img src="images/User_icon.png" alt="User" class="me-2" style="height: 20px;width: 20px;">
+                        <span id="username">Login</span>
                     </div>
                 </div>
             </div>
-    </div>
-    </nav>
-    <!-- navbar ended -->
+        </nav>
+        <!-- Navbar ended -->
+
+        <!-- Main Content -->
+        <div style="margin-top: 60px;">
 
     <!-------------- sidenav1--------- -->
-    <div id="mySidenav" class="sidenav" style="font-size: 17px;">
+    <div id="mySidenav" class="sidenav sidenav-glassy" style="font-size: 17px;">
         <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
         <a href="/SearchCode" onclick="window.prompt('enter the word you want to search')"><input type="search"
-                name="searchcode" class="search1" placeholder="search code"></a>
+                name="searchcode" class="search1-glassy" placeholder="search code"></a>
         <!-- <hr style="color: white;">
             <a href="#">AI search</a>
             <hr style="color: white;"> -->
 
         <!-- <a href="/other-pages/contactUs.html">Contact us</a> -->
         <!-- <a href="#" title="admin only">Maintenance</a> -->
-        <p id="fontcont">Font Size: <select name="" id="fontsize">
+        <p id="fontcont-glassy">Font Size: <select name="" id="fontsize">
                 <option value="12">12</option>
                 <option value="14">14</option>
                 <option value="16">16</option>
@@ -102,9 +121,9 @@
                 <option value="20">20</option>
                 <option value="22">22</option>
             </select></p>
-        <p class="colorPicker">Background : <input type="color" name="" class="colors" id="color1"></p>
-        <p class="colorPicker">FontColor : <input type="color" name="" class="colors" id="color2"></p>
-        <input type="submit" class="defaultcolors" id="defaultcolors" value="default Theme">
+        <p class="colorPicker-glassy">Background : <input type="color" name="" class="colors" id="color1"></p>
+        <p class="colorPicker-glassy">FontColor : <input type="color" name="" class="colors" id="color2"></p>
+        <input type="submit" class="defaultcolors-glassy" id="defaultcolors" value="default Theme">
         <hr style="color: #fff;">
         <a href="../extension">→ Extension</a>
         <a href="../games/games.html">→ Games</a>
@@ -114,7 +133,7 @@
     </div>
 
     <!-------- Sidebar2-------- -->
-    <div id="mySidenav2" class="sidenav sidebarOpen" style="font-size: 17px;">
+    <div id="mySidenav2" class="sidenav sidenav-glassy sidebarOpen" style="font-size: 17px;">
         <a href="javascript:void(0)" class="closebtn" onclick="closeNav1()">&times;</a>
         <!-- <a href="#"><input type="search" name="searchcode" class="search1" placeholder="search code"></a> -->
         <!-- <hr style="color: white;">
@@ -130,17 +149,16 @@
         <a href="/questions" title="admin only">Ask your question</a>
         <a href="/404" title="admin only">Hire a Developer</a>
         <hr style="color: #fff;">
-        <a href="javascript:void(0);" onclick="logout()" id="logout" style="border:1px solid black; width: 70%;margin-left: 10%;
-            background-color: #fff;border-radius: 3px;color: black;padding-left: 4vw;">Logout</a>
+        <a href="javascript:void(0);" onclick="logout()" id="logout" class="logout-btn-glassy">Logout</a>
 
         <a style="font-size: 13px;float: center;margin-top: 1vh;">Copyright to Yash Production</a>
 
     </div>
     <!-- sidenav2 ended -->
     <!-- sidenav4 -->
-    <div id="mySidenav4" class="sidenav" style="font-size: 17px;">
+    <div id="mySidenav4" class="sidenav sidenav-glassy" style="font-size: 17px;">
         <a href="javascript:void(0)" class="closebtn" onclick="closeNav3()">&times;</a><br>
-        <input type="text" id="" style="margin-left: 2%; width: 95%;" placeholder="Paste Link">
+        <input type="text" id="" style="margin-left: 2%; width: 95%;" placeholder="Paste Link" class="search1-glassy">
         <a href="/join"><button
                 style="background-image: linear-gradient(120deg, #f093fb 0%, #f5576c 100%); color: white;padding: 5px;">Join
                 Session</button></a>
@@ -300,6 +318,8 @@ void main()
 
     <script type="text/javascript" async>
         $(document).ready(function () {
+            console.log('=== Dashboard Check Script Started ===');
+            
             // don't change : .user,#logout
             $('#htmlEditor,#htmlTextarea,#htmlTextarea1,#lineCounter1,.kali,#selectedFile,.futureWork,.encrypt').hide();
 
@@ -337,6 +357,7 @@ void main()
             window.logout = function() {
                 deleteCookie('username');
                 deleteCookie('token');
+                deleteCookie('role');
                 // Send to backend to destroy session
                 fetch('/api/auth/logout', {
                     method: 'POST',
@@ -352,6 +373,11 @@ void main()
             let username = getCookie('username');
             let userData = sessionStorage.getItem('nameToken');
 
+            console.log('Retrieved username:', username);
+            console.log('All cookies:', document.cookie);
+            console.log('LocalStorage user:', localStorage.getItem('user'));
+            console.log('LocalStorage role:', localStorage.getItem('role'));
+
             // userData += username.innerHTML;
 
             // login logic
@@ -363,6 +389,11 @@ void main()
                     // Redirect to login page
                     window.location.href = '/Account/login';
                 };
+                // Hide dashboard button if not logged in
+                if (document.getElementById('dashboard-link')) {
+                    document.getElementById('dashboard-link').style.display = 'none';
+                }
+                console.log('User not logged in - showing login button');
             } else {
                 $('.user').show();
                 $('#logout').show();
@@ -370,17 +401,37 @@ void main()
                 document.getElementById('user').onclick = openNav1;
 
                 // Check user role and show/hide admin features
-                let userRole = getCookie('role');
+                // Try to get role from cookie first, then from localStorage
+                let userRole = getCookie('role') || localStorage.getItem('role');
+                console.log('=== DASHBOARD LOGIC ===');
+                console.log('User:', username);
+                console.log('Role from cookie:', getCookie('role'));
+                console.log('Role from localStorage:', localStorage.getItem('role'));
+                console.log('Final role:', userRole);
+                console.log('Raw cookies:', document.cookie);
+                
+                // Show dashboard button for all authenticated users
+                if (document.getElementById('dashboard-link')) {
+                    document.getElementById('dashboard-link').style.display = 'block';
+                    console.log('Dashboard button shown for user');
+                }
+                
                 if (userRole === 'admin') {
+                    console.log('User is ADMIN');
                     // Show admin-only links
                     document.querySelectorAll('[title="admin only"]').forEach(el => el.style.display = 'block');
                     // Show admin link in navbar
-                    document.getElementById('admin-link').style.display = 'block';
+                    if (document.getElementById('admin-link')) {
+                        document.getElementById('admin-link').style.display = 'block';
+                    }
                 } else {
+                    console.log('User is REGULAR USER');
                     // Hide admin-only links
                     document.querySelectorAll('[title="admin only"]').forEach(el => el.style.display = 'none');
                     // Hide admin link in navbar
-                    document.getElementById('admin-link').style.display = 'none';
+                    if (document.getElementById('admin-link')) {
+                        document.getElementById('admin-link').style.display = 'none';
+                    }
                 }
             }
 
