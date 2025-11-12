@@ -34,6 +34,15 @@
                         Sign UP
                     </span>
 
+                    <div id="failedLoginAlert" style="display:none; margin-bottom: 20px;">
+                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                            <strong>Login Failed!</strong> We couldn't find your account. Please sign up with this email to verify your identity and proceed.
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    </div>
+
                     <div class="wrap-input100 validate-input" data-validate="Enter username">
                         <input class="input100" type="text" name="username" placeholder="Username" id="username">
                         <span class="focus-input100" data-placeholder="&#xf207;"></span>
@@ -89,6 +98,22 @@
     <!-- <script src="/js/main.js"></script> -->
 
     <script>
+        // Get URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const emailParam = urlParams.get('email');
+        const failedLogin = urlParams.get('failedLogin');
+
+        // If coming from failed login, pre-fill email and show alert
+        if (emailParam) {
+            document.getElementById('email').value = decodeURIComponent(emailParam);
+        }
+
+        if (failedLogin === 'true') {
+            document.getElementById('failedLoginAlert').style.display = 'block';
+            // Optionally auto-focus on username field
+            document.getElementById('username').focus();
+        }
+
         document.getElementById('signupForm').addEventListener('submit', async function (e) {
             e.preventDefault();
 
@@ -108,7 +133,7 @@
             }
 
             try {
-                const response = await fetch('/api/signup/Account/Signup', {
+                const response = await fetch('/Account/Signup', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -124,9 +149,10 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    alert('Registration successful! Please check your email for verification.');
-                    // Redirect to login page
-                    window.location.href = '/other/login/index.html';
+                    alert('Registration successful! Please check your email for OTP verification.');
+                    // Redirect to OTP page
+                    console.log('Redirecting to OTP page:', data.redirectUrl);
+                    window.location.href = data.redirectUrl || '/Account/sendOTP';
                 } else {
                     alert(data.error || 'Registration failed');
                 }

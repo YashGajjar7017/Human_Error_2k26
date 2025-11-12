@@ -36,15 +36,22 @@ exports.SignUpToken = (req, res) => {
 exports.signUp = (req, res) => {
     try {
         const { SignUpToken } = req.params;
+        const { email, failedLogin } = req.query; // Get email and failedLogin flag from query
+        
         console.log('Received signup token:', SignUpToken);
+        console.log('Email from query:', email);
+        console.log('Failed login redirect:', failedLogin);
         
         if (SignUpToken && SignUpToken.length === 15) {
             const filePath = path.join(rootDir, 'views', 'Signup.html');
             console.log('Serving signup page from:', filePath);
-            res.sendFile(filePath);
+            // Pass email and failedLogin flag to the HTML page via query parameters
+            return res.sendFile(filePath);
         } else {
-            console.log('Invalid signup token length:', SignUpToken?.length);
-            res.status(401).json({ error: "Invalid signup token" });
+            // If no token in path, generate one and redirect
+            const token = generateToken(15);
+            console.log('Generated new signup token:', token);
+            return res.redirect(`/Account/Signup/${token}?email=${encodeURIComponent(email || '')}&failedLogin=${failedLogin || false}`);
         }
     } catch (error) {
         console.error('Error serving signup page:', error);

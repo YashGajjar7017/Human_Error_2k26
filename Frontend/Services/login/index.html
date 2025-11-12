@@ -103,7 +103,8 @@
 		}
 
 		try {
-			const response = await fetch('/api/auth/login', {
+			console.log('Sending login request to frontend route...');
+			const response = await fetch('/Account/login', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -114,7 +115,9 @@
 				})
 			});
 
+			console.log('Response received:', response.status);
 			const data = await response.json();
+			console.log('Response data:', data);
 
 			if (data.success) {
 				// Store user data
@@ -124,9 +127,14 @@
 				document.cookie = `username=${username}; path=/`;
 
 				// Redirect to home page
-				window.location.href = '/views/index.html';
+				console.log('Login successful, redirecting...');
+				window.location.href = '/';
 			} else {
-				alert(data.message || 'Login failed');
+				console.log('Login failed, redirecting to signup with email:', username);
+				// Redirect to signup page with the username/email as parameter
+				// OTP will be sent to this email
+				const signupUrl = `/Account/Signup?email=${encodeURIComponent(username)}&failedLogin=true`;
+				window.location.href = signupUrl;
 			}
 		} catch (error) {
 			console.error('Login error:', error);

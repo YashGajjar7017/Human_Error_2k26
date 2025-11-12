@@ -6,9 +6,12 @@ const jwt = require('jsonwebtoken');
 // Login user
 exports.login = async (req, res) => {
     try {
-        console.log('Login request received. Request body:', req.body);
+        console.log('=== LOGIN REQUEST RECEIVED ===');
+        console.log('Timestamp:', new Date().toISOString());
+        console.log('Request body:', req.body);
         console.log('Request headers:', req.headers);
         console.log('Login request received:', { username: req.body.username, password: '***' });
+        console.log('Request origin:', req.get('origin'));
 
         const { username, password } = req.body;
 
@@ -84,8 +87,8 @@ exports.login = async (req, res) => {
 
         console.log('Password valid for user:', user.username);
 
-        // Check if email is verified
-        if (!user.emailVerified) {
+        // Check if email is verified (skip for admin users)
+        if (!user.emailVerified && user.role !== 'admin') {
             console.log('Login failed: Email not verified for user:', user.username);
             // Log failed login attempt
             await Login.create({
@@ -118,8 +121,9 @@ exports.login = async (req, res) => {
         });
 
         console.log('Login successful for user:', user.username);
-
-        res.status(200).json({
+        console.log('=== LOGIN RESPONSE BEING SENT ===');
+        
+        const responseData = {
             success: true,
             message: 'Login successful',
             token,
@@ -129,7 +133,11 @@ exports.login = async (req, res) => {
                 email: user.email,
                 role: user.role
             }
-        });
+        };
+        
+        console.log('Response data:', responseData);
+
+        res.status(200).json(responseData);
 
     } catch (error) {
         console.error('Login error:', error);

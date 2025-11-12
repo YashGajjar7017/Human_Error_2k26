@@ -24,7 +24,7 @@ const loginSchema = new mongoose.Schema({
     },
     failureReason: {
         type: String,
-        enum: ['invalid_credentials', 'account_locked', 'otp_required', 'other'],
+        enum: ['invalid_credentials', 'account_locked', 'otp_required', 'email_not_verified', 'other'],
         default: null
     },
     location: {

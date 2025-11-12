@@ -4,8 +4,9 @@ const rootDir = require('../util/path');
 const axios = require('axios');
 const session = require('express-session');
 
-// API configuration - using relative paths to go through proxy
-const API_BASE_URL = '/api';
+// API configuration - use absolute URL for server-side axios requests
+const API_BASE_URL = 'http://localhost:8000/api';
+const BACKEND_PORT = process.env.BACKEND_PORT || 8000;
 
 // token class
 function AlphaNumericGenerator(length) {
@@ -55,10 +56,20 @@ async function FetchData(endpoint, data, headers = {}) {
                 ...headers
             }
         };
-        const response = await axios.post(`${API_BASE_URL}/${endpoint}`, data, config);
+        const url = `${API_BASE_URL}/${endpoint}`;
+        console.log(`FetchData: Making request to ${url}`);
+        console.log(`FetchData: Request data:`, data);
+        
+        const response = await axios.post(url, data, config);
+        
+        console.log(`FetchData: Response status:`, response.status);
+        console.log(`FetchData: Response data:`, response.data);
+        
         return response.data;
     } catch (error) {
-        console.error("API Error:", error.response?.data || error.message);
+        console.error("API Error - Status:", error.response?.status);
+        console.error("API Error - Data:", error.response?.data);
+        console.error("API Error - Message:", error.message);
         throw error;
     }
 }
@@ -96,7 +107,12 @@ exports.Getlogin = async (req, res, next) => {
 exports.Postlogin = async (req, res) => {
     const { username, password } = req.body;
 
+    console.log('=== FRONTEND LOGIN REQUEST ===');
+    console.log('Username:', username);
+    console.log('Timestamp:', new Date().toISOString());
+
     if (!username || !password) {
+        console.log('Missing username or password');
         return res.status(400).json({
             success: false,
             message: 'Username and password are required'
@@ -104,8 +120,11 @@ exports.Postlogin = async (req, res) => {
     }
 
     try {
+        console.log('Calling backend API for authentication...');
         // Call backend login API
-        const response = await FetchData('auth/login', { username, password });
+        const response = await FetchData('login', { username, password });
+        
+        console.log('Backend response received:', response);
 
         if (response.success) {
             // Set session data
@@ -117,6 +136,8 @@ exports.Postlogin = async (req, res) => {
                 role: response.user.role,
                 token: response.token
             };
+
+            console.log('Session set for user:', username);
 
             // Save auth token to MongoDB (with timeout handling)
             try {
@@ -132,20 +153,26 @@ exports.Postlogin = async (req, res) => {
                 maxAge: 24 * 60 * 60 * 1000 // 24 hours
             });
 
-            res.json({
+            const responseData = {
                 success: true,
                 message: 'Login successful',
                 user: req.session.user,
                 token: response.token
-            });
+            };
+            
+            console.log('=== SENDING LOGIN RESPONSE ===');
+            console.log('Response:', responseData);
+            res.json(responseData);
         } else {
+            console.log('Backend authentication failed:', response.message);
             res.status(401).json({
                 success: false,
                 message: response.message || 'Login failed'
             });
         }
     } catch (error) {
-        console.error('Login error:', error);
+        console.error('Login error:', error.message);
+        console.error('Error stack:', error.stack);
         res.status(500).json({
             success: false,
             message: 'Login failed. Please try again.'
