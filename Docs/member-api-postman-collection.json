@@ -1,0 +1,465 @@
+{
+  "info": {
+    "name": "Member API - HumanError",
+    "description": "Complete Member Management API for HumanError platform",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Members - GET",
+      "item": [
+        {
+          "name": "Get All Members",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/members?page=1&limit=20",
+              "host": ["{{baseUrl}}", "api", "members"],
+              "query": [
+                {"key": "page", "value": "1"},
+                {"key": "limit", "value": "20"},
+                {"key": "role", "value": "user", "disabled": true},
+                {"key": "status", "value": "active", "disabled": true},
+                {"key": "search", "value": "", "disabled": true}
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Members Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/members/stats",
+              "host": ["{{baseUrl}}", "api", "members", "stats"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Member by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/members/{{memberId}}",
+              "host": ["{{baseUrl}}", "api", "members", "{{memberId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Member Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/members/{{memberId}}/profile",
+              "host": ["{{baseUrl}}", "api", "members", "{{memberId}}", "profile"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Member Activity",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/members/{{memberId}}/activity?page=1&limit=20",
+              "host": ["{{baseUrl}}", "api", "members", "{{memberId}}", "activity"],
+              "query": [
+                {"key": "page", "value": "1"},
+                {"key": "limit", "value": "20"}
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Member Projects",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/members/{{memberId}}/projects?page=1&limit=10",
+              "host": ["{{baseUrl}}", "api", "members", "{{memberId}}", "projects"],
+              "query": [
+                {"key": "page", "value": "1"},
+                {"key": "limit", "value": "10"}
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Member Compilations",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/members/{{memberId}}/compilations?page=1&limit=10",
+              "host": ["{{baseUrl}}", "api", "members", "{{memberId}}", "compilations"],
+              "query": [
+                {"key": "page", "value": "1"},
+                {"key": "limit", "value": "10"}
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Search Members",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/members/search/john?limit=10",
+              "host": ["{{baseUrl}}", "api", "members", "search", "john"],
+              "query": [
+                {"key": "limit", "value": "10"}
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Members - POST",
+      "item": [
+        {
+          "name": "Create New Member",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"jane_doe\",\n  \"email\": \"jane@example.com\",\n  \"password\": \"SecurePass123\",\n  \"fullName\": \"Jane Doe\",\n  \"role\": \"user\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/members",
+              "host": ["{{baseUrl}}", "api", "members"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Upgrade Member Plan",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"plan\": \"pro\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/members/{{memberId}}/upgrade",
+              "host": ["{{baseUrl}}", "api", "members", "{{memberId}}", "upgrade"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Downgrade Member Plan",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"plan\": \"free\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/members/{{memberId}}/downgrade",
+              "host": ["{{baseUrl}}", "api", "members", "{{memberId}}", "downgrade"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Suspend Member",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Violation of terms of service\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/members/{{memberId}}/suspend",
+              "host": ["{{baseUrl}}", "api", "members", "{{memberId}}", "suspend"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Activate Member",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/members/{{memberId}}/activate",
+              "host": ["{{baseUrl}}", "api", "members", "{{memberId}}", "activate"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Members - PATCH/PUT",
+      "item": [
+        {
+          "name": "Update Member (Partial)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"John Smith\",\n  \"bio\": \"Updated bio\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/members/{{memberId}}",
+              "host": ["{{baseUrl}}", "api", "members", "{{memberId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Member Profile (Full)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"John Doe\",\n  \"bio\": \"Software developer\",\n  \"avatar\": \"https://example.com/avatar.jpg\",\n  \"socialLinks\": {\n    \"github\": \"https://github.com/johndoe\",\n    \"twitter\": \"https://twitter.com/johndoe\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/members/{{memberId}}/profile",
+              "host": ["{{baseUrl}}", "api", "members", "{{memberId}}", "profile"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Member Settings",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"notifications\": {\n    \"email\": true,\n    \"push\": false\n  },\n  \"privacy\": {\n    \"profileVisibility\": \"public\"\n  },\n  \"theme\": \"dark\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/members/{{memberId}}/settings",
+              "host": ["{{baseUrl}}", "api", "members", "{{memberId}}", "settings"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Members - DELETE",
+      "item": [
+        {
+          "name": "Delete Member",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/members/{{memberId}}",
+              "host": ["{{baseUrl}}", "api", "members", "{{memberId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete All Member Data",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/members/{{memberId}}/data",
+              "host": ["{{baseUrl}}", "api", "members", "{{memberId}}", "data"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "your_jwt_token_here",
+      "type": "string"
+    },
+    {
+      "key": "memberId",
+      "value": "507f1f77bcf86cd799439011",
+      "type": "string"
+    }
+  ]
+}

@@ -22,6 +22,7 @@ const filesRoutes = require('./Routes/files.routes');
 const snippetsRoutes = require('./Routes/snippets.routes');
 const projectsRoutes = require('./Routes/projects.routes');
 const dashboardRoutes = require('./Routes/dashboard.routes');
+const memberRoutes = require('./Routes/Member.routes');
 
 // make an object of express
 const app = express();
@@ -79,11 +80,17 @@ app.use('/files', filesRoutes);
 app.use('/snippets', snippetsRoutes);
 app.use('/projects', projectsRoutes);
 app.use('/dashboard', dashboardRoutes);
+app.use('/members', memberRoutes);
 app.use(mailServer);
 
 // Home page route with dashboard access link
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'index.html'));
+});
+
+// Membership page route
+app.get('/membership', (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'membership.html'));
 });
 
 // 404 error : putting at last after all the request are check

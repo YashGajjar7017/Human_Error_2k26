@@ -29,7 +29,7 @@ class AdminController {
                 systemHealth: 'healthy'
             };
 
-            res.render(path.join(rootDir, 'views', 'admin', 'dashboard.html'), {
+            res.render(path.join(rootDir, 'views', 'admin', 'Dashboard_admin.html'), {
                 title: 'Admin Dashboard',
                 stats,
                 user: req.user

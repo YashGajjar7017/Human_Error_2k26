@@ -15,16 +15,30 @@ const users = [
 // Dashboard
 exports.Dashboard = (req, res, next) => {
     if (req.session.authenticated && req.session.user) {
-        // Check if user is admin and redirect to admin dashboard
-        if (req.session.user.role === 'admin') {
-            res.redirect('/admin-panel');
+        // Get user role with fallback to 'user' if not set
+        const userRole = req.session.user.role || 'user';
+        
+        console.log(`User Dashboard accessed by: ${req.session.user.username}, Role: ${userRole}`);
+        
+        // Redirect admins and users to explicit role-based endpoints under /Account/Dashboard
+        if (userRole === 'admin') {
+            console.log('Admin detected, redirecting to /Account/Dashboard/admin');
+            res.redirect('/Account/Dashboard/admin');
             return;
         }
-        // Regular user dashboard
-        res.sendFile(path.join(rootDir, 'views', '/Services/Dashboard.html'));
+
+        if (userRole === 'user') {
+            console.log('Regular user detected, redirecting to /Account/Dashboard/user');
+            res.redirect('/Account/Dashboard/user');
+            return;
+        }
+
+        // Unknown role: show error guidance
+        console.warn('Regular Dashboard access with unknown role:', userRole);
+        res.sendFile(path.join(rootDir, 'views', 'Dashboard_error.html'));
     } else {
         // Redirect to login if not authenticated
-        res.redirect('/Account/login/123456789012345');
+        res.redirect('/Account/login/');
     }
 };
 

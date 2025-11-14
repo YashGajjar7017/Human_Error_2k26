@@ -5,7 +5,8 @@ const router = express.Router();
 // Middleware to check if user is authenticated
 const requireAuth = (req, res, next) => {
     if (!req.session.authenticated) {
-        return res.redirect('/Account/Admin/login/');
+        // Redirect to the main login page; /Account/login exists in login.routes.js
+        return res.redirect('/Account/login');
     }
     next();
 };
@@ -13,16 +14,23 @@ const requireAuth = (req, res, next) => {
 // Common Dashboard route - routes to admin or user dashboard based on role
 router.get('/', requireAuth, (req, res) => {
     try {
-        const userRole = req.session.user?.role || 'user';
+        // Use explicit branching so unknown/missing roles are handled clearly
+        const userRole = req.session.user?.role;
         console.log(`Dashboard request for user: ${req.session.user?.username}, Role: ${userRole}`);
-        
+
         if (userRole === 'admin') {
             console.log('Serving admin dashboard');
-            res.sendFile(path.join(__dirname, '../views/Dashboard_admin.html'));
-        } else {
-            console.log('Serving user dashboard');
-            res.sendFile(path.join(__dirname, '../views/Dashboard_User.html'));
+            return res.sendFile(path.join(__dirname, '../views/Dashboard_admin.html'));
         }
+
+        if (userRole === 'user') {
+            console.log('Serving user dashboard');
+            return res.sendFile(path.join(__dirname, '../views/Dashboard_User.html'));
+        }
+
+        // Unknown or missing role - show a helpful error page with next steps
+        console.warn('Dashboard access with missing/unknown role:', userRole);
+        return res.sendFile(path.join(__dirname, '../views/Dashboard_error.html'));
     } catch (error) {
         console.error('Dashboard route error:', error);
         res.status(500).json({ error: 'Failed to load dashboard' });

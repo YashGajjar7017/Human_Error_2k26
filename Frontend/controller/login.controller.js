@@ -97,8 +97,20 @@ exports.Getlogin = async (req, res, next) => {
     res.setHeader('Content-Type', 'text/html');
 
     if (token.length === 15) {
-        res.sendFile(path.join(__dirname, '../Services/login', 'index.html'));
+           res.sendFile(path.join(__dirname, '../views', 'login.html'));
     } else {
+        res.redirect('/404');
+    }
+};
+
+// Serve the overlay variant of the login page
+exports.GetLoginOverlay = (req, res, next) => {
+    try {
+        res.status(200);
+        res.setHeader('Content-Type', 'text/html');
+        res.sendFile(path.join(__dirname, '../views', 'login_overlay.html'));
+    } catch (err) {
+        console.error('Error serving login overlay:', err);
         res.redirect('/404');
     }
 };
@@ -278,5 +290,33 @@ exports.refreshToken = async (req, res) => {
             success: false,
             message: 'Token invalid or expired'
         });
+    }
+};
+
+// Quick sign-in helper for local testing only
+// Usage: GET /Account/quick-signin?role=admin OR ?role=user
+exports.quickSignin = (req, res) => {
+    try {
+        const role = (req.query.role === 'admin') ? 'admin' : 'user';
+        // Create a minimal demo user session
+        req.session.authenticated = true;
+        req.session.user = {
+            id: role === 'admin' ? 'demo-admin' : 'demo-user',
+            username: role === 'admin' ? 'admin_demo' : 'user_demo',
+            email: role === 'admin' ? 'admin@example.local' : 'user@example.local',
+            role: role,
+            token: 'demo-token-12345'
+        };
+
+        // Set cookies so frontend JS sees username/role
+        res.cookie('username', req.session.user.username, { path: '/', maxAge: 24*60*60*1000 });
+        res.cookie('role', role, { path: '/', maxAge: 24*60*60*1000 });
+        res.cookie('auth_token', req.session.user.token, { path: '/', maxAge: 24*60*60*1000 });
+
+        console.log('Quick sign-in created for role:', role);
+        return res.redirect('/Account/Dashboard');
+    } catch (err) {
+        console.error('Quick signin error:', err);
+        return res.status(500).send('Quick signin failed');
     }
 };

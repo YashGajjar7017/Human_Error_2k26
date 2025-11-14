@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>Login | Human Error</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+	<link rel="icon" type="image/png" href="images/icons/favicon.ico" />
+	
+	<link rel="stylesheet" type="text/css" href="/css/login/util.css">
+	<link rel="stylesheet" type="text/css" href="/css/login/main.css">
+	
+	<style>
+		/* Side Navigation Overlay Styles */
+		.side-nav-overlay {
+			position: fixed;
+			top: 0;
+			left: -350px;
+			width: 320px;
+			height: 100vh;
+			background: rgba(15, 15, 35, 0.95);
+			backdrop-filter: blur(10px);
+			-webkit-backdrop-filter: blur(10px);
+			border-right: 1px solid rgba(255, 255, 255, 0.1);
+			z-index: 1000;
+			transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+			overflow-y: auto;
+			box-shadow: 8px 0 32px rgba(0, 0, 0, 0.5);
+			padding: 60px 0 40px 0;
+		}
+
+		.side-nav-overlay.active {
+			left: 0;
+		}
+
+		.nav-close-btn {
+			position: absolute;
+			top: 20px;
+			right: 20px;
+			background: rgba(255, 255, 255, 0.1);
+			border: 1px solid rgba(255, 255, 255, 0.2);
+			color: #e6eef8;
+			width: 40px;
+			height: 40px;
+			border-radius: 8px;
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			transition: all 0.3s ease;
+			z-index: 1001;
+		}
+
+		.nav-close-btn:hover {
+			background: rgba(255, 255, 255, 0.15);
+			border-color: rgba(255, 255, 255, 0.3);
+			transform: rotate(90deg);
+		}
+
+		.nav-menu {
+			list-style: none;
+			padding: 20px;
+			margin: 0;
+		}
+
+		.nav-menu li {
+			margin: 0;
+			padding: 0;
+		}
+
+		.nav-link {
+			display: block;
+			padding: 14px 18px;
+			color: #cbd5e1;
+			text-decoration: none;
+			font-size: 15px;
+			font-weight: 500;
+			border-radius: 8px;
+			transition: all 0.3s ease;
+			margin-bottom: 8px;
+			border-left: 3px solid transparent;
+		}
+
+		.nav-link:hover {
+			background: rgba(124, 92, 255, 0.15);
+			color: #7c5cff;
+			border-left-color: #7c5cff;
+			padding-left: 24px;
+		}
+
+		.nav-link.logout-link {
+			color: #ff6b6b;
+			border-left-color: transparent;
+		}
+
+		.nav-link.logout-link:hover {
+			background: rgba(255, 107, 107, 0.15);
+			color: #ff6b6b;
+			border-left-color: #ff6b6b;
+		}
+
+		.nav-backdrop {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: rgba(0, 0, 0, 0);
+			z-index: 999;
+			transition: background 0.3s ease;
+			pointer-events: none;
+		}
+
+		.nav-backdrop.active {
+			background: rgba(0, 0, 0, 0.5);
+			pointer-events: all;
+		}
+
+		.nav-toggle-btn {
+			position: fixed;
+			top: 30px;
+			left: 30px;
+			background: rgba(124, 92, 255, 0.2);
+			border: 1px solid rgba(124, 92, 255, 0.4);
+			color: #7c5cff;
+			width: 44px;
+			height: 44px;
+			border-radius: 10px;
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			z-index: 500;
+			transition: all 0.3s ease;
+		}
+
+		.nav-toggle-btn:hover {
+			background: rgba(124, 92, 255, 0.3);
+			border-color: rgba(124, 92, 255, 0.6);
+			box-shadow: 0 0 20px rgba(124, 92, 255, 0.3);
+		}
+
+		.nav-toggle-btn svg {
+			stroke-width: 2;
+		}
+
+		/* Adjust login form container for new layout */
+		.limiter {
+			position: relative;
+			z-index: 1;
+		}
+
+		/* When nav is open, push / overflow main content for a layered effect */
+		body.nav-open .limiter {
+			transform: translateX(300px) scale(0.985);
+			transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+			box-shadow: -20px 40px 80px rgba(2,6,23,0.45);
+			border-radius: 8px;
+			overflow: hidden;
+		}
+
+		.nav-toggle-btn:hover svg {
+			animation: slideIn 0.3s ease;
+		}
+
+		@keyframes slideIn {
+			from {
+				transform: translateX(-4px);
+			}
+			to {
+				transform: translateX(0);
+			}
+		}
+
+		/* Responsive adjustments */
+		@media (max-width: 768px) {
+			.side-nav-overlay {
+				width: 280px;
+				left: -280px;
+			}
+
+			.nav-toggle-btn {
+				top: 20px;
+				left: 20px;
+				width: 40px;
+				height: 40px;
+			}
+
+			.nav-close-btn {
+				top: 16px;
+				right: 16px;
+				width: 36px;
+				height: 36px;
+			}
+
+			.nav-menu {
+				padding: 15px;
+			}
+
+			.nav-link {
+				padding: 12px 14px;
+				font-size: 14px;
+				margin-bottom: 6px;
+			}
+		}
+	</style>
+</head>
+
+<body>
+	<!-- Side Navigation Overlay -->
+	<nav class="side-nav-overlay" id="sideNav">
+		<button class="nav-close-btn" id="navCloseBtn">
+			<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+				<path d="M6 18L18 6M6 6l12 12"/>
+			</svg>
+		</button>
+		<ul class="nav-menu">
+			<li><a href="/" class="nav-link">🏠 Home</a></li>
+			<li><a href="/Account/Dashboard/user" class="nav-link">📊 Dashboard</a></li>
+			<li><a href="/membership" class="nav-link">💎 Membership Plans</a></li>
+			<li><a href="/Account/signup" class="nav-link">📝 Sign Up</a></li>
+			<li><a href="/classroom" class="nav-link">🎓 Classroom</a></li>
+			<li><a href="#" class="nav-link">ℹ️ About Us</a></li>
+			<li><a href="/Account/logout" class="nav-link logout-link">🚪 Logout</a></li>
+		</ul>
+	</nav>
+
+	<!-- Overlay Backdrop -->
+	<div class="nav-backdrop" id="navBackdrop"></div>
+
+	<!-- Toggle Button -->
+	<button class="nav-toggle-btn" id="navToggleBtn">
+		<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+			<path d="M3 6h18M3 12h18M3 18h18"/>
+		</svg>
+	</button>
+
+	<div class="limiter">
+		<div class="container-login100">
+			<div class="wrap-login100">
+				<form class="login100-form validate-form" id="loginForm">
+					<span class="login100-form-logo">
+						<i class="zmdi zmdi-landscape"></i>
+					</span>
+
+					<span class="login100-form-title p-b-34 p-t-27">
+						Log IN
+					</span>
+
+					<div class="wrap-input100 validate-input" data-validate="Enter username">
+						<input class="input100" type="text" name="username" placeholder="Username" id="username" required minlength="3">
+						<span class="focus-input100" data-placeholder="&#xf207;"></span>
+					</div>
+
+					<div class="wrap-input100 validate-input" data-validate="Enter password">
+						<input class="input100" type="password" name="password" placeholder="Password" id="password" required minlength="6">
+						<span class="focus-input100" data-placeholder="&#xf191;"></span>
+					</div>
+
+					<div class="contact100-form-checkbox">
+						<input class="input-checkbox100" id="ckb1" type="checkbox" name="remember-me">
+						<label class="label-checkbox100" for="ckb1">
+							Remember me
+						</label>
+					</div>
+
+					<div class="container-login100-form-btn">
+						<button class="login100-form-btn" type="submit" id="loginBtn">
+							Login
+						</button>
+					</div>
+
+					<div class="text-center p-t-40">
+						<a class="txt1" href="/Account/forgotPassword">
+							Forgot Password?
+						</a>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<div id="dropDownSelect1"></div>
+
+	<!------------------------Script File--------------------  -->
+	<script src="/js/login/main.js"></script>
+
+	<script>
+		// Side Navigation Toggle
+		const navToggleBtn = document.getElementById('navToggleBtn');
+		const navCloseBtn = document.getElementById('navCloseBtn');
+		const sideNav = document.getElementById('sideNav');
+		const navBackdrop = document.getElementById('navBackdrop');
+
+		// Open navigation
+		navToggleBtn.addEventListener('click', () => {
+			sideNav.classList.add('active');
+			navBackdrop.classList.add('active');
+			document.body.classList.add('nav-open');
+			// focus first link for accessibility
+			const firstLink = sideNav.querySelector('.nav-link');
+			if (firstLink) firstLink.focus();
+		});
+
+		// Close navigation
+		const closeNav = () => {
+			sideNav.classList.remove('active');
+			navBackdrop.classList.remove('active');
+			document.body.classList.remove('nav-open');
+			// return focus to toggle button
+			navToggleBtn.focus();
+		};
+
+		navCloseBtn.addEventListener('click', closeNav);
+		navBackdrop.addEventListener('click', closeNav);
+
+		// Close nav when a link is clicked
+		document.querySelectorAll('.nav-link').forEach(link => {
+			link.addEventListener('click', closeNav);
+		});
+
+		// Close on Escape key for accessibility
+		document.addEventListener('keydown', (e) => {
+			if (e.key === 'Escape' || e.key === 'Esc') {
+				if (document.body.classList.contains('nav-open')) {
+					closeNav();
+				}
+			}
+		});
+
+		// Login Form Handler
+		document.getElementById('loginForm').addEventListener('submit', async function(e) {
+			e.preventDefault();
+
+			const username = document.getElementById('username').value.trim();
+			const password = document.getElementById('password').value.trim();
+
+			// Client-side validation
+			if (username.length < 3) {
+				showError('Username must be at least 3 characters long.');
+				return;
+			}
+			if (password.length < 6) {
+				showError('Password must be at least 6 characters long.');
+				return;
+			}
+
+			// Show loading state
+			const loginBtn = document.getElementById('loginBtn');
+			const originalText = loginBtn.textContent;
+			loginBtn.textContent = 'Logging in...';
+			loginBtn.disabled = true;
+
+			try {
+				const response = await fetch('/Account/login', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({ username, password })
+				});
+
+				const data = await response.json();
+
+				if (data.success) {
+					// Set cookies for token and user data
+					document.cookie = `token=${data.token}; path=/; max-age=${24*60*60}`;
+					document.cookie = `username=${data.user.username}; path=/; max-age=${24*60*60}`;
+					document.cookie = `role=${data.user.role}; path=/; max-age=${24*60*60}`;
+
+					// Redirect to home page
+					window.location.href = '/';
+				} else {
+					showError(data.message || 'Login failed');
+				}
+			} catch (error) {
+				console.error('Login error:', error);
+				showError('An error occurred during login. Please try again.');
+			} finally {
+				// Reset button state
+				loginBtn.textContent = originalText;
+				loginBtn.disabled = false;
+			}
+		});
+
+		function showError(message) {
+			// Create or update error message element
+			let errorDiv = document.getElementById('error-message');
+			if (!errorDiv) {
+				errorDiv = document.createElement('div');
+				errorDiv.id = 'error-message';
+				errorDiv.style.cssText = `
+					color: #ff6b6b;
+					font-size: 14px;
+					text-align: center;
+					margin-top: 10px;
+					font-family: Poppins-Regular, sans-serif;
+				`;
+				document.getElementById('loginForm').appendChild(errorDiv);
+			}
+			errorDiv.textContent = message;
+
+			// Auto-hide after 5 seconds
+			setTimeout(() => {
+				if (errorDiv.parentNode) {
+					errorDiv.parentNode.removeChild(errorDiv);
+				}
+			}, 5000);
+		}
+	</script>
+
+</body>
+
+</html>

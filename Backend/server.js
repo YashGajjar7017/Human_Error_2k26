@@ -34,6 +34,7 @@ const achievementsRoutes = require('./Routes/achievements.routes');
 const apiDocsRoutes = require('./Routes/api-docs.routes');
 const passwordResetRoutes = require('./Routes/passwordReset.routes');
 const otpRoutes = require('./Routes/otp.routes');
+const memberRoutes = require('./Routes/member.routes');
 
 // DB Connect
 const DBConnect = require('./DB/DBHandler');
@@ -98,7 +99,7 @@ app.use(session({
 
 // API logging middleware
 app.use('/api', (req, res, next) => {
-    console.log(`API Request: ${req.method} ${req.originalUrl}`, req.body);
+    console.log(`API Request: ${req.method} ${req.originalUrl}`);
     next();
 });
 
@@ -147,18 +148,12 @@ app.post('/api/login', rawBody, async (req, res, next) => {
         let parsedBody = {};
         const raw = req.body && req.body.length ? req.body.toString('utf8') : '';
 
-        // Debug logging to help trace incoming payload issues
-        console.log('--- raw-login handler invoked for /api/login ---');
-        console.log('Headers:', req.headers);
-        console.log('Raw length:', req.body ? req.body.length : 0);
-        console.log('Raw string (first 2000 chars):', raw.slice(0, 2000));
-
         if (raw) {
             // Try JSON
             try {
                 parsedBody = JSON.parse(raw);
             } catch (e) {
-                // Fallback: try URL-encoded (e.g., form submits or incorrect fetch)
+                // Fallback: try URL-encoded
                 const qs = require('querystring');
                 try {
                     parsedBody = qs.parse(raw);
@@ -168,9 +163,6 @@ app.post('/api/login', rawBody, async (req, res, next) => {
             }
         }
 
-        console.log('Parsed body:', parsedBody);
-
-        // Attach parsed body and call controller
         req.body = parsedBody;
         return loginController.login(req, res, next);
     } catch (err) {
@@ -208,6 +200,7 @@ app.use('/api/achievements', achievementsRoutes);
 app.use('/api/docs', apiDocsRoutes);
 app.use('/api/password-reset', passwordResetRoutes);
 app.use('/api/otp', otpRoutes);
+app.use('/api', memberRoutes);
 
 // Socket.IO for WebRTC signaling
 io.on('connection', (socket) => {
