@@ -117,20 +117,33 @@
         document.getElementById('signupForm').addEventListener('submit', async function (e) {
             e.preventDefault();
 
+            console.log('[SignupForm] Form submit event triggered');
+
             const username = document.getElementById('username').value;
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
 
+            console.log('[SignupForm] Collected form data:', {
+                username: username ? '***' : 'empty',
+                email: email ? '***' : 'empty',
+                password: password ? '***' : 'empty',
+                confirmPassword: confirmPassword ? '***' : 'empty'
+            });
+
             if (!username || !email || !password || !confirmPassword) {
+                console.log('[SignupForm] Validation failed: Missing fields');
                 alert('Please fill in all fields');
                 return;
             }
 
             if (password !== confirmPassword) {
+                console.log('[SignupForm] Validation failed: Passwords do not match');
                 alert('Passwords do not match');
                 return;
             }
+
+            console.log('[SignupForm] Sending fetch to /Account/Signup');
 
             try {
                 const response = await fetch('/Account/Signup', {
@@ -146,18 +159,26 @@
                     })
                 });
 
+                console.log('[SignupForm] Response received:', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    headers: Object.fromEntries(response.headers.entries())
+                });
+
                 const data = await response.json();
+                console.log('[SignupForm] Response data:', data);
 
                 if (data.success) {
+                    console.log('[SignupForm] Signup successful, redirecting to:', data.redirectUrl);
                     alert('Registration successful! Please check your email for OTP verification.');
                     // Redirect to OTP page
-                    console.log('Redirecting to OTP page:', data.redirectUrl);
                     window.location.href = data.redirectUrl || '/Account/sendOTP';
                 } else {
+                    console.log('[SignupForm] Signup failed:', data.error);
                     alert(data.error || 'Registration failed');
                 }
             } catch (error) {
-                console.error('Signup error:', error);
+                console.error('[SignupForm] Signup error:', error);
                 alert('Registration failed. Please try again.');
             }
         });
