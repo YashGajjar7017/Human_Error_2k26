@@ -208,6 +208,45 @@
 			background-clip: text;
 		}
 
+		/* Member Badge */
+		.member-badge {
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+			padding: 12px 24px;
+			border-radius: 25px;
+			font-size: 16px;
+			font-weight: 700;
+			text-transform: uppercase;
+			letter-spacing: 1px;
+			margin-bottom: 30px;
+			box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+			animation: fadeInUp 0.8s ease 0.2s both;
+			border: 2px solid transparent;
+		}
+
+		.member-badge.free {
+			background: linear-gradient(135deg, rgba(100, 200, 255, 0.2) 0%, rgba(80, 209, 255, 0.1) 100%);
+			color: #50d1ff;
+			border-color: rgba(80, 209, 255, 0.4);
+		}
+
+		.member-badge.pro {
+			background: linear-gradient(135deg, rgba(124, 92, 255, 0.2) 0%, rgba(157, 124, 255, 0.1) 100%);
+			color: #7c5cff;
+			border-color: rgba(124, 92, 255, 0.4);
+		}
+
+		.member-badge.enterprise {
+			background: linear-gradient(135deg, rgba(255, 180, 0, 0.2) 0%, rgba(255, 215, 0, 0.1) 100%);
+			color: #ffd700;
+			border-color: rgba(255, 215, 0, 0.4);
+		}
+
+		.member-badge-icon {
+			font-size: 20px;
+		}
+
 		.header-section p {
 			font-size: 18px;
 			color: #cbd5e1;
@@ -732,7 +771,13 @@
 		<div class="header-section">
 			<h1>Simple, Transparent Pricing</h1>
 			<p>Choose the perfect plan for your coding journey. Upgrade anytime.</p>
-			
+
+			<!-- Member Badge (shown only for authenticated users) -->
+			<div id="member-badge" class="member-badge" style="display: none;">
+				<span class="member-badge-icon">👤</span>
+				<span id="badge-text">Free Member</span>
+			</div>
+
 			<div class="toggle-billing">
 				<button class="toggle-btn active" data-billing="monthly">Monthly</button>
 				<button class="toggle-btn" data-billing="yearly">Yearly <span style="color: #50d1ff; margin-left: 4px;">-25%</span></button>
@@ -986,27 +1031,37 @@
 				signupBtn.style.display = 'none';
 				dashboardBtn.style.display = 'inline-block';
 				logoutBtn.style.display = 'inline-block';
-				
+
 				// Display username
 				usernameDisplay.textContent = `Welcome, ${username}!`;
-				
+
 				// Determine subscription tier based on role
 				let tier = 'Free';
 				let tierColor = '#ffd700';
+				let badgeClass = 'free';
 				if (userRole && userRole.toLowerCase().includes('pro')) {
 					tier = 'Pro Plan';
 					tierColor = '#50d1ff';
+					badgeClass = 'pro';
 				} else if (userRole && userRole.toLowerCase().includes('enterprise')) {
 					tier = 'Enterprise Plan';
 					tierColor = '#7c5cff';
+					badgeClass = 'enterprise';
 				}
-				
+
 				subscriptionDisplay.textContent = tier;
 				subscriptionDisplay.style.borderColor = tierColor;
 				subscriptionDisplay.style.color = tierColor;
 				subscriptionDisplay.style.borderLeft = `3px solid ${tierColor}`;
 				subscriptionDisplay.style.paddingLeft = '12px';
 				subscriptionDisplay.style.background = `rgba(${tierColor === '#50d1ff' ? '80, 209, 255' : tierColor === '#7c5cff' ? '124, 92, 255' : '255, 215, 0'}, 0.1)`;
+
+				// Show and update member badge
+				const memberBadge = document.getElementById('member-badge');
+				const badgeText = document.getElementById('badge-text');
+				memberBadge.style.display = 'inline-flex';
+				memberBadge.className = `member-badge ${badgeClass}`;
+				badgeText.textContent = tier;
 			} else {
 				// User is not authenticated
 				userInfo.style.display = 'none';
@@ -1014,6 +1069,10 @@
 				signupBtn.style.display = 'inline-block';
 				dashboardBtn.style.display = 'none';
 				logoutBtn.style.display = 'none';
+
+				// Hide member badge
+				const memberBadge = document.getElementById('member-badge');
+				memberBadge.style.display = 'none';
 			}
 		}
 		
