@@ -35,6 +35,7 @@ const apiDocsRoutes = require('./Routes/api-docs.routes');
 const passwordResetRoutes = require('./Routes/passwordReset.routes');
 const otpRoutes = require('./Routes/otp.routes');
 const memberRoutes = require('./Routes/member.routes');
+const frontendMemberRoutes = require('../Frontend/Routes/Member.routes');
 
 // DB Connect
 const DBConnect = require('./DB/DBHandler');
@@ -201,6 +202,7 @@ app.use('/api/docs', apiDocsRoutes);
 app.use('/api/password-reset', passwordResetRoutes);
 app.use('/api/otp', otpRoutes);
 app.use('/api', memberRoutes);
+app.use('/', frontendMemberRoutes);
 
 // Socket.IO for WebRTC signaling
 io.on('connection', (socket) => {

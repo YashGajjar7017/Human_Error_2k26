@@ -52,7 +52,100 @@ const userSchema = new mongoose.Schema({
         type: String,
         enum: ['user', 'admin'],
         default: 'user'
-    }
+    },
+    status: {
+        type: String,
+        enum: ['active', 'suspended', 'inactive'],
+        default: 'active'
+    },
+    subscription: {
+        plan: {
+            type: String,
+            enum: ['free', 'pro', 'enterprise'],
+            default: 'free'
+        },
+        upgradeDate: {
+            type: Date,
+            default: null
+        },
+        downgradeDate: {
+            type: Date,
+            default: null
+        },
+        billingCycle: {
+            type: String,
+            enum: ['monthly', 'yearly'],
+            default: 'monthly'
+        },
+        nextBillingDate: {
+            type: Date,
+            default: null
+        }
+    },
+    suspensionReason: {
+        type: String,
+        default: null
+    },
+    suspendedAt: {
+        type: Date,
+        default: null
+    },
+    fullName: {
+        type: String,
+        trim: true,
+        maxlength: 100
+    },
+    bio: {
+        type: String,
+        trim: true,
+        maxlength: 500
+    },
+    avatar: {
+        type: String,
+        default: null
+    },
+    socialLinks: {
+        type: Object,
+        default: {}
+    },
+    preferences: {
+        notifications: {
+            type: Object,
+            default: {
+                email: true,
+                push: true,
+                marketing: false
+            }
+        },
+        privacy: {
+            type: Object,
+            default: {
+                profileVisibility: 'public',
+                showEmail: false
+            }
+        },
+        theme: {
+            type: String,
+            enum: ['light', 'dark', 'auto'],
+            default: 'auto'
+        }
+    },
+    activityLog: [{
+        action: {
+            type: String,
+            required: true
+        },
+        timestamp: {
+            type: Date,
+            default: Date.now
+        },
+        details: {
+            type: String,
+            default: ''
+        },
+        ipAddress: String,
+        userAgent: String
+    }]
 }, {
     timestamps: true
 });
