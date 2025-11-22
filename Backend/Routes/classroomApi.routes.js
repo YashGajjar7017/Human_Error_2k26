@@ -23,4 +23,8 @@ router.post('/api/classrooms/remove-student', classroomController.removeStudentF
 router.get('/api/classrooms/instructor/:instructorId', classroomController.getInstructorClassrooms);
 router.get('/api/classrooms/student/:studentId', classroomController.getStudentClassrooms);
 
+// Share and join endpoints
+router.get('/api/classrooms/:id/share', classroomController.getShareLink);
+router.post('/api/classrooms/join/:code', authMiddleware, classroomController.joinClassroom);
+
 module.exports = router;

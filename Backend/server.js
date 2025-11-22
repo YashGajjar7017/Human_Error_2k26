@@ -172,6 +172,36 @@ app.post('/api/login', rawBody, async (req, res, next) => {
     }
 });
 
+// Maintenance login route - before maintenance middleware to allow admin access during maintenance
+app.post('/api/maintenance/login', rawBody, async (req, res, next) => {
+    try {
+        const maintenanceController = require('./controller/maintenance.controller');
+        let parsedBody = {};
+        const raw = req.body && req.body.length ? req.body.toString('utf8') : '';
+
+        if (raw) {
+            // Try JSON
+            try {
+                parsedBody = JSON.parse(raw);
+            } catch (e) {
+                // Fallback: try URL-encoded
+                const qs = require('querystring');
+                try {
+                    parsedBody = qs.parse(raw);
+                } catch (e2) {
+                    parsedBody = {};
+                }
+            }
+        }
+
+        req.body = parsedBody;
+        return maintenanceController.maintenanceLogin(req, res, next);
+    } catch (err) {
+        console.error('Maintenance login handler error:', err);
+        return res.status(500).json({ success: false, message: 'Maintenance login handler error' });
+    }
+});
+
 // Maintenance middleware - check before other routes
 app.use(maintenanceController.maintenanceMiddleware);
 

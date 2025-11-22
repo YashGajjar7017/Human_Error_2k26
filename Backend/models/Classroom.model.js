@@ -37,9 +37,28 @@ const classroomSchema = new mongoose.Schema({
     }
 });
 
-// Update the updatedAt field before saving
-classroomSchema.pre('save', function(next) {
+// Generate share code before saving if not present
+classroomSchema.pre('save', async function(next) {
     this.updatedAt = Date.now();
+    if (!this.shareCode) {
+        const generateShareCode = () => {
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let code = '';
+            for (let i = 0; i < 8; i++) {
+                code += characters.charAt(Math.floor(Math.random() * characters.length));
+            }
+            return code;
+        };
+
+        let code;
+        let exists;
+        do {
+            code = generateShareCode();
+            exists = await mongoose.models.Classroom.findOne({ shareCode: code });
+        } while (exists);
+
+        this.shareCode = code;
+    }
     next();
 });
 

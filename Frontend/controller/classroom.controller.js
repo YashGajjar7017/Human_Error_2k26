@@ -30,7 +30,7 @@ const classroom = function (req, res, next) {
     res.setHeader('Content-Type', 'Text/html');
     res.statusCode = 200;
     if(classID.length == 25){
-        res.sendFile(path.join(rootDir, 'views', '/Services/classroom.html'))
+        res.sendFile(path.join(rootDir, 'views', 'classroom.html'))
     }
     else{
         res.send('Something went wrong while connecting to classroom')

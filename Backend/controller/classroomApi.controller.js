@@ -1,6 +1,16 @@
 const Classroom = require('../models/Classroom.model');
 const UserSignUp = require('../models/User.model');
 
+// Generate unique share code
+function generateShareCode(length = 8) {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let code = '';
+    for (let i = 0; i < length; i++) {
+        code += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return code;
+}
+
 // Create new classroom
 exports.createClassroom = async (req, res) => {
     try {
@@ -216,6 +226,62 @@ exports.getStudentClassrooms = async (req, res) => {
         });
     } catch (error) {
         console.error('Error fetching student classrooms:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+// Get share link for classroom
+exports.getShareLink = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const classroom = await Classroom.findById(id);
+        if (!classroom) {
+            return res.status(404).json({ error: 'Classroom not found' });
+        }
+
+        const shareUrl = `${req.protocol}://${req.get('host')}/classroom/join/${classroom.shareCode}`;
+
+        res.status(200).json({
+            success: true,
+            shareUrl,
+            shareCode: classroom.shareCode
+        });
+    } catch (error) {
+        console.error('Error getting share link:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+// Join classroom by share code (requires authentication)
+exports.joinClassroom = async (req, res) => {
+    try {
+        const { code } = req.params;
+        const userId = req.user.id; // Assuming auth middleware sets req.user
+
+        const classroom = await Classroom.findOne({ shareCode: code });
+        if (!classroom) {
+            return res.status(404).json({ error: 'Invalid share code' });
+        }
+
+        if (classroom.students.includes(userId)) {
+            return res.status(400).json({ error: 'Already joined this classroom' });
+        }
+
+        if (classroom.students.length >= classroom.capacity) {
+            return res.status(400).json({ error: 'Classroom is full' });
+        }
+
+        classroom.students.push(userId);
+        await classroom.save();
+
+        res.status(200).json({
+            success: true,
+            message: 'Successfully joined the classroom',
+            classroom
+        });
+    } catch (error) {
+        console.error('Error joining classroom:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 };

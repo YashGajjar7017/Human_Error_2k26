@@ -97,13 +97,27 @@
         <div class="content">
             <center><h1>Welcome to the Classroom!</h1></center>
             <p>If you want to join the classroom then enter the classroom code or just put the code to other to join & code with other members of your coder family..!</p><hr><br>
-            <input type="text" name="classID" id="classID" class="classText">
+            <input type="text" name="classID" id="classID" class="classText" placeholder="Enter classroom code to join">
             <div class="btn" style="display: flex;flex-direction: row;margin-left: 9vw;">
-                <button disabled="disabled" class="bt1 btn-success">Join</button>
-                <button disabled="disabled" class="bt2 btn-info">Share</button>
+                <button id="joinBtn" class="bt1 btn-success" onclick="joinClassroom()">Join</button>
+                <button id="shareBtn" class="bt2 btn-info" onclick="shareClassroom()">Share</button>
                 <button disabled="disabled" class="bt2 btn-info">Add Classroom</button>
                 <button disabled="disabled" class="bt3">Remove Class</button>
             </div>
+            <br><br>
+            <h3>Classroom Members</h3>
+            <table id="membersTable" border="1" style="width: 80%; margin: auto;">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Members will be loaded here -->
+                </tbody>
+            </table>
         </div>
 </body>
 <script>
