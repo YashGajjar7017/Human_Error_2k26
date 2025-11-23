@@ -7,13 +7,14 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	
 	<link rel="icon" type="image/png" href="images/icons/favicon.ico" />
-	
+	<link href="../Lib/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" href="/css/login/util.css">
 	<link rel="stylesheet" type="text/css" href="/css/login/main.css">
 	
 </head>
 
-<body>
+	<body>
+	<div class="container py-5">
 
 	<div class="limiter">
 		<div class="container-login100">
@@ -28,12 +29,12 @@
 					</span>
 
 					<div class="wrap-input100 validate-input" data-validate="Enter username">
-						<input class="input100" type="text" name="username" placeholder="Username" id="username" required minlength="3">
+						<input class="input100 form-control" type="text" name="username" placeholder="Username" id="username" required minlength="3">
 						<span class="focus-input100" data-placeholder="&#xf207;"></span>
 					</div>
 
 					<div class="wrap-input100 validate-input" data-validate="Enter password">
-						<input class="input100" type="password" name="password" placeholder="Password" id="password" required minlength="6">
+						<input class="input100 form-control" type="password" name="password" placeholder="Password" id="password" required minlength="6">
 						<span class="focus-input100" data-placeholder="&#xf191;"></span>
 					</div>
 
@@ -45,7 +46,7 @@
 					</div>
 
 					<div class="container-login100-form-btn">
-						<button class="login100-form-btn" type="submit" id="loginBtn">
+						<button class="login100-form-btn btn btn-primary" type="submit" id="loginBtn">
 							Login
 						</button>
 					</div>
@@ -60,6 +61,7 @@
 		</div>
 	</div>
 
+	</div>
 	<div id="dropDownSelect1"></div>
 
 	<!------------------------Script File--------------------  -->
@@ -106,10 +108,28 @@
 				document.cookie = `username=${data.user.username}; path=/; max-age=${24*60*60}`;
 				document.cookie = `role=${data.user.role}; path=/; max-age=${24*60*60}`;
 
-				// Redirect to home page
-				window.location.href = '/';
+				// Store user session in localStorage for cross-page access
+				localStorage.setItem('user', JSON.stringify({
+					id: data.user._id || data.user.id,
+					username: data.user.username,
+					role: data.user.role,
+					token: data.token
+				}));
+
+				// Redirect to /Account/complier/user/:Token page for joining/sharing code (WebRTC)
+				if (data.token) {
+					window.location.href = `/Account/complier/user/${encodeURIComponent(data.token)}`;
+				} else {
+					window.location.href = '/';
+				}
 			} else {
-				showError(data.message || 'Login failed');
+				// If user not found, redirect to signup page with pre-filled username/email
+				if (data.message && data.message.toLowerCase().includes('invalid credentials')) {
+					const signupUrl = `/Account/Signup?email=${encodeURIComponent(username)}`;
+					window.location.href = signupUrl;
+				} else {
+					showError(data.message || 'Login failed');
+				}
 			}
 		} catch (error) {
 			console.error('Login error:', error);

@@ -10,9 +10,9 @@ require('dotenv').config();
 router.use(express.json());
 
 // === ACCOUNT ROUTES ===
-router.get('/account', WebHandler.account);
-router.get('/account/:userState/:NO', WebHandler.accountNumber);
-router.get('/account/user/:userState/:NO', WebHandler.accountNumber);
-router.get('/account/complier/user/:NO', WebHandler.ComplierPage);
+router.get('/Account', WebHandler.account);
+router.get('/Account/:userState/:NO', WebHandler.accountNumber);
+router.get('/Account/user/:userState/:NO', WebHandler.accountNumber);
+router.get('/Account/complier/user/:NO', WebHandler.ComplierPage);
 
 module.exports = router;

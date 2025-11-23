@@ -8,8 +8,10 @@
 
     <link rel="icon" type="image/png" href="/images/icons/favicon.ico" />
 
-    <link rel="stylesheet" type="text/css" href="/css/login/util.css">
-    <link rel="stylesheet" type="text/css" href="/css/login/main.css">
+    <link href="../Lib/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+	<link rel="stylesheet" type="text/css" href="/css/login/util.css">
+	<link rel="stylesheet" type="text/css" href="/css/login/main.css">
     <style>
         /* Lightweight variant of the login page with overlay-nav already enabled */
         body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg,#071126 0%, #081833 100%); color: #e6eef8; }
@@ -56,15 +58,15 @@
             <form id="overlayLoginForm" style="margin-top:18px">
                 <div style="margin-bottom:12px">
                     <label for="ov-username">Username</label><br>
-                    <input id="ov-username" name="username" required minlength="3" style="padding:10px;width:100%;border-radius:6px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit" />
+                    <input id="ov-username" name="username" required minlength="3" class="form-control" style="padding:10px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit" />
                 </div>
                 <div style="margin-bottom:12px">
                     <label for="ov-password">Password</label><br>
-                    <input id="ov-password" name="password" type="password" required minlength="6" style="padding:10px;width:100%;border-radius:6px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit" />
+                    <input id="ov-password" name="password" type="password" required minlength="6" class="form-control" style="padding:10px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit" />
                 </div>
                 <div style="display:flex;gap:8px">
-                    <button type="submit" class="btn-primary-action" style="padding:10px 16px;border-radius:8px;border:none;">Login</button>
-                    <a href="/Account/signup" class="btn-secondary" style="padding:10px 16px;border-radius:8px;text-decoration:none;">Sign up</a>
+                    <button type="submit" class="btn btn-primary" style="padding:10px 16px;border-radius:8px;border:none;">Login</button>
+                    <a href="/Account/signup" class="btn btn-outline-light" style="padding:10px 16px;border-radius:8px;text-decoration:none;">Sign up</a>
                 </div>
             </form>
         </div>

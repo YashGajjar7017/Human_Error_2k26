@@ -74,77 +74,9 @@ const validateSignupData = (data) => {
     return errors;
 };
 
-// Fixed post signup handler - calls backend API
-exports.postSignUp = async (req, res) => {
-    try {
-        const userData = req.body;
-        console.log('Processing signup for:', userData.email);
-        
-        // Validate input
-        const validationErrors = validateSignupData(userData);
-        if (validationErrors.length > 0) {
-            console.log('Validation errors:', validationErrors);
-            return res.status(400).json({ errors: validationErrors });
-        }
-
-        // Call backend API through proxy
-        const response = await axios.post(`${API_PREFIX}/Account/Signup`, {
-            username: userData.username,
-            email: userData.email,
-            password: userData.password,
-            confirmPassword: userData.confirmPassword
-        }, {
-            headers: { 'Content-Type': 'application/json' },
-            timeout: 10000
-        });
-
-        console.log('Backend response:', response.status, response.data);
-
-        if (response.data.success) {
-            // Store user info for OTP verification
-            UserProfile.username = userData.username;
-            UserProfile.email = userData.email;
-            
-            res.cookie('Signup', true, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                maxAge: 24 * 60 * 60 * 1000
-            });
-            
-            res.status(201).json({ 
-                success: true, 
-                message: response.data.message || 'Account created successfully',
-                data: response.data.data,
-                redirectUrl: `/Account/Signup/OTP/${UserProfile.token}`
-            });
-        } else {
-            res.status(400).json({ 
-                error: response.data.error || 'Signup failed'
-            });
-        }
-    } catch (error) {
-        console.error('Signup error:', error.message);
-        
-        if (error.code === 'ECONNREFUSED') {
-            return res.status(503).json({ 
-                error: 'Backend service unavailable. Please try again later.' 
-            });
-        }
-        
-        if (error.response) {
-            res.status(error.response.status || 500).json({ 
-                error: error.response.data?.error || error.response.data?.message || 'Signup failed'
-            });
-        } else if (error.request) {
-            res.status(503).json({ 
-                error: 'No response from server. Please try again later.' 
-            });
-        } else {
-            res.status(500).json({ 
-                error: 'An unexpected error occurred during signup'
-            });
-        }
-    }
+// No-op signup handler: frontend should POST directly to backend API
+exports.postSignUp = (req, res) => {
+    res.status(501).json({ error: 'Not implemented. Please POST directly to /Account/Signup.' });
 };
 
 // OTP handler

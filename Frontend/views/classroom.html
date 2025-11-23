@@ -10,8 +10,7 @@
 
     <!-- ================= Css =============== -->
     <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="../Lib/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/classroom.css">
 
@@ -27,20 +26,20 @@
         <nav id="nav">
             <div class="nav-bar">
                 <i class='bx bx-menu sidebarOpen'></i>
-                <span class="logo navLogo"><a href="/classloader">Human Error</a></span>
+                <span class="logo navLogo"><a href="/classroom.html">Human Error</a></span>
 
                 <div class="menu">
                     <div class="logo-toggle">
-                        <span class="logo"><a href="/:classID=195G6H">Human Error</a></span>
+                        <span class="logo"><a href="/classroom.html">Human Error</a></span>
                         <i class='bx bx-x siderbarClose'></i>
                     </div>
 
                     <ul class="nav-links">
-                        <li><a href="/" onclick="portforwaring()"> Home</a> </li>
-                        <li><a href="/services">Services</a></li>
-                        <li><a href="/download">Download</a></li>
-                        <li><a href="/info">More info</a></li>
-                        <li><a href="/MyCompanyInfo">Company </a></li>
+                        <li><a href="/index.html"> Home</a> </li>
+                        <li><a href="/services.html">Services</a></li>
+                        <li><a href="/download.html">Download</a></li>
+                        <li><a href="/info.html">More info</a></li>
+                        <li><a href="/company.html">Company </a></li>
                     </ul>
                 </div>
 
@@ -62,7 +61,7 @@
                             <i class='bx bx-search'></i>
                         </div>
                     </div>
-                    <a href="/login/Sign_Up.html" id="login" class="login" onclick="login()">Login</a>
+                    <a href="/login_1.html" id="login" class="login">Login</a>
                     <!-- <a id="login" class="login" onclick="login()">Login</a> -->
 
                 </div>
@@ -94,37 +93,188 @@
         </div>
 
         <!-- Main Content -->
-        <div class="content">
-            <center><h1>Welcome to the Classroom!</h1></center>
-            <p>If you want to join the classroom then enter the classroom code or just put the code to other to join & code with other members of your coder family..!</p><hr><br>
-            <input type="text" name="classID" id="classID" class="classText" placeholder="Enter classroom code to join">
-            <div class="btn" style="display: flex;flex-direction: row;margin-left: 9vw;">
-                <button id="joinBtn" class="bt1 btn-success" onclick="joinClassroom()">Join</button>
-                <button id="shareBtn" class="bt2 btn-info" onclick="shareClassroom()">Share</button>
-                <button disabled="disabled" class="bt2 btn-info">Add Classroom</button>
-                <button disabled="disabled" class="bt3">Remove Class</button>
+        <div class="content" style="display: flex; justify-content: center; align-items: flex-start; min-height: 80vh;">
+            <div class="glass-container" style="background: rgba(255,255,255,0.25); box-shadow: 0 8px 32px 0 rgba(31,38,135,0.37); backdrop-filter: blur(10px); border-radius: 20px; border: 1px solid rgba(255,255,255,0.18); padding: 2.5rem 2rem; width: 480px; max-width: 98vw; display: flex; flex-direction: column; gap: 2rem;">
+                <div class="classroom-header" style="display: flex; align-items: center; justify-content: space-between;">
+                    <span class="classroom-title" style="font-size: 2rem; font-weight: 700; color: #222; letter-spacing: 1px;">Classroom</span>
+                    <i class="bx bxs-chalkboard" style="font-size: 2rem; color: #007bff;"></i>
+                </div>
+                <div class="token-area" style="background: rgba(255,255,255,0.5); border-radius: 12px; padding: 1rem; display: flex; align-items: center; justify-content: space-between; font-size: 1.1rem; font-weight: 500; color: #333; margin-bottom: 0.5rem;">
+                    <span id="classroom-token">Loading...</span>
+                    <i class="bx bx-copy token-copy" title="Copy token" style="cursor:pointer; color:#007bff; font-size:1.3rem; margin-left:1rem;" onclick="copyToken()"></i>
+                </div>
+                <div class="join-area" style="display: flex; gap: 0.5rem; align-items: center;">
+                    <input type="text" class="join-input" id="join-token" placeholder="Paste classroom code/token to join..." style="flex:1; padding:0.7rem 1rem; border-radius:8px; border:1px solid #ccc; font-size:1rem; background:rgba(255,255,255,0.7);">
+                    <button class="join-btn" style="padding:0.7rem 1.2rem; border-radius:8px; border:none; background:#007bff; color:#fff; font-weight:600; cursor:pointer;" onclick="joinClassroom()">Join Class</button>
+                </div>
+                <div class="members-area" style="background:rgba(255,255,255,0.4); border-radius:12px; padding:1rem; margin-top:1rem;">
+                    <div class="members-title" style="font-size:1.1rem; font-weight:600; margin-bottom:0.5rem; color:#333;">Members</div>
+                    <ul class="member-list" id="member-list" style="list-style:none; padding:0; margin:0; display:flex; flex-wrap:wrap; gap:0.5rem;">
+                        <li>Loading...</li>
+                    </ul>
+                    <div id="admin-actions" style="margin-top:1rem; display:none;">
+                        <input type="text" id="add-member-id" placeholder="User ID to add" style="padding:0.3rem 0.7rem; border-radius:6px; border:1px solid #ccc;">
+                        <button onclick="addMember()" style="margin-left:0.5rem; padding:0.3rem 0.8rem; border-radius:6px; border:none; background:#007bff; color:#fff;">Add Member</button>
+                    </div>
+                </div>
+                <div class="editor-area" style="margin-top:2rem; border-radius:12px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.08);">
+                    <textarea id="editor" placeholder="Start coding together in real-time..." style="width:100%; height:320px; font-size:1rem; background:#1e1e1e; color:#fff; border:none; outline:none; resize:none; padding:1rem; font-family:'Fira Mono','Consolas',monospace;"></textarea>
+                </div>
             </div>
-            <br><br>
-            <h3>Classroom Members</h3>
-            <table id="membersTable" border="1" style="width: 80%; margin: auto;">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Role</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Members will be loaded here -->
-                </tbody>
-            </table>
         </div>
 </body>
+
+<script src="https://cdn.jsdelivr.net/npm/simple-peer@9.11.1/simplepeer.min.js"></script>
 <script>
-    function portforwaring() {
-        var token = localStorage.getItem(userName);
-        location.replace(`/index.html#${token}`)
+    // --- User/session helpers (replace with real auth integration) ---
+    let currentUser = { id: '', role: 'user', token: '' };
+    // Simulate getting user from localStorage/session (replace with real logic)
+    function getCurrentUser() {
+        // Example: { id: '...', role: 'admin', token: '...' }
+        try {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (user && user.token) return user;
+        } catch {}
+        return { id: '', role: 'user', token: '' };
     }
+    currentUser = getCurrentUser();
+
+    // --- Classroom API integration ---
+
+    // Get classroomId or token from URL (e.g., ?id=... or ?token=...)
+    function getClassroomIdFromUrl() {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('id');
+    }
+    function getClassroomTokenFromUrl() {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('token');
+    }
+    const classroomId = getClassroomIdFromUrl();
+    const classroomToken = getClassroomTokenFromUrl();
+
+    async function fetchClassroom() {
+        if (!classroomId) return;
+        const res = await fetch(`/api/classrooms/${classroomId}`, {
+            headers: { 'Authorization': `Bearer ${currentUser.token}` }
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.classroom) {
+            document.getElementById('classroom-token').innerText = data.classroom.shareCode || 'N/A';
+            renderMembers(data.classroom);
+            if (currentUser.role === 'admin') {
+                document.getElementById('admin-actions').style.display = 'block';
+            }
+        }
+    }
+
+    function renderMembers(classroom) {
+        const ul = document.getElementById('member-list');
+        ul.innerHTML = '';
+        if (classroom.instructor) {
+            ul.innerHTML += `<li class="member-item" style="background:rgba(0,123,255,0.1); color:#007bff; padding:0.4rem 0.8rem; border-radius:6px; font-size:0.98rem;">${classroom.instructor.username} <span class="admin-badge" style="background:#007bff; color:#fff; border-radius:4px; padding:0.1rem 0.5rem; font-size:0.8rem; margin-left:0.5rem;">Admin</span></li>`;
+        }
+        if (classroom.students && classroom.students.length) {
+            classroom.students.forEach(s => {
+                ul.innerHTML += `<li class="member-item" style="background:rgba(0,123,255,0.1); color:#007bff; padding:0.4rem 0.8rem; border-radius:6px; font-size:0.98rem;">${s.username || s.email}</li>`;
+            });
+        }
+    }
+
+    // Copy classroom token
+    function copyToken() {
+        const token = document.getElementById('classroom-token').innerText;
+        navigator.clipboard.writeText(token);
+        alert('Classroom token copied!');
+    }
+
+    // Join classroom by token
+    async function joinClassroom() {
+        const token = document.getElementById('join-token').value.trim();
+        if (!token) return alert('Please enter a classroom code/token.');
+        if (!currentUser.token) return alert('You must be logged in.');
+        const res = await fetch(`/api/classrooms/join/${token}`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${currentUser.token}` }
+        });
+        const data = await res.json();
+        if (res.ok && data.classroomId) {
+            alert('Joined classroom! Redirecting...');
+            window.location.href = `classroom.html?id=${data.classroomId}`;
+        } else {
+            alert(data.error || 'Failed to join classroom');
+        }
+    }
+
+    // Add member (admin only)
+    async function addMember() {
+        const studentId = document.getElementById('add-member-id').value.trim();
+        if (!studentId) return alert('Enter user ID to add.');
+        if (!currentUser.token) return alert('You must be logged in.');
+        const res = await fetch('/api/classrooms/add-student', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${currentUser.token}`
+            },
+            body: JSON.stringify({ classroomId, studentId })
+        });
+        const data = await res.json();
+        if (res.ok) {
+            alert('Member added!');
+            fetchClassroom();
+        } else {
+            alert(data.error || 'Failed to add member');
+        }
+    }
+
+    // On page load
+
+    window.onload = async function() {
+        // If ?token=... is present, auto-join and redirect
+        if (classroomToken && currentUser.token) {
+            const res = await fetch(`/api/classrooms/join/${classroomToken}`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${currentUser.token}` }
+            });
+            const data = await res.json();
+            if (res.ok && data.classroomId) {
+                window.location.href = `classroom.html?id=${data.classroomId}`;
+                return;
+            } else {
+                alert(data.error || 'Failed to join classroom');
+            }
+        }
+        fetchClassroom();
+    };
+
+    // --- WebRTC Real-time Coding (Demo Only) ---
+    let peer;
+    let isAdmin = currentUser.role === 'admin';
+    function setupPeer() {
+        peer = new SimplePeer({ initiator: isAdmin, trickle: false });
+        peer.on('signal', data => {
+            // Send signal data to server/other peer
+            // For demo, just log
+            console.log('SIGNAL', JSON.stringify(data));
+        });
+        peer.on('connect', () => {
+            document.getElementById('editor').disabled = false;
+        });
+        peer.on('data', data => {
+            document.getElementById('editor').value = data.toString();
+        });
+    }
+    setupPeer();
+    // Sync editor changes
+    document.getElementById('editor').addEventListener('input', function() {
+        if (peer && peer.connected) {
+            peer.send(this.value);
+        }
+    });
+    // Disable editor if not connected
+    document.getElementById('editor').disabled = true;
 </script>
 
 </html>

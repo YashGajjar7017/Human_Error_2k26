@@ -1,6 +1,6 @@
 const express = require('express');
 const classroomController = require('../controller/classroomApi.controller');
-const authMiddleware = require('../middleware/auth.middleware');
+const { auth, authorize } = require('../middleware/auth.middleware');
 
 const router = express.Router();
 
@@ -9,22 +9,28 @@ router.post('/api/Account/classroom', classroomController.classID);
 router.post('/api/Account/classroom/:Token', classroomController.classID);
 
 // RESTful classroom endpoints
-router.get('/api/classrooms', classroomController.getAllClassrooms);
-router.get('/api/classrooms/:id', classroomController.getClassroomById);
-router.post('/api/classrooms', classroomController.createClassroom);
-router.put('/api/classrooms/:id', classroomController.updateClassroom);
-router.delete('/api/classrooms/:id', classroomController.deleteClassroom);
 
-// Classroom member management
-router.post('/api/classrooms/add-student', classroomController.addStudentToClassroom);
-router.post('/api/classrooms/remove-student', classroomController.removeStudentFromClassroom);
+// Classroom CRUD (admin only)
+router.get('/api/classrooms', auth, classroomController.getAllClassrooms);
+router.get('/api/classrooms/:id', auth, classroomController.getClassroomById);
+router.post('/api/classrooms', auth, authorize('admin'), classroomController.createClassroom);
+router.put('/api/classrooms/:id', auth, authorize('admin'), classroomController.updateClassroom);
+router.delete('/api/classrooms/:id', auth, authorize('admin'), classroomController.deleteClassroom);
+
+// Classroom member management (admin only)
+router.post('/api/classrooms/add-student', auth, authorize('admin'), classroomController.addStudentToClassroom);
+router.post('/api/classrooms/remove-student', auth, authorize('admin'), classroomController.removeStudentFromClassroom);
 
 // User-specific classroom endpoints
-router.get('/api/classrooms/instructor/:instructorId', classroomController.getInstructorClassrooms);
-router.get('/api/classrooms/student/:studentId', classroomController.getStudentClassrooms);
+
+// User-specific classroom endpoints (user or admin)
+router.get('/api/classrooms/instructor/:instructorId', auth, classroomController.getInstructorClassrooms);
+router.get('/api/classrooms/student/:studentId', auth, classroomController.getStudentClassrooms);
 
 // Share and join endpoints
-router.get('/api/classrooms/:id/share', classroomController.getShareLink);
-router.post('/api/classrooms/join/:code', authMiddleware, classroomController.joinClassroom);
+
+// Share and join endpoints
+router.get('/api/classrooms/:id/share', auth, classroomController.getShareLink);
+router.post('/api/classrooms/join/:code', classroomController.joinClassroom);
 
 module.exports = router;

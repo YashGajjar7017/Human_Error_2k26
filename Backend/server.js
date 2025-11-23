@@ -27,6 +27,7 @@ const notificationRoutes = require('./Routes/notification.routes');
 const enhancedWebrtcRoutes = require('./Routes/enhanced-webrtc.routes');
 const maintenanceRoutes = require('./Routes/maintenance.routes');
 const filemanagerRoutes = require('./Routes/filemanager.routes');
+const editorRoutes = require('./Routes/editor.routes');
 const snippetsRoutes = require('./Routes/snippets.routes');
 const projectsRoutes = require('./Routes/projects.routes');
 const collaborationRoutes = require('./Routes/collaboration.routes');
@@ -36,6 +37,7 @@ const passwordResetRoutes = require('./Routes/passwordReset.routes');
 const otpRoutes = require('./Routes/otp.routes');
 const memberRoutes = require('./Routes/member.routes');
 const frontendMemberRoutes = require('../Frontend/Routes/Member.routes');
+const publicUploadRoutes = require('./Routes/publicUpload.routes');
 
 // DB Connect
 const DBConnect = require('./DB/DBHandler');
@@ -59,6 +61,9 @@ app.use(cors())
 
 // Serve static files from Frontend directory
 app.use(express.static(path.join(__dirname, '../Frontend')));
+
+// Serve uploaded files for preview/download
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Middleware to parse JSON bodies with error handling
 // Skip JSON parsing for the raw-login endpoint to allow our raw-body fallback handler
@@ -224,6 +229,7 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/maintenance', maintenanceRoutes);
 app.use('/api/files', filemanagerRoutes);
+app.use('/api/editor', editorRoutes);
 app.use('/api/snippets', snippetsRoutes);
 app.use('/api/projects', projectsRoutes);
 app.use('/api/collaboration', collaborationRoutes);
@@ -233,6 +239,7 @@ app.use('/api/password-reset', passwordResetRoutes);
 app.use('/api/otp', otpRoutes);
 app.use('/api', memberRoutes);
 app.use('/', frontendMemberRoutes);
+app.use(publicUploadRoutes);
 
 // Socket.IO for WebRTC signaling
 io.on('connection', (socket) => {

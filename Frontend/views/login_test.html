@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Test - Debug Mode</title>
+    <link href="../Lib/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -102,6 +103,7 @@
                     placeholder="Enter username" 
                     value="testuser"
                     required
+                    class="form-control"
                 />
             </div>
             
@@ -114,10 +116,11 @@
                     placeholder="Enter password" 
                     value="testpass123"
                     required
+                    class="form-control"
                 />
             </div>
             
-            <button type="submit" id="submitBtn">Test Login</button>
+            <button type="submit" id="submitBtn" class="btn btn-primary">Test Login</button>
         </form>
         
         <div class="status">

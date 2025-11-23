@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OTP</title>
+    <link href="../Lib/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <style>
         @import url("https://fonts.googleapis.com/css2?family=Inter:wght@500;600&disply=swap");
         *{
@@ -103,21 +104,21 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container py-5 d-flex justify-content-center align-items-center">
         <h4>Enter Your 6 Digit OTP</h4>
         <form class="form">
             <div class="email-input">
-                <input type="email" id="email" placeholder="Enter your email" required>
+                <input type="email" id="email" class="form-control" placeholder="Enter your email" required>
             </div>
             <div class="input_field_box">
-                <input type="number" id="otp1" maxlength="1" required>
-                <input type="number" id="otp2" maxlength="1" required>
-                <input type="number" id="otp3" maxlength="1" required>
-                <input type="number" id="otp4" maxlength="1" required>
-                <input type="number" id="otp5" maxlength="1" required>
-                <input type="number" id="otp6" maxlength="1" required>
+                <input type="number" id="otp1" class="otp-input form-control text-center d-inline-block" maxlength="1" required style="width:56px;">
+                <input type="number" id="otp2" class="otp-input form-control text-center d-inline-block" maxlength="1" required style="width:56px;">
+                <input type="number" id="otp3" class="otp-input form-control text-center d-inline-block" maxlength="1" required style="width:56px;">
+                <input type="number" id="otp4" class="otp-input form-control text-center d-inline-block" maxlength="1" required style="width:56px;">
+                <input type="number" id="otp5" class="otp-input form-control text-center d-inline-block" maxlength="1" required style="width:56px;">
+                <input type="number" id="otp6" class="otp-input form-control text-center d-inline-block" maxlength="1" required style="width:56px;">
             </div>
-            <button type="submit" id="verifyBtn">Verify OTP</button>
+            <button type="submit" id="verifyBtn" class="btn btn-primary mt-3">Verify OTP</button>
         </form>
     </div>
 

@@ -11,15 +11,16 @@ function generateShareCode(length = 8) {
     return code;
 }
 
-// Create new classroom
+// Create new classroom (admin only)
 exports.createClassroom = async (req, res) => {
     try {
+        if (!req.user || req.user.role !== 'admin') {
+            return res.status(403).json({ error: 'Only admins can create classrooms' });
+        }
         const { name, description, instructor, capacity } = req.body;
-
         if (!name || !instructor) {
             return res.status(400).json({ error: 'Classroom name and instructor are required' });
         }
-
         const classroom = new Classroom({
             name,
             description,
@@ -27,9 +28,7 @@ exports.createClassroom = async (req, res) => {
             capacity: capacity || 30,
             students: []
         });
-
         await classroom.save();
-
         res.status(201).json({
             success: true,
             message: 'Classroom created successfully',
@@ -58,7 +57,7 @@ exports.getAllClassrooms = async (req, res) => {
     }
 };
 
-// Get classroom by ID
+// Get classroom by ID (always include shareCode)
 exports.getClassroomById = async (req, res) => {
     try {
         const { id } = req.params;
@@ -71,9 +70,15 @@ exports.getClassroomById = async (req, res) => {
             return res.status(404).json({ error: 'Classroom not found' });
         }
 
+        // Ensure shareCode is present in response
+        const classroomObj = classroom.toObject();
+        if (!classroomObj.shareCode && classroom.shareCode) {
+            classroomObj.shareCode = classroom.shareCode;
+        }
+
         res.status(200).json({
             success: true,
-            classroom
+            classroom: classroomObj
         });
     } catch (error) {
         console.error('Error fetching classroom:', error);
@@ -81,23 +86,23 @@ exports.getClassroomById = async (req, res) => {
     }
 };
 
-// Update classroom
+// Update classroom (admin only)
 exports.updateClassroom = async (req, res) => {
     try {
+        if (!req.user || req.user.role !== 'admin') {
+            return res.status(403).json({ error: 'Only admins can update classrooms' });
+        }
         const { id } = req.params;
         const { name, description, capacity } = req.body;
-
         const classroom = await Classroom.findByIdAndUpdate(
             id,
             { name, description, capacity },
             { new: true, runValidators: true }
         ).populate('instructor', 'username email')
          .populate('students', 'username email');
-
         if (!classroom) {
             return res.status(404).json({ error: 'Classroom not found' });
         }
-
         res.status(200).json({
             success: true,
             message: 'Classroom updated successfully',
@@ -109,16 +114,17 @@ exports.updateClassroom = async (req, res) => {
     }
 };
 
-// Delete classroom
+// Delete classroom (admin only)
 exports.deleteClassroom = async (req, res) => {
     try {
+        if (!req.user || req.user.role !== 'admin') {
+            return res.status(403).json({ error: 'Only admins can delete classrooms' });
+        }
         const { id } = req.params;
-
         const classroom = await Classroom.findByIdAndDelete(id);
         if (!classroom) {
             return res.status(404).json({ error: 'Classroom not found' });
         }
-
         res.status(200).json({
             success: true,
             message: 'Classroom deleted successfully'
@@ -129,32 +135,29 @@ exports.deleteClassroom = async (req, res) => {
     }
 };
 
-// Add student to classroom
+// Add student to classroom (admin only)
 exports.addStudentToClassroom = async (req, res) => {
     try {
+        if (!req.user || req.user.role !== 'admin') {
+            return res.status(403).json({ error: 'Only admins can add students' });
+        }
         const { classroomId, studentId } = req.body;
-
         const classroom = await Classroom.findById(classroomId);
         if (!classroom) {
             return res.status(404).json({ error: 'Classroom not found' });
         }
-
         const student = await UserSignUp.findById(studentId);
         if (!student) {
             return res.status(404).json({ error: 'Student not found' });
         }
-
         if (classroom.students.includes(studentId)) {
             return res.status(400).json({ error: 'Student already enrolled in this classroom' });
         }
-
         if (classroom.students.length >= classroom.capacity) {
             return res.status(400).json({ error: 'Classroom is full' });
         }
-
         classroom.students.push(studentId);
         await classroom.save();
-
         res.status(200).json({
             success: true,
             message: 'Student added to classroom successfully',
@@ -166,21 +169,21 @@ exports.addStudentToClassroom = async (req, res) => {
     }
 };
 
-// Remove student from classroom
+// Remove student from classroom (admin only)
 exports.removeStudentFromClassroom = async (req, res) => {
     try {
+        if (!req.user || req.user.role !== 'admin') {
+            return res.status(403).json({ error: 'Only admins can remove students' });
+        }
         const { classroomId, studentId } = req.body;
-
         const classroom = await Classroom.findById(classroomId);
         if (!classroom) {
             return res.status(404).json({ error: 'Classroom not found' });
         }
-
         classroom.students = classroom.students.filter(
             student => student.toString() !== studentId
         );
         await classroom.save();
-
         res.status(200).json({
             success: true,
             message: 'Student removed from classroom successfully',
@@ -253,32 +256,45 @@ exports.getShareLink = async (req, res) => {
     }
 };
 
-// Join classroom by share code (requires authentication)
+// Join classroom by share code (public, userId optional)
 exports.joinClassroom = async (req, res) => {
     try {
         const { code } = req.params;
-        const userId = req.user.id; // Assuming auth middleware sets req.user
+        let userId = null;
+        if (req.user && (req.user.id || req.user._id)) {
+            userId = req.user.id || req.user._id;
+        } else if (req.body && req.body.userId) {
+            userId = req.body.userId;
+        }
 
         const classroom = await Classroom.findOne({ shareCode: code });
         if (!classroom) {
             return res.status(404).json({ error: 'Invalid share code' });
         }
 
-        if (classroom.students.includes(userId)) {
-            return res.status(400).json({ error: 'Already joined this classroom' });
+        // If userId is provided, add to students
+        if (userId) {
+            if (classroom.students.includes(userId)) {
+                return res.status(400).json({ error: 'Already joined this classroom' });
+            }
+            if (classroom.students.length >= classroom.capacity) {
+                return res.status(400).json({ error: 'Classroom is full' });
+            }
+            classroom.students.push(userId);
+            await classroom.save();
         }
 
-        if (classroom.students.length >= classroom.capacity) {
-            return res.status(400).json({ error: 'Classroom is full' });
+        // Ensure shareCode is present in response
+        const classroomObj = classroom.toObject();
+        if (!classroomObj.shareCode && classroom.shareCode) {
+            classroomObj.shareCode = classroom.shareCode;
         }
-
-        classroom.students.push(userId);
-        await classroom.save();
 
         res.status(200).json({
             success: true,
-            message: 'Successfully joined the classroom',
-            classroom
+            message: userId ? 'Successfully joined the classroom' : 'Classroom found',
+            classroomId: classroom._id,
+            classroom: classroomObj
         });
     } catch (error) {
         console.error('Error joining classroom:', error);
