@@ -1,25 +1,28 @@
 const express = require('express');
 const signUP = require('../controller/SignupApi.controller');
 
-const app = express.Router();
+const router = express.Router();
 
-// GET routes for frontend access - keeping consistent naming
-app.get('/Account/Signup', (req, res) => {
-    res.json({ message: 'Signup page endpoint - use POST /Account/Signup for registration' });
+// RESTful signup routes mounted under the prefix used by server.js (e.g. /api/signup)
+// POST /api/signup              -> register a new user
+// POST /api/signup/otp          -> send OTP for an existing user
+// POST /api/signup/verify-otp   -> verify provided OTP
+// GET  /api/signup              -> small health/info endpoint for the signup API
+router.get('/', (req, res) => {
+    res.json({ message: 'Signup API root - use POST /api/signup to register' });
 });
 
-app.get('/Account/Signup/:SignUpToken', (req, res) => {
-    const { SignUpToken } = req.params;
+router.get('/:signupToken', (req, res) => {
+    const { signupToken } = req.params;
     res.json({ 
         message: 'Token-based signup endpoint', 
-        token: SignUpToken,
-        valid: SignUpToken && SignUpToken.length === 15 
+        token: signupToken,
+        valid: signupToken && signupToken.length === 15
     });
 });
 
-// POST routes for actual signup functionality - using consistent /Account/Signup prefix
-app.post('/Account/Signup', signUP.signUP);
-app.post('/Account/SignupOTP', signUP.sendOtp);
-app.post('/Account/verifyOTP', signUP.verifyOtp);
+router.post('/', signUP.signUP);
+router.post('/otp', signUP.sendOtp);
+router.post('/verify-otp', signUP.verifyOtp);
 
-module.exports = app;
+module.exports = router;
