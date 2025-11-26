@@ -7,6 +7,7 @@ const fs = require('fs').promises;
 const { exec } = require('child_process');
 const util = require('util');
 const execAsync = util.promisify(exec);
+const compilerController = require('../controller/compiler.controller');
 
 const compiler = new GDBCompiler();
 const upload = multer({ dest: '../../Compling/TemporaryCache/' });
@@ -51,14 +52,16 @@ router.post('/compile-content', async (req, res) => {
             return res.status(400).json({ error: 'Content and language are required' });
         }
 
-        const result = await compiler.compileFromContent(content, language, outputName || 'output');
-        
+        // Use safe controller that writes to a temp dir and executes with timeout
+        const result = await compilerController.compileAndRunFromContent({ content, language, filename: outputName, timeout: 5000 });
+        if (!result.success) {
+            return res.status(400).json({ success: false, result });
+        }
+
         res.json({
             success: true,
-            message: 'Compilation successful',
-            output: result.stdout,
-            errors: result.stderr,
-            executablePath: result.outputPath
+            message: 'Compilation/execution completed',
+            result
         });
 
     } catch (error) {
@@ -132,22 +135,9 @@ router.post('/compile/python', async (req, res) => {
             return res.status(400).json({ error: 'Content is required' });
         }
 
-        // Write content to temporary file
-        const tempFile = path.join('../../Compling/TemporaryCache/', `temp_${Date.now()}.py`);
-        await fs.writeFile(tempFile, content);
-
-        // Execute Python code
-        const { stdout, stderr } = await execAsync(`python "${tempFile}"`, { timeout: 10000 });
-
-        // Clean up temp file
-        await fs.unlink(tempFile);
-
-        res.json({
-            success: true,
-            message: 'Python execution successful',
-            output: stdout,
-            errors: stderr
-        });
+        const result = await compilerController.compileAndRunFromContent({ content, language: 'python', filename: outputName, timeout: 10000 });
+        if (!result.success) return res.status(400).json({ success: false, result });
+        res.json({ success: true, result });
 
     } catch (error) {
         res.status(500).json({
@@ -167,23 +157,10 @@ router.post('/compile/java', upload.single('file'), async (req, res) => {
             return res.status(400).json({ error: 'No file provided' });
         }
 
-        const fileName = path.parse(file.originalname).name;
-        const classPath = path.dirname(file.path);
-
-        // Compile Java file
-        const compileCommand = `javac "${file.path}"`;
-        await execAsync(compileCommand);
-
-        // Run compiled class
-        const runCommand = `java -cp "${classPath}" ${fileName}`;
-        const { stdout, stderr } = await execAsync(runCommand, { timeout: 10000 });
-
-        res.json({
-            success: true,
-            message: 'Java compilation and execution successful',
-            output: stdout,
-            errors: stderr
-        });
+        const content = await fs.readFile(file.path, 'utf8');
+        const result = await compilerController.compileAndRunFromContent({ content, language: 'java', filename: file.originalname, timeout: 10000 });
+        if (!result.success) return res.status(400).json({ success: false, result });
+        res.json({ success: true, result });
 
     } catch (error) {
         res.status(500).json({

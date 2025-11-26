@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>404 - Page Not Found</title>
-    <link href="../Lib/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/CSS/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
             margin: 0;
@@ -37,8 +38,13 @@
         }
 
         @keyframes glow {
-            from { text-shadow: 0 0 20px rgba(255, 107, 157, 0.5); }
-            to { text-shadow: 0 0 30px rgba(255, 107, 157, 0.8), 0 0 40px rgba(255, 107, 157, 0.6); }
+            from {
+                text-shadow: 0 0 20px rgba(255, 107, 157, 0.5);
+            }
+
+            to {
+                text-shadow: 0 0 30px rgba(255, 107, 157, 0.8), 0 0 40px rgba(255, 107, 157, 0.6);
+            }
         }
 
         .error-message {
@@ -92,18 +98,60 @@
             animation: float 6s ease-in-out infinite;
         }
 
-        .particle:nth-child(1) { width: 4px; height: 4px; top: 10%; left: 10%; animation-delay: 0s; }
-        .particle:nth-child(2) { width: 6px; height: 6px; top: 20%; left: 80%; animation-delay: 1s; }
-        .particle:nth-child(3) { width: 3px; height: 3px; top: 60%; left: 20%; animation-delay: 2s; }
-        .particle:nth-child(4) { width: 5px; height: 5px; top: 80%; left: 70%; animation-delay: 3s; }
-        .particle:nth-child(5) { width: 4px; height: 4px; top: 40%; left: 50%; animation-delay: 4s; }
+        .particle:nth-child(1) {
+            width: 4px;
+            height: 4px;
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .particle:nth-child(2) {
+            width: 6px;
+            height: 6px;
+            top: 20%;
+            left: 80%;
+            animation-delay: 1s;
+        }
+
+        .particle:nth-child(3) {
+            width: 3px;
+            height: 3px;
+            top: 60%;
+            left: 20%;
+            animation-delay: 2s;
+        }
+
+        .particle:nth-child(4) {
+            width: 5px;
+            height: 5px;
+            top: 80%;
+            left: 70%;
+            animation-delay: 3s;
+        }
+
+        .particle:nth-child(5) {
+            width: 4px;
+            height: 4px;
+            top: 40%;
+            left: 50%;
+            animation-delay: 4s;
+        }
 
         @keyframes float {
-            0%, 100% { transform: translateY(0px) translateX(0px); }
-            50% { transform: translateY(-20px) translateX(10px); }
+
+            0%,
+            100% {
+                transform: translateY(0px) translateX(0px);
+            }
+
+            50% {
+                transform: translateY(-20px) translateX(10px);
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="particles">
         <div class="particle"></div>
@@ -123,4 +171,5 @@
         <a href="/" class="back-button btn btn-primary">Go Home</a>
     </div>
 </body>
+
 </html>

@@ -1,8 +1,5 @@
-
 (function ($) {
     "use strict";
-
-
     /*==================================================================
     [ Focus input ]*/
     $('.input100').each(function(){
@@ -15,8 +12,7 @@
             }
         })    
     })
-  
-  
+
     /*==================================================================
     [ Validate ]*/
     var input = $('.validate-input .input100');
@@ -33,7 +29,6 @@
 
         return check;
     });
-
 
     $('.validate-form .input100').each(function(){
         $(this).focus(function(){
@@ -82,6 +77,4 @@
         }
         
     });
-
-
 })(jQuery);

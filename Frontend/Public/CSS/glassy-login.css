@@ -1,0 +1,376 @@
+/* Glassy Login & Signup Base Styles */
+
+.glass-container {
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-radius: 24px;
+  box-shadow: 0 0 15px 2px rgba(118, 75, 162, 0.7);
+  border: 1.5px solid rgba(118, 75, 162, 0.8);
+  padding: 48px 36px;
+  max-width: 480px;
+  margin: 60px auto;
+  transition: all 0.4s ease;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #f0f0f5;
+}
+
+.glass-container:hover {
+  box-shadow: 0 0 30px 8px rgba(118, 75, 162, 0.9);
+}
+
+.glass-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #ffffffcc;
+  text-align: center;
+  margin-bottom: 30px;
+  letter-spacing: 1.15px;
+  text-shadow: 0 2px 8px rgba(102, 126, 234, 0.8);
+}
+
+/* Enhanced Login Page Specific Styles */
+
+.login-card {
+  max-width: 400px;
+  margin: 40px auto;
+  padding: 40px 30px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37),
+    0 0 10px 2px rgba(102, 126, 234, 0.4);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  color: #e9e9fb;
+  text-align: center;
+  transition: box-shadow 0.4s ease;
+  position: relative;
+}
+
+.login-card:hover {
+  box-shadow: 0 12px 42px 0 rgba(31, 38, 135, 0.5),
+    0 0 18px 4px rgba(118, 75, 162, 0.5);
+}
+
+.login-icon {
+  font-size: 3rem;
+  margin-bottom: 20px;
+  color: #667eea;
+  filter: drop-shadow(0 0 2px #8a6ff7cc);
+  transition: filter 0.3s ease;
+}
+
+.login-card:hover .login-icon {
+  filter: drop-shadow(0 0 5px #9a7ff7cc);
+}
+
+.glass-input {
+  width: 100%;
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  border: none;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.25);
+  color: #ffffffdd;
+  font-size: 1rem;
+  box-shadow: inset 2px 2px 6px rgba(255, 255, 255, 0.15),
+    inset -2px -2px 6px rgba(0, 0, 0, 0.3);
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.glass-input::placeholder {
+  color: #ddd;
+}
+
+.glass-input:focus {
+  background: rgba(255, 255, 255, 0.4);
+  outline: none;
+  color: #000;
+}
+
+.glass-checkbox-label {
+  color: #f0f0f5cc;
+  user-select: none;
+  font-weight: 500;
+  margin-left: 8px;
+  cursor: pointer;
+}
+
+.glass-checkbox {
+  accent-color: #667eea;
+}
+
+.glass-button {
+  width: 100%;
+  padding: 14px 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 14px;
+  color: white;
+  font-size: 1.15rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 15px rgba(102, 126, 234, 0.7);
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glass-button:hover {
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  box-shadow: 0 12px 30px rgba(118, 75, 162, 0.8);
+}
+
+.glass-link {
+  text-align: center;
+  display: block;
+  margin-top: 15px;
+  color: #b3b3cc;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.glass-link:hover {
+  color: #e0e0ff;
+  text-decoration: underline;
+}
+
+.glass-error {
+  color: #ff6b6bcc;
+  margin-bottom: 15px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* Side Navigation Overlay Styles */
+.side-nav-overlay {
+  position: fixed;
+  top: 0;
+  left: -350px;
+  width: 320px;
+  height: 100vh;
+  background: rgba(15, 15, 35, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: 1000;
+  transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-y: auto;
+  box-shadow: 8px 0 32px rgba(0, 0, 0, 0.5);
+  padding: 60px 0 40px 0;
+}
+
+.side-nav-overlay.active {
+  left: 0;
+}
+
+.nav-close-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #e6eef8;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 1001;
+}
+
+.nav-close-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
+}
+
+.nav-menu {
+  list-style: none;
+  padding: 20px;
+  margin: 0;
+}
+
+.nav-menu li {
+  margin: 0;
+  padding: 0;
+}
+
+.nav-link {
+  display: block;
+  padding: 14px 18px;
+  color: #cbd5e1;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  margin-bottom: 8px;
+  border-left: 3px solid transparent;
+}
+
+.nav-link:hover {
+  background: rgba(124, 92, 255, 0.15);
+  color: #7c5cff;
+  border-left-color: #7c5cff;
+  padding-left: 24px;
+}
+
+.nav-link.logout-link {
+  color: #ff6b6b;
+  border-left-color: transparent;
+}
+
+.nav-link.logout-link:hover {
+  background: rgba(255, 107, 107, 0.15);
+  color: #ff6b6b;
+  border-left-color: #ff6b6b;
+}
+
+.nav-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0);
+  z-index: 999;
+  transition: background 0.3s ease;
+  pointer-events: none;
+}
+
+.nav-backdrop.active {
+  background: rgba(0, 0, 0, 0.5);
+  pointer-events: all;
+}
+
+.nav-toggle-btn {
+  position: fixed;
+  top: 30px;
+  left: 30px;
+  background: rgba(124, 92, 255, 0.2);
+  border: 1px solid rgba(124, 92, 255, 0.4);
+  color: #7c5cff;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 500;
+  transition: all 0.3s ease;
+}
+
+.nav-toggle-btn:hover {
+  background: rgba(124, 92, 255, 0.3);
+  border-color: rgba(124, 92, 255, 0.6);
+  box-shadow: 0 0 20px rgba(124, 92, 255, 0.3);
+}
+
+.nav-toggle-btn svg {
+  stroke-width: 2;
+}
+
+/* Adjust login form container for new layout */
+.limiter {
+  position: relative;
+  z-index: 1;
+}
+
+/* When nav is open, push / overflow main content for a layered effect */
+body.nav-open .limiter {
+  transform: translateX(300px) scale(0.985);
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+  box-shadow: -20px 40px 80px rgba(2, 6, 23, 0.45);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.nav-toggle-btn:hover svg {
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-4px);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .side-nav-overlay {
+    width: 280px;
+    left: -280px;
+  }
+
+  .nav-toggle-btn {
+    top: 20px;
+    left: 20px;
+    width: 40px;
+    height: 40px;
+  }
+
+  .nav-close-btn {
+    top: 16px;
+    right: 16px;
+    width: 36px;
+    height: 36px;
+  }
+
+  .nav-menu {
+    padding: 15px;
+  }
+
+  .nav-link {
+    padding: 12px 14px;
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+}
+
+/* Responsive adjustments */
+
+@media (max-width: 480px) {
+  .login-card {
+    padding: 30px 20px;
+    margin: 20px auto;
+  }
+}
+
+/* body 
+{ 
+  background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%); 
+}
+.signup-container {
+    max-width: 400px;
+    margin: 5vh auto; 
+    background: rgba(255,255,255,0.9); 
+    border-radius: 16px; 
+    box-shadow: 0 8px 32px 0 rgba(31,38,135,0.18); 
+    padding: 2.5rem 2rem; 
+}
+.form-label 
+{ 
+  font-weight: 500; 
+}
+.form-control, .form-select 
+{ 
+  border-radius: 8px; 
+}
+.btn-primary 
+{ 
+  width: 100%; border-radius: 8px; 
+}
+.text-danger 
+{ 
+  font-size: 0.95rem; 
+} */
