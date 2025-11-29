@@ -1,207 +1,478 @@
-/* ===== New Proper Sidenav Styling ===== */
+/* ===== MODERN GLASSY SIDENAV STYLING ===== */
 
-.sidenav {
-  height: 100vh;
-  width: 270px;
-  position: fixed;
-  top: 60px;
-  left: 0;
-  background: rgba(18, 18, 25, 0.9);
-  box-shadow: 3px 0 15px rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(12px);
-  overflow-y: auto;
-  font-size: 17px;
-  transition: width 0.3s ease;
-  padding-top: 10px;
-  z-index: 1000;
-  color: #fff;
+/* Base sidenav glassmorphism styling */
+.sidenav-glassy {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    border-left: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: -8px 0 32px rgba(0, 0, 0, 0.1);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.sidenav .closebtn {
-  font-size: 28px;
-  color: white;
-  text-align: right;
-  padding: 10px 15px;
-  display: block;
-  cursor: pointer;
-  user-select: none;
-  transition: color 0.3s ease;
+/* Dark mode sidenav styling */
+body.dark .sidenav-glassy {
+    background: rgba(30, 30, 35, 0.8);
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: -8px 0 32px rgba(0, 0, 0, 0.3);
 }
 
-.sidenav .closebtn:hover {
-  color: #ff4b2b;
-  text-shadow: 0 0 6px #ff4b2b;
+/* Close button styling */
+.sidenav-glassy .closebtn {
+    position: absolute;
+    top: 15px;
+    right: 25px;
+    font-size: 32px;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    line-height: 1;
+    padding: 5px;
 }
 
-.sidenav input.search1-glassy {
-  display: block;
-  margin: 10px 15px;
-  width: calc(100% - 30px);
-  padding: 8px;
-  border-radius: 8px;
-  border: none;
-  background: rgba(255, 255, 255, 0.15);
-  color: #fff;
-  font-size: 16px;
-  outline: none;
-  transition: background 0.3s ease;
+.sidenav-glassy .closebtn:hover {
+    color: #fff;
+    transform: rotate(90deg) scale(1.1);
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
 }
 
-.sidenav input.search1-glassy::placeholder {
-  color: rgba(255, 255, 255, 0.7);
+body.dark .sidenav-glassy .closebtn {
+    color: rgba(255, 255, 255, 0.6);
 }
 
-.sidenav input.search1-glassy:focus {
-  background: rgba(255, 255, 255, 0.3);
+body.dark .sidenav-glassy .closebtn:hover {
+    color: rgba(255, 255, 255, 0.9);
 }
 
-.sidenav a {
-  display: block;
-  padding: 12px 25px;
-  color: #eee;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 16px;
-  border-radius: 10px;
-  margin: 5px 15px;
-  user-select: none;
-  transition: background-color 0.3s ease, color 0.3s ease;
+/* Sidenav links styling */
+.sidenav-glassy a {
+    padding: 12px 20px;
+    text-decoration: none;
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.8);
+    display: block;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    margin: 5px 10px;
+    border-radius: 8px;
+    position: relative;
 }
 
-.sidenav a:hover {
-  background-color: rgba(255, 75, 43, 0.4);
-  color: #fff;
-  box-shadow: 0 0 10px rgba(255, 75, 43, 0.7);
+.sidenav-glassy a::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+    border-radius: 8px;
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: -1;
 }
 
-.sidenav hr {
-  border: none;
-  height: 1px;
-  margin: 15px 10px;
-  background: rgba(255, 255, 255, 0.15);
+.sidenav-glassy a:hover {
+    color: #fff;
+    transform: translateX(8px);
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
-.sidenav div {
-  padding: 10px 15px;
-  font-weight: 600;
-  font-size: 14px;
-  color: #ccc;
-  user-select: none;
+.sidenav-glassy a:hover::before {
+    opacity: 1;
 }
 
-.sidenav select {
-  width: 100%;
-  padding: 6px;
-  border-radius: 6px;
-  border: none;
-  background: rgba(255, 255, 255, 0.15);
-  color: #eee;
-  font-weight: 600;
-  margin-top: 5px;
-  cursor: pointer;
-  appearance: none;
-  outline: none;
+body.dark .sidenav-glassy a {
+    color: rgba(255, 255, 255, 0.7);
 }
 
-.sidenav select option {
-  background: #121219;
-  color: #eee;
+body.dark .sidenav-glassy a:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 8px 20px rgba(255, 255, 255, 0.1);
 }
 
-.sidenav .colorPicker-glassy label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 5px;
+/* Input fields in sidenav */
+.sidenav-glassy input[type="search"],
+.sidenav-glassy input[type="text"],
+.sidenav-glassy input[type="color"],
+.sidenav-glassy select {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.9);
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    margin: 8px 0;
 }
 
-.sidenav .colorPicker-glassy input[type="color"] {
-  width: 100%;
-  height: 38px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  transition: box-shadow 0.3s ease;
+.sidenav-glassy input[type="search"]:focus,
+.sidenav-glassy input[type="text"]:focus,
+.sidenav-glassy input[type="color"]:focus,
+.sidenav-glassy select:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
 }
 
-.sidenav .colorPicker-glassy input[type="color"]:hover {
-  box-shadow: 0 0 8px 2px rgba(255, 75, 43, 0.6);
+body.dark .sidenav-glassy input[type="search"],
+body.dark .sidenav-glassy input[type="text"],
+body.dark .sidenav-glassy input[type="color"],
+body.dark .sidenav-glassy select {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.85);
 }
 
-.sidenav button.defaultcolors-glassy {
-  width: calc(100% - 30px);
-  background: linear-gradient(45deg, #ff416c, #ff4b2b);
-  border: none;
-  color: white;
-  font-weight: 700;
-  font-size: 16px;
-  padding: 10px 15px;
-  margin: 15px auto;
-  border-radius: 10px;
-  cursor: pointer;
-  display: block;
-  user-select: none;
-  transition: background 0.3s ease;
+body.dark .sidenav-glassy input[type="search"]:focus,
+body.dark .sidenav-glassy input[type="text"]:focus,
+body.dark .sidenav-glassy input[type="color"]:focus,
+body.dark .sidenav-glassy select:focus {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.25);
 }
 
-.sidenav button.defaultcolors-glassy:hover {
-  background: linear-gradient(45deg, #ff4b2b, #ff416c);
-  box-shadow: 0 0 12px #ff4b2b;
+/* Sidenav paragraphs styling */
+.sidenav-glassy p {
+    color: rgba(255, 255, 255, 0.8);
+    margin: 15px 20px 10px 20px;
+    font-size: 14px;
+    font-weight: 500;
 }
 
-.sidenav a.logout-btn-glassy {
-  background: linear-gradient(45deg, #ff4b2b, #ff416c);
-  text-align: center;
-  font-weight: 700;
-  color: white;
-  margin: 15px 25px 10px 25px;
-  padding: 10px 5px;
-  border-radius: 10px;
-  cursor: pointer;
-  user-select: none;
-  transition: background 0.4s ease;
+body.dark .sidenav-glassy p {
+    color: rgba(255, 255, 255, 0.75);
 }
 
-.sidenav a.logout-btn-glassy:hover {
-  background: linear-gradient(45deg, #ff416c, #ff4b2b);
-  color: white;
-  text-shadow: 0 0 6px #fff;
-  box-shadow: 0 0 12px #ff4b2b;
+/* Select dropdown styling */
+.sidenav-glassy select {
+    cursor: pointer;
+    width: 100%;
+    max-width: 150px;
 }
 
-.sidenav a[title="admin only"] {
-  font-weight: 700;
-  color: #ff6666 !important;
+.sidenav-glassy select option {
+    background: #333;
+    color: #fff;
 }
 
-.sidenav a[title="admin only"]:hover {
-  color: #ff2222 !important;
+body.dark .sidenav-glassy select option {
+    background: #1a1a1a;
+    color: #fff;
 }
 
-/* Scrollbar */
-.sidenav::-webkit-scrollbar {
-  width: 7px;
+/* Button styling in sidenav */
+.sidenav-glassy button {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    margin: 5px 0;
 }
 
-.sidenav::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 75, 43, 0.5);
-  border-radius: 10px;
+.sidenav-glassy button:hover {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.1));
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
-.sidenav::-webkit-scrollbar-track {
-  background: transparent;
+.sidenav-glassy button:active {
+    transform: translateY(0);
 }
 
-/* Responsive - small screen minimize sidenav */
-@media (max-width: 768px) {
-  .sidenav {
-    width: 0;
-    overflow-x: hidden;
-    transition: width 0.4s ease;
-    box-shadow: none;
-  }
-  
-  .sidenav.open {
-    width: 270px;
-    box-shadow: 3px 0 15px rgba(0, 0, 0, 0.6);
-  }
+body.dark .sidenav-glassy button {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02));
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+body.dark .sidenav-glassy button:hover {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.08));
+    box-shadow: 0 8px 20px rgba(255, 255, 255, 0.1);
+}
+
+/* Horizontal line styling */
+.sidenav-glassy hr {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, 
+        rgba(255, 255, 255, 0), 
+        rgba(255, 255, 255, 0.3), 
+        rgba(255, 255, 255, 0));
+    margin: 15px 10px;
+}
+
+/* Copyright text styling */
+.sidenav-glassy a[style*="float"],
+.sidenav-glassy a[style*="margin-top"] {
+    font-size: 11px !important;
+    color: rgba(255, 255, 255, 0.5);
+    padding: 8px 12px;
+}
+
+.sidenav-glassy a[style*="float"]:hover,
+.sidenav-glassy a[style*="margin-top"]:hover {
+    color: rgba(255, 255, 255, 0.7);
+    background: transparent;
+    transform: none;
+}
+
+body.dark .sidenav-glassy a[style*="float"],
+body.dark .sidenav-glassy a[style*="margin-top"] {
+    color: rgba(255, 255, 255, 0.45);
+}
+
+/* Search input styling */
+.search1-glassy {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 16px;
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    margin: 10px 0;
+    transition: all 0.3s ease;
+}
+
+.search1-glassy::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.search1-glassy:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
+}
+
+body.dark .search1-glassy {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.85);
+}
+
+body.dark .search1-glassy::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+body.dark .search1-glassy:focus {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+}
+
+/* Font size label styling */
+#fontcont-glassy {
+    color: rgba(255, 255, 255, 0.8);
+    margin: 15px 20px 10px 20px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+body.dark #fontcont-glassy {
+    color: rgba(255, 255, 255, 0.75);
+}
+
+/* Color picker styling */
+.colorPicker-glassy {
+    color: rgba(255, 255, 255, 0.8);
+    margin: 15px 20px 10px 20px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.colorPicker-glassy input[type="color"] {
+    cursor: pointer;
+    border-radius: 6px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    width: 40px;
+    height: 40px;
+    margin-left: 10px;
+    transition: all 0.3s ease;
+}
+
+.colorPicker-glassy input[type="color"]:hover {
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+}
+
+body.dark .colorPicker-glassy {
+    color: rgba(255, 255, 255, 0.75);
+}
+
+/* Default colors button styling */
+.defaultcolors-glassy {
+    background: linear-gradient(135deg, rgba(100, 200, 255, 0.3), rgba(150, 150, 255, 0.2));
+    border: 2px solid rgba(100, 200, 255, 0.4);
+    color: #fff;
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    margin: 15px 20px;
+    width: calc(100% - 40px);
+}
+
+.defaultcolors-glassy:hover {
+    background: linear-gradient(135deg, rgba(100, 200, 255, 0.4), rgba(150, 150, 255, 0.3));
+    border: 2px solid rgba(100, 200, 255, 0.6);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(100, 200, 255, 0.3);
+}
+
+body.dark .defaultcolors-glassy {
+    background: linear-gradient(135deg, rgba(100, 150, 255, 0.2), rgba(100, 100, 200, 0.15));
+    border: 2px solid rgba(100, 150, 255, 0.3);
+}
+
+body.dark .defaultcolors-glassy:hover {
+    background: linear-gradient(135deg, rgba(100, 150, 255, 0.3), rgba(100, 100, 200, 0.25));
+    border: 2px solid rgba(100, 150, 255, 0.5);
+    box-shadow: 0 8px 20px rgba(100, 150, 255, 0.2);
+}
+
+/* Logout button special styling */
+.logout-btn-glassy {
+    background: linear-gradient(135deg, rgba(255, 100, 100, 0.3), rgba(255, 80, 80, 0.2)) !important;
+    border: 2px solid rgba(255, 100, 100, 0.4) !important;
+    color: #fff !important;
+    padding: 10px 15px !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+    width: 70% !important;
+    margin-left: 15% !important;
+    margin-top: 10px !important;
+    text-align: center !important;
+}
+
+.logout-btn-glassy:hover {
+    background: linear-gradient(135deg, rgba(255, 100, 100, 0.4), rgba(255, 80, 80, 0.3)) !important;
+    border: 2px solid rgba(255, 100, 100, 0.6) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 20px rgba(255, 100, 100, 0.3) !important;
+}
+
+body.dark .logout-btn-glassy {
+    background: linear-gradient(135deg, rgba(255, 100, 100, 0.2), rgba(255, 80, 80, 0.15)) !important;
+    border: 2px solid rgba(255, 100, 100, 0.3) !important;
+}
+
+body.dark .logout-btn-glassy:hover {
+    background: linear-gradient(135deg, rgba(255, 100, 100, 0.3), rgba(255, 80, 80, 0.25)) !important;
+    border: 2px solid rgba(255, 100, 100, 0.5) !important;
+    box-shadow: 0 8px 20px rgba(255, 100, 100, 0.2) !important;
+}
+
+/* Responsive adjustments */
+@media screen and (max-height: 450px) {
+    .sidenav-glassy {
+        padding-top: 15px;
+    }
+
+    .sidenav-glassy a {
+        padding: 10px 15px;
+        font-size: 16px;
+    }
+
+    .sidenav-glassy .closebtn {
+        font-size: 28px;
+    }
+}
+
+@media (max-width: 600px) {
+    .sidenav-glassy {
+        width: 100% !important;
+    }
+
+    .sidenav-glassy a {
+        padding: 10px 15px;
+        margin: 3px 5px;
+    }
+
+    .logout-btn-glassy {
+        width: 80% !important;
+        margin-left: 10% !important;
+    }
+}
+
+/* Animation for sidenav entrance */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.sidenav-glassy a {
+    animation: slideIn 0.3s ease forwards;
+}
+
+.sidenav-glassy a:nth-child(n+2) {
+    animation-delay: calc((var(--index, 0) + 1) * 50ms);
+}
+
+/* Admin-only link styling */
+.sidenav-glassy a[title="admin only"] {
+    border-left: 3px solid rgba(255, 200, 100, 0.3);
+    padding-left: 17px;
+}
+
+.sidenav-glassy a[title="admin only"]:hover {
+    border-left: 3px solid rgba(255, 200, 100, 0.6);
+    background: rgba(255, 200, 100, 0.1);
+}
+
+body.dark .sidenav-glassy a[title="admin only"] {
+    border-left: 3px solid rgba(255, 180, 80, 0.2);
+}
+
+body.dark .sidenav-glassy a[title="admin only"]:hover {
+    border-left: 3px solid rgba(255, 180, 80, 0.5);
+    background: rgba(255, 180, 80, 0.08);
+}
+
+/* Smooth scroll for sidenav content */
+.sidenav-glassy {
+    scroll-behavior: smooth;
+}
+
+/* Icon effects for arrow links */
+.sidenav-glassy a[href*="extension"],
+.sidenav-glassy a[href*="games"],
+.sidenav-glassy a[href*="theme"] {
+    position: relative;
+    padding-right: 30px;
+}
+
+.sidenav-glassy a[href*="extension"]::after,
+.sidenav-glassy a[href*="games"]::after,
+.sidenav-glassy a[href*="theme"]::after {
+    content: '→';
+    position: absolute;
+    right: 15px;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.sidenav-glassy a[href*="extension"]:hover::after,
+.sidenav-glassy a[href*="games"]:hover::after,
+.sidenav-glassy a[href*="theme"]:hover::after {
+    opacity: 1;
+    right: 12px;
 }

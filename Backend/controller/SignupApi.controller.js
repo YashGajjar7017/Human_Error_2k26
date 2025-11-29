@@ -1,4 +1,5 @@
 const SignUPModel = require('../models/User.model');
+const SignupModel = require('../models/Signup.model');
 const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
 const mongoose = require('mongoose');
@@ -106,50 +107,64 @@ exports.signUP = async (req, res) => {
     }
 
     try {
-        // Check if the user already exists
-        const existingUser = await SignUPModel.findOne({ 
-            $or: [{ email }, { username }] 
+        // Check if the user already exists in User model
+        const existingUser = await SignUPModel.findOne({
+            $or: [{ email }, { username }]
         });
-        
+
         if (existingUser) {
             if (existingUser.email === email) {
-                return res.status(400).json({ 
+                return res.status(400).json({
                     success: false,
-                    error: "Email already registered." 
+                    error: "Email already registered."
                 });
             }
             if (existingUser.username === username) {
-                return res.status(400).json({ 
+                return res.status(400).json({
                     success: false,
-                    error: "Username already taken." 
+                    error: "Username already taken."
                 });
             }
         }
 
-        // Create new user - only pass required fields
-        const newUser = new SignUPModel({
+        // Check if signup already exists
+        const existingSignup = await SignupModel.findOne({
+            $or: [{ email }, { username }]
+        });
+
+        if (existingSignup) {
+            if (existingSignup.email === email) {
+                return res.status(400).json({
+                    success: false,
+                    error: "Signup already initiated for this email."
+                });
+            }
+            if (existingSignup.username === username) {
+                return res.status(400).json({
+                    success: false,
+                    error: "Username already taken."
+                });
+            }
+        }
+
+        // Create signup entry - only pass required fields
+        const newSignup = new SignupModel({
             username,
             email,
             password
         });
 
-        await newUser.save();
+        await newSignup.save();
 
-        // Generate tokens for immediate login
-        const accessToken = newUser.generateAccessToken();
-        const refreshToken = newUser.generateRefreshToken();
+        console.log("Signup initiated successfully:", username);
 
-        console.log("User registered successfully:", username);
-        
-        res.status(201).json({ 
+        res.status(201).json({
             success: true,
-            message: "User registered successfully", 
+            message: "Signup initiated successfully. Please verify your email with OTP.",
             data: {
-                username: newUser.username,
-                email: newUser.email,
-                userId: newUser._id,
-                accessToken,
-                refreshToken
+                username: newSignup.username,
+                email: newSignup.email,
+                signupId: newSignup._id
             }
         });
     } catch (err) {
@@ -188,26 +203,25 @@ exports.sendOtp = async (req, res) => {
     }
 
     try {
-        const user = await SignUPModel.findOne({ email });
-        if (!user) {
-            return res.status(404).json({ 
+        const signup = await SignupModel.findOne({ email });
+        if (!signup) {
+            return res.status(404).json({
                 success: false,
-                error: "User not found with this email." 
+                error: "Signup not found with this email. Please initiate signup first."
             });
         }
 
         const otp = generateOTP();
         const expirationTime = Date.now() + 10 * 60 * 1000; // OTP valid for 10 minutes
 
-        // Save OTP to user database - using a temporary storage approach
-        // In production, consider using Redis or a separate OTP collection
-        await SignUPModel.updateOne(
-            { email }, 
-            { 
-                $set: { 
-                    otp, 
-                    otpExpiresAt: new Date(expirationTime) 
-                } 
+        // Save OTP to signup database
+        await SignupModel.updateOne(
+            { email },
+            {
+                $set: {
+                    otp,
+                    otpExpiresAt: new Date(expirationTime)
+                }
             }
         );
 
@@ -249,47 +263,61 @@ exports.verifyOtp = async (req, res) => {
     }
 
     try {
-        const user = await SignUPModel.findOne({ email });
+        const signup = await SignupModel.findOne({ email });
 
-        if (!user) {
-            return res.status(404).json({ 
-                success: false, 
-                error: "User not found." 
+        if (!signup) {
+            return res.status(404).json({
+                success: false,
+                error: "Signup not found."
             });
         }
 
-        if (!user.otp || !user.otpExpiresAt) {
-            return res.status(400).json({ 
-                success: false, 
-                error: "OTP not found." 
+        if (!signup.otp || !signup.otpExpiresAt) {
+            return res.status(400).json({
+                success: false,
+                error: "OTP not found."
             });
         }
 
-        if (Date.now() > user.otpExpiresAt) {
-            return res.status(400).json({ 
-                success: false, 
-                error: "OTP has expired." 
+        if (Date.now() > signup.otpExpiresAt) {
+            return res.status(400).json({
+                success: false,
+                error: "OTP has expired."
             });
         }
 
-        if (user.otp !== otp) {
-            return res.status(400).json({ 
-                success: false, 
-                error: "Invalid OTP." 
+        if (signup.otp !== otp) {
+            return res.status(400).json({
+                success: false,
+                error: "Invalid OTP."
             });
         }
 
-        // Clear OTP after verification
-        await SignUPModel.updateOne({ email }, { $unset: { otp: "", otpExpiresAt: "" } });
+        // Create User instance after successful OTP verification
+        const newUser = new SignUPModel({
+            username: signup.username,
+            email: signup.email,
+            password: signup.password // Password is already hashed in Signup model
+        });
+
+        await newUser.save();
+
+        // Remove the signup entry after successful user creation
+        await SignupModel.deleteOne({ email });
 
         // Generate tokens after successful OTP verification
-        const accessToken = user.generateAccessToken();
-        const refreshToken = user.generateRefreshToken();
+        const accessToken = newUser.generateAccessToken();
+        const refreshToken = newUser.generateRefreshToken();
 
-        res.status(200).json({ 
-            success: true, 
-            message: "OTP verified successfully.",
+        console.log("User registered successfully after OTP verification:", newUser.username);
+
+        res.status(200).json({
+            success: true,
+            message: "OTP verified successfully. User account created.",
             data: {
+                username: newUser.username,
+                email: newUser.email,
+                userId: newUser._id,
                 accessToken,
                 refreshToken
             }

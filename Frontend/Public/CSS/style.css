@@ -288,6 +288,7 @@ body.dark .search-field i {
     /* margin: 0; */
     padding: 10px 0;
     height: 62vh;
+    width: 100vw; /*--changed : 97vw*/
     /* border-radius: 11px; */
     resize: none;
     font-size: 16px;
@@ -300,7 +301,6 @@ body.dark .search-field i {
     margin-right: 0.5vw;
     margin-left: 0.5vw;
     padding-left: calc(2.5rem + 5px);
-    width: 99vw; /*--changed : 97vw*/
     background-color: #333;
     border-color: #272822;
     color: rgb(255, 255, 240);

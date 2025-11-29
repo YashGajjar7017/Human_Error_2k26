@@ -81,8 +81,9 @@ const jsonParser = express.json({
         }
     }
 });
+
 // Enable JSON parser middleware globally to fix undefined req.body data
-app.use(jsonParser);
+// app.use(jsonParser);
 
 // login auth
 app.use((req, res, next) => {

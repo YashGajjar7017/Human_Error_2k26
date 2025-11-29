@@ -101,8 +101,8 @@
         </nav>
         <!-- Navbar ended -->
 
-    <!-- Main Content -->
-    <main class="container-fluid" style="margin-top: 60px; margin-left: 300px;">
+        <!-- Main Content -->
+        <main class="container-fluid" style="margin-top: 3vh;">
 
     <!-------------- sidenav1--------- -->
     <div id="mySidenav" class="sidenav sidenav-glassy" style="font-size: 17px;">
@@ -135,11 +135,12 @@
     </div>
 
     <!-------- Sidebar2-------- -->
-    <div id="mySidenav2" class="sidenav sidenav-glassy" style="font-size: 17px; width: 270px; left: 0; position: fixed; top: 60px; height: calc(100% - 60px); overflow-y: auto; box-shadow: 3px 0 15px rgba(0, 0, 0, 0.5);">
-        <a href="javascript:void(0)" class="closebtn" onclick="closeNav1()" style="font-size: 28px; color: white; text-align: right; padding: 10px 15px; display: block;">&times;</a>
-        
-        <input type="search" name="searchcode" class="search1-glassy" placeholder="Search code..." style="margin: 10px 15px; width: calc(100% - 30px); padding: 8px; border-radius: 8px;">
-
+    <div id="mySidenav2" class="sidenav sidenav-glassy sidebarOpen" style="font-size: 17px;">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav1()">&times;</a>
+        <!-- <a href="#"><input type="search" name="searchcode" class="search1" placeholder="search code"></a> -->
+        <!-- <hr style="color: white;">
+            <a href="#">AI search</a>
+            <hr style="color: white;"> -->
         <a href="../extension">Extension</a>
         <a href="../games/games.html">Games</a>
         <a href="../other/contactUs.html">Contact us</a>
@@ -149,38 +150,11 @@
         <a href="/classroom" title="admin only">Classroom</a>
         <a href="/questions" title="admin only">Ask your question</a>
         <a href="/404" title="admin only">Hire a Developer</a>
-        
-        <hr style="color: #fff; margin: 15px 10px;">
-        
-        <div style="padding: 0 15px; color: white;">
-            <label for="fontsize">Font Size:</label>
-            <select id="fontsize" name="fontsize" style="width: 100%; margin-top: 5px; padding: 5px; border-radius: 5px;">
-                <option value="12">12</option>
-                <option value="14" selected>14</option>
-                <option value="16">16</option>
-                <option value="18">18</option>
-                <option value="20">20</option>
-                <option value="22">22</option>
-            </select>
-        </div>
-        
-        <div class="colorPicker-glassy" style="padding: 10px 15px; color: white;">
-            <label for="color1">Background :</label>
-            <input type="color" id="color1" name="color1" style="width: 100%; height: 35px; border-radius: 8px; margin-top: 5px;">
-        </div>
-        
-        <div class="colorPicker-glassy" style="padding: 10px 15px; color: white;">
-            <label for="color2">Font Color :</label>
-            <input type="color" id="color2" name="color2" style="width: 100%; height: 35px; border-radius: 8px; margin-top: 5px;">
-        </div>
+        <hr style="color: #fff;">
+        <a href="javascript:void(0);" onclick="logout()" id="logout" class="logout-btn-glassy">Logout</a>
 
-        <button id="defaultcolors" class="defaultcolors-glassy" style="margin: 15px;">Reset Theme</button>
-        
-        <hr style="color: #fff; margin: 15px 10px;">
-        
-        <a href="javascript:void(0);" onclick="logout()" id="logout" class="logout-btn-glassy" style="margin: 15px 25px 10px 25px;">Logout</a>
+        <a style="font-size: 13px;float: center;margin-top: 1vh;">Copyright to Yash Production</a>
 
-        <a style="font-size: 13px; text-align: center; display: block; margin: 10px 0; color: rgba(255, 255, 255, 0.5);">Copyright to Yash Production</a>
     </div>
     <!-- sidenav2 ended -->
     <!-- sidenav4 -->
@@ -508,15 +482,12 @@ void main()
         document.getElementById("mySidenav").style.width = "0";
     }
 
-    // Disable sidenav toggle functions for permanent sidenav
     function openNav1() {
-        // Do nothing or keep sidenav visible
         document.getElementById("mySidenav2").style.width = "250px";
     }
 
     function closeNav1() {
-        // Disable close for permanent sidenav
-        // document.getElementById("mySidenav2").style.width = "0";
+        document.getElementById("mySidenav2").style.width = "0";
     }
 
     function openNav3() {
