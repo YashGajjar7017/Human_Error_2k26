@@ -61,7 +61,7 @@
                             <i class='bx bx-search'></i>
                         </div>
                     </div>
-                    <a href="/login_1.html" id="login" class="login">Login</a>
+                    <a href="/Account/login" id="login" class="login">Login</a>
                     <!-- <a id="login" class="login" onclick="login()">Login</a> -->
 
                 </div>
@@ -88,7 +88,7 @@
                 <img src="/images/github.jpg" alt="User Logo">
             </div>
             <div class="user-name">
-                <p>{"*UserName_list"}</p>
+                <p id="user-name">Loading...</p>
             </div>
         </div>
 
@@ -127,17 +127,57 @@
 <script src="https://cdn.jsdelivr.net/npm/simple-peer@9.11.1/simplepeer.min.js"></script>
 <script>
     // --- User/session helpers (replace with real auth integration) ---
-    let currentUser = { id: '', role: 'user', token: '' };
-    // Simulate getting user from localStorage/session (replace with real logic)
+    let currentUser = { id: '', role: 'user', token: '', username: 'Guest' };
+
+    // Function to get a specific cookie by name
+    function getCookie(name) {
+        let cookies = document.cookie.split('; ');
+        for (let cookie of cookies) {
+            let [key, value] = cookie.split('=');
+            if (key === name) return decodeURIComponent(value);
+        }
+        return null;
+    }
+
+    // Simulate getting user from cookies/session (replace with real logic)
     function getCurrentUser() {
-        // Example: { id: '...', role: 'admin', token: '...' }
+        // Try localStorage first (user object and role separately)
         try {
             const user = JSON.parse(localStorage.getItem('user'));
-            if (user && user.token) return user;
-        } catch {}
-        return { id: '', role: 'user', token: '' };
+            const role = localStorage.getItem('role') || 'user';
+            if (user && user.token) {
+                console.log('Login session found in localStorage:', { user, role });
+                return { id: '', role, token: user.token, username: user.username };
+            }
+        } catch (e) {
+            console.error('Error parsing user from localStorage:', e);
+        }
+
+        // Fallback to cookies
+        let username = getCookie('username');
+        let token = getCookie('token');
+        let role = getCookie('role') || 'user';
+
+        if (username && token) {
+            console.log('Login session found in cookies:', { username, token, role });
+            return { id: '', role, token, username };
+        }
+        console.log('No login session found');
+        return { id: '', role: 'user', token: '', username: 'Guest' };
     }
     currentUser = getCurrentUser();
+    console.log('Current user on classroom page:', currentUser);
+
+    // Update user name in side panel
+    function updateUserName() {
+        const userNameElement = document.getElementById('user-name');
+        const username = currentUser.username || 'Guest';
+        console.log('Updating user name to:', username);
+        userNameElement.innerText = username;
+    }
+
+    // Call immediately to update
+    updateUserName();
 
     // --- Classroom API integration ---
 
@@ -232,6 +272,7 @@
     // On page load
 
     window.onload = async function() {
+        updateUserName();
         // If ?token=... is present, auto-join and redirect
         if (classroomToken && currentUser.token) {
             const res = await fetch(`/api/classrooms/join/${classroomToken}`, {

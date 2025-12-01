@@ -1,5 +1,7 @@
 const Classroom = require('../models/Classroom.model');
 const UserSignUp = require('../models/User.model');
+const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
 
 // Generate unique share code
 function generateShareCode(length = 8) {
@@ -9,6 +11,22 @@ function generateShareCode(length = 8) {
         code += characters.charAt(Math.floor(Math.random() * characters.length));
     }
     return code;
+}
+
+// Generate classroom access token
+function generateClassroomToken(classroomId, userId, role) {
+    return jwt.sign(
+        {
+            classroomId: classroomId,
+            userId: userId,
+            role: role,
+            type: 'classroom'
+        },
+        process.env.CLASSROOM_TOKEN_SECRET || process.env.JWT_SECRET,
+        {
+            expiresIn: process.env.CLASSROOM_TOKEN_EXPIRY || '24h'
+        }
+    );
 }
 
 // Create new classroom (admin only)
@@ -47,10 +65,34 @@ exports.getAllClassrooms = async (req, res) => {
             .populate('instructor', 'username email')
             .populate('students', 'username email');
 
-        res.status(200).json({
-            success: true,
-            classrooms
-        });
+        // If user is authenticated, add user role information to each classroom
+        if (req.user) {
+            const classroomsWithRoles = classrooms.map(classroom => {
+                const classroomObj = classroom.toObject();
+                const isInstructor = classroom.instructor._id.toString() === req.user._id.toString();
+                const isStudent = classroom.students.some(student => student._id.toString() === req.user._id.toString());
+
+                classroomObj.userRole = isInstructor ? 'instructor' : (isStudent ? 'student' : null);
+                return classroomObj;
+            });
+
+            res.status(200).json({
+                success: true,
+                classrooms: classroomsWithRoles,
+                user: {
+                    id: req.user._id,
+                    username: req.user.username,
+                    email: req.user.email,
+                    role: req.user.role
+                }
+            });
+        } else {
+            res.status(200).json({
+                success: true,
+                classrooms,
+                user: null
+            });
+        }
     } catch (error) {
         console.error('Error fetching classrooms:', error);
         res.status(500).json({ error: 'Internal server error' });
@@ -76,10 +118,31 @@ exports.getClassroomById = async (req, res) => {
             classroomObj.shareCode = classroom.shareCode;
         }
 
-        res.status(200).json({
-            success: true,
-            classroom: classroomObj
-        });
+        // If user is authenticated, include their role in the classroom
+        if (req.user) {
+            const isInstructor = classroom.instructor._id.toString() === req.user._id.toString();
+            const isStudent = classroom.students.some(student => student._id.toString() === req.user._id.toString());
+
+            classroomObj.userRole = isInstructor ? 'instructor' : (isStudent ? 'student' : null);
+
+            res.status(200).json({
+                success: true,
+                classroom: classroomObj,
+                user: {
+                    id: req.user._id,
+                    username: req.user.username,
+                    email: req.user.email,
+                    role: req.user.role
+                }
+            });
+        } else {
+            classroomObj.userRole = null;
+            res.status(200).json({
+                success: true,
+                classroom: classroomObj,
+                user: null
+            });
+        }
     } catch (error) {
         console.error('Error fetching classroom:', error);
         res.status(500).json({ error: 'Internal server error' });
@@ -261,27 +324,74 @@ exports.joinClassroom = async (req, res) => {
     try {
         const { code } = req.params;
         let userId = null;
+        let userInfo = null;
+
         if (req.user && (req.user.id || req.user._id)) {
             userId = req.user.id || req.user._id;
+            userInfo = {
+                id: req.user._id,
+                username: req.user.username,
+                email: req.user.email,
+                role: req.user.role
+            };
         } else if (req.body && req.body.userId) {
             userId = req.body.userId;
+            // Try to fetch user info if userId is provided in body
+            try {
+                const user = await UserSignUp.findById(userId);
+                if (user) {
+                    userInfo = {
+                        id: user._id,
+                        username: user.username,
+                        email: user.email,
+                        role: user.role
+                    };
+                }
+            } catch (userError) {
+                console.warn('Could not fetch user info for userId:', userId);
+            }
         }
 
-        const classroom = await Classroom.findOne({ shareCode: code });
+        const classroom = await Classroom.findOne({ shareCode: code })
+            .populate('instructor', 'username email')
+            .populate('students', 'username email');
+
         if (!classroom) {
             return res.status(404).json({ error: 'Invalid share code' });
         }
 
         // If userId is provided, add to students
+        let joined = false;
         if (userId) {
-            if (classroom.students.includes(userId)) {
-                return res.status(400).json({ error: 'Already joined this classroom' });
-            }
-            if (classroom.students.length >= classroom.capacity) {
+            if (classroom.students.some(student => student._id.toString() === userId.toString())) {
+                // User is already a student, just return success
+                joined = true;
+            } else if (classroom.students.length >= classroom.capacity) {
                 return res.status(400).json({ error: 'Classroom is full' });
+            } else {
+                classroom.students.push(userId);
+                await classroom.save();
+                joined = true;
             }
-            classroom.students.push(userId);
-            await classroom.save();
+        }
+
+        // Generate classroom access token
+        let classroomToken = null;
+        let userRole = null;
+        if (userId) {
+            try {
+                const role = classroom.instructor._id.toString() === userId.toString() ? 'instructor' : 'student';
+                userRole = role;
+                classroomToken = generateClassroomToken(classroom._id, userId, role);
+                console.log('Classroom token generated for user:', userId, 'role:', role);
+            } catch (tokenError) {
+                console.error('Failed to generate classroom token:', tokenError);
+                // Return error if token generation fails
+                return res.status(500).json({
+                    error: 'Failed to generate access token',
+                    details: 'Token generation failed'
+                });
+            }
         }
 
         // Ensure shareCode is present in response
@@ -290,12 +400,19 @@ exports.joinClassroom = async (req, res) => {
             classroomObj.shareCode = classroom.shareCode;
         }
 
-        res.status(200).json({
+        // Add user role to classroom object
+        classroomObj.userRole = userRole;
+
+        const response = {
             success: true,
-            message: userId ? 'Successfully joined the classroom' : 'Classroom found',
+            message: userId ? (joined ? 'Successfully joined the classroom' : 'Already a member of this classroom') : 'Classroom found',
             classroomId: classroom._id,
-            classroom: classroomObj
-        });
+            classroom: classroomObj,
+            classroomToken: classroomToken,
+            user: userInfo
+        };
+
+        res.status(200).json(response);
     } catch (error) {
         console.error('Error joining classroom:', error);
         res.status(500).json({ error: 'Internal server error' });

@@ -248,17 +248,17 @@ exports.verifyOtp = async (req, res) => {
     const { email, otp } = req.body;
 
     if (!email || !otp) {
-        return res.status(400).json({ 
-            success: false, 
-            error: "Email and OTP are required." 
+        return res.status(400).json({
+            success: false,
+            error: "Email and OTP are required."
         });
     }
 
     // Validate email format
     if (!validateEmail(email)) {
-        return res.status(400).json({ 
+        return res.status(400).json({
             success: false,
-            error: "Please provide a valid email address." 
+            error: "Please provide a valid email address."
         });
     }
 
@@ -306,8 +306,18 @@ exports.verifyOtp = async (req, res) => {
         await SignupModel.deleteOne({ email });
 
         // Generate tokens after successful OTP verification
-        const accessToken = newUser.generateAccessToken();
-        const refreshToken = newUser.generateRefreshToken();
+        let accessToken, refreshToken;
+        try {
+            accessToken = newUser.generateAccessToken();
+            refreshToken = newUser.generateRefreshToken();
+            console.log("Tokens generated successfully for user:", newUser.username);
+        } catch (tokenError) {
+            console.error("Token generation failed:", tokenError);
+            return res.status(500).json({
+                success: false,
+                error: "Failed to generate authentication tokens."
+            });
+        }
 
         console.log("User registered successfully after OTP verification:", newUser.username);
 
@@ -324,9 +334,9 @@ exports.verifyOtp = async (req, res) => {
         });
     } catch (error) {
         console.error("Error verifying OTP:", error);
-        res.status(500).json({ 
-            success: false, 
-            error: "Failed to verify OTP." 
+        res.status(500).json({
+            success: false,
+            error: "Failed to verify OTP."
         });
     }
 };

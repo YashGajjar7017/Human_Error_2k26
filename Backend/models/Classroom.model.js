@@ -14,18 +14,23 @@ const classroomSchema = new mongoose.Schema({
     },
     instructor: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'UserSignUp',
+        ref: 'User',
         required: true
     },
     students: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'UserSignUp'
+        ref: 'User'
     }],
     capacity: {
         type: Number,
         required: true,
         min: [1, 'Capacity must be at least 1'],
         max: [100, 'Capacity cannot exceed 100']
+    },
+    shareCode: {
+        type: String,
+        unique: true,
+        sparse: true
     },
     createdAt: {
         type: Date,
