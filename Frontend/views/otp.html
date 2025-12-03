@@ -163,17 +163,25 @@
                     body: JSON.stringify({
                         email: email,
                         otp: otp,
-                        purpose: 'password_reset'
+                        purpose: 'signup_verification'
                     })
                 });
 
                 const data = await response.json();
 
                 if (response.ok) {
-                    alert('OTP verified successfully!');
-                    // Redirect to password reset page with token
-                    const resetToken = data.data.resetToken;
-                    window.location.href = `/resetPassword?token=${resetToken}`;
+                    alert('Signup verified successfully! Welcome to the platform.');
+                    // Store tokens and redirect to dashboard
+                    if (data.data && data.data.accessToken) {
+                        localStorage.setItem('accessToken', data.data.accessToken);
+                        localStorage.setItem('refreshToken', data.data.refreshToken);
+                        localStorage.setItem('user', JSON.stringify({
+                            username: data.data.username,
+                            email: data.data.email,
+                            userId: data.data.userId
+                        }));
+                    }
+                    window.location.href = '/index.html';
                 } else {
                     alert(data.error || 'OTP verification failed');
                 }

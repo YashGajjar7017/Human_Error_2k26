@@ -167,6 +167,8 @@ exports.signUP = async (req, res) => {
                 signupId: newSignup._id
             }
         });
+
+        // Note: OTP sending is handled separately via /api/otp/send endpoint
     } catch (err) {
         console.error("Database Error:", err);
         if (err.code === 11000) {
