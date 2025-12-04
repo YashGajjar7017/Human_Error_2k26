@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Editor with Autocomplete & Compiler</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto 1fr auto;
+            height: 100vh;
+            gap: 0;
+        }
+        
+        .header {
+            grid-column: 1 / -1;
+            background: #252526;
+            padding: 12px 20px;
+            border-bottom: 1px solid #3e3e42;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #4db8ff;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        select {
+            background: #3c3c3c;
+            color: #d4d4d4;
+            border: 1px solid #555;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        button {
+            background: #0e639c;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: background 0.2s;
+        }
+        
+        button:hover {
+            background: #1177bb;
+        }
+        
+        button:active {
+            background: #084fa3;
+        }
+        
+        .editor-section {
+            grid-column: 1;
+            grid-row: 2;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #3e3e42;
+        }
+        
+        .editor-label {
+            background: #2d2d30;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #cccccc;
+        }
+        
+        .editor-container {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 100%;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border: none;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            resize: none;
+            outline: none;
+            line-height: 1.5;
+            overflow-y: auto;
+        }
+        
+        textarea::selection {
+            background: #264f78;
+        }
+        
+        .output-section {
+            grid-column: 2;
+            grid-row: 2;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .output-label {
+            background: #2d2d30;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #cccccc;
+            border-bottom: 1px solid #3e3e42;
+        }
+        
+        .output-container {
+            flex: 1;
+            padding: 12px;
+            overflow-y: auto;
+            background: #1e1e1e;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .status-section {
+            grid-column: 1 / -1;
+            grid-row: 3;
+            background: #252526;
+            padding: 12px 20px;
+            border-top: 1px solid #3e3e42;
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+        }
+        
+        .status-item {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .status-info {
+            color: #858585;
+        }
+        
+        .status-info strong {
+            color: #d4d4d4;
+        }
+        
+        .success { color: #4ec9b0; }
+        .error { color: #f48771; }
+        .warning { color: #ce9178; }
+        
+        .autocomplete-container {
+            position: fixed;
+            background: #3c3c3c;
+            border: 1px solid #555;
+            border-radius: 4px;
+            max-width: 350px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 10000;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        .autocomplete-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            border-bottom: 1px solid #2d2d30;
+            color: #d4d4d4;
+        }
+        
+        .autocomplete-item:hover,
+        .autocomplete-item.selected {
+            background: #0e639c;
+            color: #fff;
+        }
+        
+        .suggestion-prob {
+            color: #858585;
+            font-size: 11px;
+            margin-left: 8px;
+        }
+        
+        .hint {
+            font-size: 11px;
+            color: #858585;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="title">💻 Code Editor with AI Autocomplete</div>
+            <div class="controls">
+                <select id="languageSelect">
+                    <option value="python">Python</option>
+                    <option value="javascript">JavaScript</option>
+                    <option value="cpp">C++</option>
+                    <option value="java">Java</option>
+                </select>
+                <button onclick="compileCode()">Compile</button>
+                <button onclick="clearEditor()" style="background: #a6401a;">Clear</button>
+            </div>
+        </div>
+        
+        <div class="editor-section">
+            <div class="editor-label">📝 Editor (Ctrl+Space for suggestions)</div>
+            <div class="editor-container">
+                <textarea id="codeEditor" placeholder="Start typing... suggestions will appear as you code"></textarea>
+            </div>
+        </div>
+        
+        <div class="output-section">
+            <div class="output-label">🔍 Output & Suggestions</div>
+            <div class="output-container">
+                <div id="outputArea">Ready for input...</div>
+            </div>
+        </div>
+        
+        <div class="status-section">
+            <div class="status-item">
+                <div class="status-info">Keystrokes: <strong id="keystrokeCount">0</strong></div>
+                <div class="status-info">Suggestions: <strong id="suggestionCount">0</strong></div>
+                <div class="status-info">Accepted: <strong id="acceptedCount">0</strong></div>
+                <div class="status-info">Acceptance Rate: <strong id="acceptanceRate">N/A</strong></div>
+            </div>
+            <div class="hint">💡 Use ↑↓ arrows to navigate, Enter/Tab to accept, Esc to dismiss</div>
+        </div>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script src="autocomplete.js"></script>
+    <script>
+        // Initialize
+        let autocomplete;
+        const API_URL = 'http://localhost:5001/api/predict';
+        
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Initialize autocomplete
+            autocomplete = new CodeAutocomplete({
+                apiUrl: API_URL,
+                updateDelay: 300,
+                maxSuggestions: 5,
+                language: 'python'
+            });
+            
+            const editor = document.getElementById('codeEditor');
+            autocomplete.init(editor);
+            
+            // Update language
+            document.getElementById('languageSelect').addEventListener('change', (e) => {
+                autocomplete.language = e.target.value;
+            });
+            
+            // Update stats display
+            setInterval(updateStats, 500);
+            
+            // Show initial message
+            showOutput('✓ Code predictor ready!\n\nType your code to see AI-powered suggestions.\nUse arrow keys to navigate and Enter to accept.', 'success');
+        });
+        
+        async function compileCode() {
+            const code = document.getElementById('codeEditor').value;
+            const language = document.getElementById('languageSelect').value;
+            
+            if (!code.trim()) {
+                showOutput('✗ Please enter some code first!', 'error');
+                return;
+            }
+            
+            showOutput('⏳ Compiling...', 'warning');
+            
+            try {
+                // Call compile + complete endpoint
+                const response = await fetch(`${API_URL}/compile-and-complete`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        code: code,
+                        language: language,
+                        compile: true
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    let output = '✓ Compilation successful!\n\n';
+                    
+                    if (data.compile_result) {
+                        output += '📊 Compiler Output:\n';
+                        output += data.compile_result.run?.stdout || 'No output';
+                        
+                        if (data.compile_result.run?.stderr) {
+                            output += '\n\n⚠️ Errors:\n';
+                            output += data.compile_result.run.stderr;
+                        }
+                    }
+                    
+                    if (data.predictions && data.predictions.length > 0) {
+                        output += '\n\n💡 Next suggestions:\n';
+                        data.predictions.forEach((pred, i) => {
+                            output += `${i+1}. ${pred.display} (${(pred.probability*100).toFixed(1)}%)\n`;
+                        });
+                    }
+                    
+                    showOutput(output, 'success');
+                } else {
+                    showOutput(`✗ Error: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                showOutput(`✗ Compilation error:\n${error.message}`, 'error');
+            }
+        }
+        
+        function clearEditor() {
+            if (confirm('Clear all code?')) {
+                document.getElementById('codeEditor').value = '';
+                showOutput('Editor cleared', 'warning');
+                updateStats();
+            }
+        }
+        
+        function showOutput(message, type = 'info') {
+            const outputArea = document.getElementById('outputArea');
+            outputArea.innerHTML = `<div class="${type}">${message}</div>`;
+        }
+        
+        function updateStats() {
+            if (!autocomplete) return;
+            const stats = autocomplete.getStats();
+            document.getElementById('keystrokeCount').textContent = stats.keystrokes;
+            document.getElementById('suggestionCount').textContent = stats.suggestions_shown;
+            document.getElementById('acceptedCount').textContent = stats.suggestions_accepted;
+            document.getElementById('acceptanceRate').textContent = stats.acceptance_rate;
+        }
+    </script>
+</body>
+</html>
