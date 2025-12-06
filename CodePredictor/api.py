@@ -15,6 +15,7 @@ from models.predictor import CodePredictorModel, CodeCompletionCache
 from models.tokenizer import CodeTokenizer
 from dataset.dataset_generator import CodeDatasetGenerator
 import threading
+from models.best_algorithm import choose_best_indices_from_logits
 
 app = Flask(__name__)
 CORS(app)
@@ -114,17 +115,42 @@ def get_completion():
             })
         
         # Get predictions
-        predictions = predictor.predict_next_token(partial_code, top_k=top_k)
-        
-        # Format response
-        formatted_predictions = [
-            {
-                'token': token,
-                'probability': float(prob),
-                'display': _format_token_for_display(token)
-            }
-            for token, prob in predictions
-        ]
+        # Use predictor to get raw prediction probabilities if available
+        try:
+            # Attempt to use model logits for more advanced selection
+            # Prepare input sequence as predictor does internally
+            tokens = predictor.tokenizer.tokenize(partial_code)
+            ids = predictor.tokenizer.encode(tokens)
+            if len(ids) < predictor.seq_length:
+                ids = [predictor.tokenizer.token_to_id['<PAD>']] * (predictor.seq_length - len(ids)) + ids
+            else:
+                ids = ids[-predictor.seq_length:]
+
+            import numpy as _np
+            input_seq = _np.array([ids])
+            logits = predictor.model.predict(input_seq, verbose=0)[0]
+
+            # Use default top_k method to select tokens (server-side selection)
+            selected = choose_best_indices_from_logits(logits, method='top_k', k=top_k)
+            formatted_predictions = [
+                {
+                    'token': predictor.tokenizer.id_to_token.get(idx, '<UNK>'),
+                    'probability': prob,
+                    'display': _format_token_for_display(predictor.tokenizer.id_to_token.get(idx, '<UNK>'))
+                }
+                for idx, prob in selected
+            ]
+        except Exception:
+            # Fallback to existing predictor helper
+            predictions = predictor.predict_next_token(partial_code, top_k=top_k)
+            formatted_predictions = [
+                {
+                    'token': token,
+                    'probability': float(prob),
+                    'display': _format_token_for_display(token)
+                }
+                for token, prob in predictions
+            ]
         
         # Cache result
         cache.put(cache_key, formatted_predictions)
@@ -203,6 +229,53 @@ def batch_predict():
             'results': results
         })
     
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/predict/best-completion', methods=['POST'])
+def best_completion():
+    """Provide suggestions using server-side best-algorithm selection.
+    Body: { code: str, top_k: int, method: 'top_k'|'nucleus'|'beam', p: float }
+    """
+    global predictor
+    if not model_loaded:
+        return jsonify({'success': False, 'error': 'Model not initialized'}), 400
+
+    try:
+        data = request.json
+        partial_code = data.get('code', '')
+        top_k = int(data.get('top_k', 5))
+        method = data.get('method', 'top_k')
+        p = float(data.get('p', 0.9))
+
+        if not partial_code:
+            return jsonify({'success': False, 'error': 'Code required'}), 400
+
+        # Prepare input like predictor
+        tokens = predictor.tokenizer.tokenize(partial_code)
+        ids = predictor.tokenizer.encode(tokens)
+        if len(ids) < predictor.seq_length:
+            ids = [predictor.tokenizer.token_to_id['<PAD>']] * (predictor.seq_length - len(ids)) + ids
+        else:
+            ids = ids[-predictor.seq_length:]
+
+        import numpy as _np
+        input_seq = _np.array([ids])
+        logits = predictor.model.predict(input_seq, verbose=0)[0]
+
+        selected = choose_best_indices_from_logits(logits, method=method, k=top_k, p=p)
+        formatted = [
+            {
+                'token': predictor.tokenizer.id_to_token.get(idx, '<UNK>'),
+                'probability': float(prob),
+                'display': _format_token_for_display(predictor.tokenizer.id_to_token.get(idx, '<UNK>'))
+            }
+            for idx, prob in selected
+        ]
+
+        return jsonify({'success': True, 'predictions': formatted, 'method': method})
+
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
