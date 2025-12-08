@@ -35,4 +35,5 @@ The model learns to select optimal test inputs to maximize rewards for finding b
 - [x] numpy
 - [x] pandas
 - [x] matplotlib
+- [x] MS-Torjan
 - subprocess (for code execution)
