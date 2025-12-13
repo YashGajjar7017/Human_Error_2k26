@@ -230,6 +230,12 @@
                 </select>
                 <button onclick="compileCode()">Compile</button>
                 <button onclick="clearEditor()" style="background: #a6401a;">Clear</button>
+                <div style="display:flex;gap:8px;align-items:center;margin-left:12px;">
+                    <div style="font-size:0.85rem;color:#d4d4d4;">Mode: <strong id="currentModeCP">web</strong></div>
+                    <button id="switchToWebCP" style="padding:6px 10px;">Web</button>
+                    <button id="switchToElectronCP" style="padding:6px 10px;">Electron</button>
+                    <button id="openAppBtnCP" style="padding:6px 10px;">Open</button>
+                </div>
             </div>
         </div>
         
@@ -364,6 +370,77 @@
             document.getElementById('acceptedCount').textContent = stats.suggestions_accepted;
             document.getElementById('acceptanceRate').textContent = stats.acceptance_rate;
         }
+    </script>
+    <script>
+        // Backend mode API on main backend
+        const BACKEND_MODE_URL_CP = 'http://localhost:8000/api/mode';
+
+        async function getCurrentModeCP() {
+            try {
+                const res = await fetch(BACKEND_MODE_URL_CP);
+                const data = await res.json();
+                return data && data.mode ? data.mode : 'web';
+            } catch (err) {
+                console.error('Failed to fetch mode:', err);
+                return 'web';
+            }
+        }
+
+        async function setModeCP(mode) {
+            try {
+                const res = await fetch(BACKEND_MODE_URL_CP, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mode: mode })
+                });
+                return await res.json();
+            } catch (err) {
+                console.error('Failed to set mode:', err);
+                return null;
+            }
+        }
+
+        async function refreshModeUICP() {
+            const mode = await getCurrentModeCP();
+            document.getElementById('currentModeCP').textContent = mode;
+            const openBtn = document.getElementById('openAppBtnCP');
+            if (mode === 'web') {
+                document.getElementById('switchToWebCP').classList.add('active');
+                document.getElementById('switchToElectronCP').classList.remove('active');
+                openBtn.textContent = 'Open Web App';
+            } else {
+                document.getElementById('switchToElectronCP').classList.add('active');
+                document.getElementById('switchToWebCP').classList.remove('active');
+                openBtn.textContent = 'Open Electron App';
+            }
+        }
+
+        document.getElementById('switchToWebCP').addEventListener('click', async () => {
+            const res = await setModeCP('web');
+            if (res && res.success) refreshModeUICP();
+        });
+        document.getElementById('switchToElectronCP').addEventListener('click', async () => {
+            const res = await setModeCP('electron');
+            if (res && res.success) refreshModeUICP();
+        });
+        document.getElementById('openAppBtnCP').addEventListener('click', async () => {
+            const mode = await getCurrentModeCP();
+            if (mode === 'web') {
+                window.open('http://localhost:3000/dashboard', '_blank');
+            } else {
+                // ensure electron started and inform user
+                const res = await setModeCP('electron');
+                if (res && res.success) {
+                    alert('Electron mode active (backend starting desktop app if available).');
+                    await refreshModeUICP();
+                } else {
+                    alert('Failed to start Electron: ' + (res && res.message ? res.message : 'unknown'));
+                }
+            }
+        });
+        (async () => {
+            await refreshModeUICP();
+        })();
     </script>
 </body>
 </html>

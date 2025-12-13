@@ -720,6 +720,13 @@
                 <i class='bx bxs-user-circle'></i>
                 <span id="username-display">Loading...</span>
             </div>
+            <!-- Mode Toggle controls -->
+            <div style="display:flex;gap:8px;align-items:center;margin-left:12px;">
+                <div id="modeLabel" style="font-size:0.85rem;color:#cbd5e1;">Mode: <strong id="currentMode">web</strong></div>
+                <button class="btn ghost" id="switchToWeb" style="padding:6px 10px;">Web</button>
+                <button class="btn ghost" id="switchToElectron" style="padding:6px 10px;">Electron</button>
+                <button class="btn primary" id="openAppBtn" style="padding:6px 10px;">Open</button>
+            </div>
             <button class="btn ghost" id="logout-btn" data-logout>
                 <i class='bx bxs-log-out'></i>Logout
             </button>
@@ -1215,6 +1222,83 @@
             
             // Then initialize user-specific dashboard
             initializeUserDashboard();
+            // Initialize mode UI (web/electron)
+            (async () => {
+                await refreshModeUI();
+            })();
+        });
+        
+        async function getCurrentMode() {
+            try {
+                const res = await fetch('/api/mode');
+                const data = await res.json();
+                if (data && data.mode) return data.mode;
+            } catch (err) {
+                console.error('Error fetching mode:', err);
+            }
+            return 'web';
+        }
+
+        async function setMode(mode) {
+            try {
+                const res = await fetch('/api/mode', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mode: mode })
+                });
+                const data = await res.json();
+                return data;
+            } catch (err) {
+                console.error('Error setting mode:', err);
+            }
+            return null;
+        }
+
+        async function refreshModeUI() {
+            const mode = await getCurrentMode();
+            const label = document.getElementById('currentMode');
+            const openBtn = document.getElementById('openAppBtn');
+            const switchToWeb = document.getElementById('switchToWeb');
+            const switchToElectron = document.getElementById('switchToElectron');
+            label.textContent = mode || 'web';
+            if (mode === 'web') {
+                switchToWeb.classList.add('primary');
+                switchToWeb.classList.remove('ghost');
+                switchToElectron.classList.remove('primary');
+                switchToElectron.classList.add('ghost');
+                openBtn.textContent = 'Open Web App';
+            } else {
+                switchToElectron.classList.add('primary');
+                switchToElectron.classList.remove('ghost');
+                switchToWeb.classList.remove('primary');
+                switchToWeb.classList.add('ghost');
+                openBtn.textContent = 'Open Electron App';
+            }
+        }
+
+        document.getElementById('switchToWeb').addEventListener('click', async () => {
+            const res = await setMode('web');
+            if (res && res.success) await refreshModeUI();
+        });
+
+        document.getElementById('switchToElectron').addEventListener('click', async () => {
+            const res = await setMode('electron');
+            if (res && res.success) await refreshModeUI();
+        });
+
+        document.getElementById('openAppBtn').addEventListener('click', async () => {
+            const mode = await getCurrentMode();
+            if (mode === 'web') {
+                window.open('http://localhost:3000/dashboard', '_blank');
+            } else {
+                const res = await setMode('electron');
+                if (res && res.success) {
+                    alert('Electron mode active. The desktop app should start on this machine if electron dependency is installed.');
+                    await refreshModeUI();
+                } else {
+                    alert('Failed to start Electron: ' + (res && res.message ? res.message : 'unknown'));
+                }
+            }
         });
     </script>
 </body>

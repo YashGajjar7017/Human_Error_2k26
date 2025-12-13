@@ -1,0 +1,12 @@
+{
+  "name": "human-error-electron",
+  "version": "1.0.0",
+  "description": "Minimal Electron wrapper for HumanError frontend",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "dependencies": {
+    "electron": "latest"
+  }
+}

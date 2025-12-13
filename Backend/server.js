@@ -38,6 +38,7 @@ const otpRoutes = require('./Routes/otp.routes');
 const memberRoutes = require('./Routes/member.routes');
 const frontendMemberRoutes = require('../Frontend/Routes/Member.routes');
 const publicUploadRoutes = require('./Routes/publicUpload.routes');
+const modeRoutes = require('./Routes/mode.routes');
 
 // DB Connect
 const DBConnect = require('./DB/DBHandler');
@@ -242,6 +243,8 @@ app.use('/api/otp', otpRoutes);
 app.use('/api', memberRoutes);
 app.use('/', frontendMemberRoutes);
 app.use(publicUploadRoutes);
+// Mode management route (web/electron)
+app.use('/api/mode', modeRoutes);
 
 // Socket.IO for WebRTC signaling
 io.on('connection', (socket) => {
