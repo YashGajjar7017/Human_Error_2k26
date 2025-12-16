@@ -7,7 +7,7 @@
 // ===========================
 // CONFIGURATION & CONSTANTS
 // ===========================
-API_KEY = "34c8103e63msh909728bfda25be5p1bb0fbjsnd587398101bf"; // PLEASE DON'T SHARE 
+const API_KEY = "34c8103e63msh909728bfda25be5p1bb0fbjsnd587398101bf"; // PLEASE DON'T SHARE 
 // API_KEY = "cc6dcd8390msh2e162a8a61f0938p1a4717jsn3b68ec13545b"; // PLEASE DON'T SHARE
 
 var language_to_id = {
@@ -31,12 +31,12 @@ function decode(bytes) {
 }
 
 function errorHandler(jqXHR, textStatus, errorThrown) {
-    $("#output").val(`${JSON.stringify(jqXHR, null, 4)}`);
+    $("#terminal").val(`${JSON.stringify(jqXHR, null, 4)}`);
     $("#run").prop("disabled", false);
 }
 
 function check(token) {
-    $("#output").val($("#output").val() + "\nChecking submission status...");
+    $("#terminal").val($("#terminal").val() + "\nChecking submission status...");
     $.ajax({
         url: `https://judge0-ce.p.rapidapi.com/submissions/${token}?base64_encoded=true`,
         type: "GET",
@@ -46,13 +46,13 @@ function check(token) {
         },
         success: function (data, textStatus, jqXHR) {
             if ([1, 2].includes(data["status"]["id"])) {
-                $("#output").val($("#output").val() + "\nStatus: " + data["status"]["description"]);
+                $("#terminal").val($("#terminal").val() + "\nStatus: " + data["status"]["description"]);
                 setTimeout(function () {
                     check(token)
                 }, 1000);
             } else {
                 var output = [decode(data["compile_output"]), decode(data["stdout"])].join("\n").trim();
-                $("#output").val(output);
+                $("#terminal").val(output);
                 $("#run").prop("disabled", false);
             }
         },
@@ -62,7 +62,7 @@ function check(token) {
 
 function run() {
     $("#run").prop("disabled", true);
-    $("#output").val("Creating submission...");
+    $("#terminal").val("Creating submission...");
     $.ajax({
         url: "https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=true",
         type: "POST",
@@ -74,11 +74,11 @@ function run() {
         data: JSON.stringify({
             "language_id": language_to_id[$("#lang").val()],
             "source_code": encode($("#source").val()),
-            "stdin": encode($("#input").val()),
+            "stdin": encode($("#terminal").val()),
             "redirect_stderr_to_stdout": true
         }),
         success: function (data, textStatus, jqXHR) {
-            $("#output").val($("#output").val() + "\nSubmission created.");
+            $("#terminal").val($("#terminal").val() + "\nSubmission created.");
             setTimeout(function () {
                 check(data["token"])
             }, 2000);
