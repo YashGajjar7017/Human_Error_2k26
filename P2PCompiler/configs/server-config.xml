@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<serverConfig>
+  <peer>
+    <listenAddrs>
+      <addr>/ip4/0.0.0.0/tcp/0</addr>
+    </listenAddrs>
+    <bootstrapPeers>
+      <!-- Add multiaddrs of known peers for bootstrap. Example:
+           <peer>/ip4/127.0.0.1/tcp/15002/p2p/QmBootstrapPeer</peer>
+      -->
+    </bootstrapPeers>
+  </peer>
+  <worker>
+    <maxJobs>2</maxJobs>
+    <defaultCommand>echo "compiled"</defaultCommand>
+  </worker>
+  <security>
+    <allowUntrusted>false</allowUntrusted>
+  </security>
+</serverConfig>
