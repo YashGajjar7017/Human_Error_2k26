@@ -50,20 +50,28 @@
                 return;
             }
             try {
-                const res = await fetch('http://localhost:3000/Account/Signup', {
+                const res = await fetch('/api/signup', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, email, password, confirmPassword, role })
                 });
                 const data = await res.json();
                 if (res.ok && data.success) {
-                    localStorage.setItem('user', JSON.stringify({
-                        id: data.user._id || data.user.id,
-                        username: data.user.username,
-                        role: data.user.role,
-                        token: data.token
-                    }));
-                    window.location.href = '/index.html';
+                    // If server returned tokens (OTP disabled and immediate creation), save and redirect
+                    if (data.data && data.data.accessToken) {
+                        localStorage.setItem('user', JSON.stringify({
+                            id: data.data.user._id || data.data.user.id,
+                            username: data.data.user.username,
+                            token: data.data.accessToken
+                        }));
+                        window.location.href = '/index.html';
+                        return;
+                    }
+
+                    // Otherwise, signup initiated and OTP should be sent separately
+                    alert(data.message || 'Signup initiated. Please check your email for OTP.');
+                    // Optionally redirect to a verification page or show OTP input
+                    window.location.href = '/Account/SignupOTP?email=' + encodeURIComponent(email);
                 } else {
                     errorDiv.textContent = data.message || data.error || 'Signup failed.';
                 }

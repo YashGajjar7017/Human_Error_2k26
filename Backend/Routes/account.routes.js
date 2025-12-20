@@ -75,6 +75,26 @@ router.get('/Account/Signup', (req, res) => {
     });
 });
 
+// GET /Account/Complier - async redirect to compiler home/info
+router.get('/Account/Complier', async (req, res) => {
+    try {
+        // Prefer using internal route handler: call compiler controller directly
+        const compilerController = require('../controller/compiler.controller');
+        const info = await compilerController.getCompilerInfo?.() || {};
+
+        // If query param beta=true redirect to the Beta UI, else to stable UI
+        if (req.query.beta === 'true') {
+            return res.redirect('/Account/Complier/Beta/true');
+        }
+
+        // Fallback: redirect to Dashboard or compiler GUI page
+        return res.redirect('/Frontend/Services/Home_GUI_2.html');
+    } catch (err) {
+        console.error('Failed to redirect to compiler:', err);
+        return res.redirect('/Frontend/Services/Home_GUI_2.html');
+    }
+});
+
 // POST routes with validation and rate limiting
 router.post(
     '/Account/Signup',

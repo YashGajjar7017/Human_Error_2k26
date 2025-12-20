@@ -97,6 +97,14 @@ See our [wiki](https://github.com/YashTechnologyPvtLtd/vscode/wiki/Feedback-Chan
 
 Many of the core components and extensions to VS Code live in their own repositories on GitHub. For example, the [node debug adapter](https://github.com/YashTechnologyPvtLtd/vscode-node-debug) and the [mono debug adapter](https://github.com/YashTechnologyPvtLtd/vscode-mono-debug) repositories are separate from each other. For a complete list, please visit the [Related Projects](https://github.com/YashTechnologyPvtLtd/vscode/wiki/Related-Projects) page on our [wiki](https://github.com/YashTechnologyPvtLtd/vscode/wiki).
 
+## Backend: New endpoints added
+
+- POST `/api/signup` — start signup; set `DISABLE_SIGNUP_OTP=true` in `.env` to create users immediately and return JWT tokens.
+- POST `/api/security/store-jwt` — store a JWT token (requires Authorization header with Bearer token).
+- POST `/api/ml/train` — upload a dataset and trigger a training job (requires auth; multipart/form-data `file`).
+
+---
+
 ## Bundled Extensions
 
 VS Code includes a set of built-in extensions located in the [extensions](extensions) folder, including grammars and snippets for many languages. Extensions that provide rich language support (inline suggestions, Go to Definition) for a language have the suffix `language-features`. For example, the `json` extension provides coloring for `JSON` and the `json-language-features` extension provides rich language support for `JSON`.
