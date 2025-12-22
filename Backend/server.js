@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 const http = require('http');
 const socketIo = require('socket.io');
 const session = require('express-session');
@@ -294,11 +295,30 @@ app.get('/health', (req, res) => {
     });
 });
 
-// Catch-all handler for frontend routes
-// app.get('*', (req, res) => {
-//     // res.sendFile(path.join(__dirname, '../Frontend/views/index.html'));
-//     res.sendStatus(404);
-// });
+// Serve React production build (if present) and fallback to index.html for client-side routing
+const buildCandidates = [
+    path.join(__dirname, '../React-Complier-Frontend/dist'),
+    path.join(__dirname, '../Frontend/react-app/dist')
+];
+let servedBuild = null;
+for (const p of buildCandidates) {
+    if (fs.existsSync(p)) {
+        servedBuild = p;
+        break;
+    }
+}
+if (servedBuild) {
+    app.use(express.static(servedBuild));
+    app.get('*', (req, res, next) => {
+        if (req.originalUrl.startsWith('/api')) return next();
+        res.sendFile(path.join(servedBuild, 'index.html'));
+    });
+} else {
+    // Catch-all handler for frontend routes when no SPA build exists
+    app.get('*', (req, res) => {
+        res.sendStatus(404);
+    });
+}
 
 // 404 handler for API routes
 app.use('/api/*', function (req, res, next) {
