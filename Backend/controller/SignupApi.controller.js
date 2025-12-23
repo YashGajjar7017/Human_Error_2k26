@@ -158,6 +158,43 @@ exports.signUP = async (req, res) => {
 
         console.log("Signup initiated successfully:", username);
 
+        // If OTP is disabled in env, create the user immediately and return tokens
+        if (process.env.DISABLE_SIGNUP_OTP && process.env.DISABLE_SIGNUP_OTP.toLowerCase() === 'true') {
+            try {
+                const newUser = new SignUPModel({
+                    username: newSignup.username,
+                    email: newSignup.email,
+                    password: newSignup.password
+                });
+
+                // generate tokens
+                await newUser.save();
+                const accessToken = newUser.generateAccessToken();
+                const refreshToken = newUser.generateRefreshToken();
+
+                // Save refresh token in DB
+                newUser.refreshToken = refreshToken;
+                await newUser.save();
+
+                return res.status(201).json({
+                    success: true,
+                    message: 'User created (OTP disabled).',
+                    data: {
+                        user: {
+                            _id: newUser._id,
+                            username: newUser.username,
+                            email: newUser.email
+                        },
+                        accessToken,
+                        refreshToken
+                    }
+                });
+            } catch (createErr) {
+                console.error('Immediate user creation failed:', createErr);
+                return res.status(500).json({ success: false, error: 'Immediate user creation failed' });
+            }
+        }
+
         res.status(201).json({
             success: true,
             message: "Signup initiated successfully. Please verify your email with OTP.",
