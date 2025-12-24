@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Human Complier</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: Arial, sans-serif;
+        background: #1e1e1e;
+        color: #ddd;
+      }
+      .app {
+        display: flex;
+        height: 100vh;
+      }
+
+      /* Left blue sidebar */
+      .sidebar {
+        width: 220px;
+        background: #005c99;
+        color: #fff;
+        padding: 15px 10px;
+      }
+      .sidebar .logo {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+        font-weight: bold;
+        font-size: 18px;
+      }
+      .sidebar .logo-box {
+        width: 28px;
+        height: 28px;
+        border: 2px solid #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 8px;
+        font-size: 16px;
+      }
+      .sidebar .menu-title {
+        font-size: 12px;
+        margin-bottom: 15px;
+        opacity: 0.9;
+      }
+      .sidebar button {
+        width: 100%;
+        background: transparent;
+        border: none;
+        color: #fff;
+        text-align: left;
+        padding: 6px 8px;
+        cursor: pointer;
+        font-size: 13px;
+      }
+      .sidebar button:hover {
+        background: rgba(0, 0, 0, 0.25);
+      }
+
+      /* Main area */
+      .main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        background: #2d2d2d;
+      }
+
+      /* Top toolbar */
+      .topbar {
+        display: flex;
+        align-items: center;
+        background: #3c3c3c;
+        padding: 4px 8px;
+        border-bottom: 1px solid #000;
+      }
+      .topbar button {
+        margin-right: 6px;
+        padding: 3px 10px;
+        border: none;
+        border-radius: 2px;
+        cursor: pointer;
+        font-size: 12px;
+        color: #fff;
+      }
+      .btn-run {
+        background: #4caf50;
+      }
+      .btn-debug {
+        background: #1976d2;
+      }
+      .btn-stop {
+        background: #f44336;
+      }
+      .btn-share {
+        background: #ff9800;
+      }
+      .btn-save {
+        background: #2196f3;
+      }
+      .btn-beautify {
+        background: #00bcd4;
+      }
+
+      .topbar .lang-select {
+        margin-left: auto;
+        font-size: 12px;
+        color: #fff;
+      }
+
+      /* Editor header */
+      .editor-header {
+        background: #333;
+        padding: 4px 10px;
+        font-size: 12px;
+        border-bottom: 1px solid #000;
+      }
+
+      /* Editor area */
+      .editor {
+        flex: 1;
+        background: #1e1e1e;
+        font-family: Consolas, "Courier New", monospace;
+        color: #d4d4d4;
+        padding: 10px 40px;
+        position: relative;
+        overflow: auto;
+      }
+      .editor pre {
+        line-height: 1.4;
+        font-size: 13px;
+        white-space: pre;
+      }
+      .line-numbers {
+        position: absolute;
+        left: 10px;
+        top: 10px;
+        text-align: right;
+        color: #858585;
+        font-size: 13px;
+        line-height: 1.4;
+      }
+      .kw {
+        color: #569cd6;
+      } /* keywords */
+      .func {
+        color: #dcdcaa;
+      }
+      .string {
+        color: #ce9178;
+      }
+      .comment {
+        color: #6a9955;
+      }
+
+      /* Bottom panel */
+      .bottom {
+        border-top: 1px solid #000;
+        background: #252526;
+        padding: 6px 10px;
+        font-size: 12px;
+        color: #ccc;
+      }
+      .bottom label {
+        margin-right: 8px;
+      }
+      .bottom input[type="text"] {
+        width: 60%;
+        padding: 3px 5px;
+        background: #1e1e1e;
+        border: 1px solid #555;
+        color: #eee;
+      }
+      .bottom .stdin-options {
+        margin-top: 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <!-- Left sidebar -->
+      <div class="sidebar">
+        <div class="logo">
+          <div class="logo-box">⚡</div>
+          Human Complier
+        </div>
+        <div class="menu-title">online compiler and debugger for c/c++</div>
+        <button>IDE</button>
+        <button>My Projects</button>
+        <button>Classroom</button>
+        <button>Learn Programming</button>
+        <button>Programming Questions</button>
+        <button>Sign Up</button>
+        <button>Login</button>
+      </div>
+
+      <!-- Main area -->
+      <div class="main">
+        <!-- Top toolbar -->
+        <div class="topbar">
+          <button class="btn-run">Run</button>
+          <button class="btn-debug">Debug</button>
+          <button class="btn-stop">Stop</button>
+          <button class="btn-share">Share</button>
+          <button class="btn-save">Save</button>
+          <button class="btn-beautify">{ } Beautify</button>
+          <div class="lang-select">Language: &nbsp;-- select -- ▼</div>
+        </div>
+
+        <!-- Editor header -->
+        <div class="editor-header">source code</div>
+
+        <!-- Editor with code -->
+        <div class="editor">
+          <div class="line-numbers">
+            1<br />2<br />3<br />4<br />5<br />6<br />7<br />8<br />9<br />10<br />11<br />12<br />13<br />14<br />15<br />16
+          </div>
+          <pre contenteditable="true" spellcheck="false">
+
+<span class="comment">/******************************************************************************</span>
+<span class="comment">Welcome to GDB Online.</span>
+<span class="comment">GDB online is an online compiler and debugger tool for C, C++, Python, PHP, Ruby,</span>
+<span class="comment">C#, OCaml, VB, Perl, Swift, Prolog, Javascript, Pascal, COBOL, HTML, CSS, JS</span>
+<span class="comment">Code, Compile, Run and Debug online from anywhere in world.</span>
+<span class="comment">*******************************************************************************/</span>
+
+<span class="kw">#include</span> &lt;stdio.h&gt;
+
+<span class="kw">int</span> <span class="func">main</span>() 
+{
+    <span class="func">printf</span>(<span class="string">"Hello World"</span>);
+    
+    <span class="kw">return</span> <span class="kw">0</span>;
+}
+</pre>
+        </div>
+
+        <!-- Bottom panel -->
+        <div class="bottom">
+          <div>
+            <label>Command line arguments:</label>
+            <input type="text" />
+          </div>
+          <div class="stdin-options">
+            Standard Input:
+            <label
+              ><input type="radio" name="stdin" checked /> Interactive
+              Console</label
+            >
+            <label><input type="radio" name="stdin" /> Text</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
