@@ -1,6 +1,7 @@
 const express = require('express');
 const memberController = require('../controller/member.controller');
 const { validateMemberInput, validateMemberId } = require('../middleware/member.middleware');
+const { auth } = require('../middleware/auth.middleware');
 
 const router = express.Router();
 
@@ -61,6 +62,12 @@ router.get('/members/:memberId/compilations', validateMemberId, memberController
  * Search members by username, email, or name
  */
 router.get('/members/search/:query', memberController.searchMembers);
+
+/**
+ * GET /api/members/me
+ * Fetch current authenticated member profile
+ */
+router.get('/members/me', auth, memberController.getCurrentMember);
 
 // ============================================
 // POST Routes - Create/Update Member Data

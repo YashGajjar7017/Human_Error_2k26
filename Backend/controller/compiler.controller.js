@@ -88,6 +88,48 @@ async function compileAndRunFromContent({ content, language, filename, stdin = '
             return { success: true, run, stdout: run.stdout, stderr: run.stderr };
         }
 
+        // TypeScript: try ts-node or tsc -> node transpile
+        if (language === 'typescript' || language === 'ts') {
+            const srcPath = path.join(workDir, filename.endsWith('.ts') ? filename : `script.ts`);
+            await fs.writeFile(srcPath, content);
+
+            // Try npx ts-node first (run directly), fallback to tsc compile
+            try {
+                const run = await spawnWithTimeout('npx', ['ts-node', srcPath], { cwd: workDir, timeout, maxOutput });
+                return { success: true, run, stdout: run.stdout, stderr: run.stderr };
+            } catch (err) {
+                // fallback to tsc + node
+                const outJs = path.join(workDir, 'out.js');
+                const compile = await spawnWithTimeout('npx', ['tsc', '--outFile', outJs, srcPath], { cwd: workDir, timeout, maxOutput });
+                if (compile.code !== 0) return { success: false, compile, stdout: compile.stdout, stderr: compile.stderr };
+                const run = await spawnWithTimeout('node', [outJs], { cwd: workDir, timeout, maxOutput });
+                return { success: true, compile, run, stdout: run.stdout, stderr: run.stderr };
+            }
+        }
+
+        // Go: compile to an executable and run
+        if (language === 'go' || language === 'golang') {
+            const srcPath = path.join(workDir, filename.endsWith('.go') ? filename : `main.go`);
+            await fs.writeFile(srcPath, content);
+            const exeName = process.platform === 'win32' ? 'main.exe' : 'main';
+            const compile = await spawnWithTimeout('go', ['build', '-o', exeName, srcPath], { cwd: workDir, timeout, maxOutput });
+            if (compile.code !== 0) return { success: false, compile, stdout: compile.stdout, stderr: compile.stderr };
+            const run = await spawnWithTimeout(path.join(workDir, exeName), [], { cwd: workDir, timeout, maxOutput });
+            return { success: true, compile, run, stdout: run.stdout, stderr: run.stderr };
+        }
+
+        // Rust: use rustc to compile to an executable and run
+        if (language === 'rust') {
+            const ext = '.rs';
+            const srcPath = path.join(workDir, filename.endsWith(ext) ? filename : `main${ext}`);
+            await fs.writeFile(srcPath, content);
+            const exeName = process.platform === 'win32' ? 'main.exe' : 'main';
+            const compile = await spawnWithTimeout('rustc', [srcPath, '-o', exeName], { cwd: workDir, timeout, maxOutput });
+            if (compile.code !== 0) return { success: false, compile, stdout: compile.stdout, stderr: compile.stderr };
+            const run = await spawnWithTimeout(path.join(workDir, exeName), [], { cwd: workDir, timeout, maxOutput });
+            return { success: true, compile, run, stdout: run.stdout, stderr: run.stderr };
+        }
+
         if (language === 'javascript' || language === 'node') {
             const srcPath = path.join(workDir, filename.endsWith('.js') ? filename : `script.js`);
             await fs.writeFile(srcPath, content);

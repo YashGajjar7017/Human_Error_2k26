@@ -41,7 +41,7 @@ const frontendMemberRoutes = require('../Frontend/Routes/Member.routes');
 const publicUploadRoutes = require('./Routes/publicUpload.routes');
 const securityRoutes = require('./Routes/security.routes');
 const mlRoutes = require('./Routes/ml.routes');
-// const modeRoutes = require('./Routes/mode.routes');
+const modeRoutes = require('./Routes/mode.routes');
 
 // DB Connect
 const DBConnect = require('./DB/DBHandler');
@@ -245,6 +245,7 @@ app.use('/api/password-reset', passwordResetRoutes);
 app.use('/api/otp', otpRoutes);
 app.use('/api/security', securityRoutes);
 app.use('/api/ml', mlRoutes);
+app.use('/api/mode', modeRoutes);
 app.use('/api', memberRoutes);
 app.use('/', frontendMemberRoutes);
 app.use(publicUploadRoutes);

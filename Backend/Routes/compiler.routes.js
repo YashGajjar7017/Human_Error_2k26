@@ -206,6 +206,45 @@ router.post('/compile/javascript', async (req, res) => {
     }
 });
 
+// Route to compile TypeScript code
+router.post('/compile/typescript', async (req, res) => {
+    try {
+        const { content, outputName } = req.body;
+        if (!content) return res.status(400).json({ error: 'Content is required' });
+        const result = await compilerController.compileAndRunFromContent({ content, language: 'typescript', filename: outputName, timeout: 10000 });
+        if (!result.success) return res.status(400).json({ success: false, result });
+        res.json({ success: true, result });
+    } catch (error) {
+        res.status(500).json({ success: false, error: 'TypeScript execution failed', details: error.stderr || error.message });
+    }
+});
+
+// Route to compile Go code
+router.post('/compile/go', async (req, res) => {
+    try {
+        const { content, outputName } = req.body;
+        if (!content) return res.status(400).json({ error: 'Content is required' });
+        const result = await compilerController.compileAndRunFromContent({ content, language: 'go', filename: outputName, timeout: 10000 });
+        if (!result.success) return res.status(400).json({ success: false, result });
+        res.json({ success: true, result });
+    } catch (error) {
+        res.status(500).json({ success: false, error: 'Go compilation failed', details: error.stderr || error.message });
+    }
+});
+
+// Route to compile Rust code
+router.post('/compile/rust', async (req, res) => {
+    try {
+        const { content, outputName } = req.body;
+        if (!content) return res.status(400).json({ error: 'Content is required' });
+        const result = await compilerController.compileAndRunFromContent({ content, language: 'rust', filename: outputName, timeout: 10000 });
+        if (!result.success) return res.status(400).json({ success: false, result });
+        res.json({ success: true, result });
+    } catch (error) {
+        res.status(500).json({ success: false, error: 'Rust compilation failed', details: error.stderr || error.message });
+    }
+});
+
 // Route to detect programming language
 router.post('/detect-language', async (req, res) => {
     try {
@@ -409,6 +448,24 @@ router.get('/languages', (req, res) => {
             extensions: ['.js'],
             interpreters: ['node'],
             features: ['execution', 'linting', 'formatting']
+        },
+        typescript: {
+            name: 'TypeScript',
+            extensions: ['.ts'],
+            tools: ['tsc', 'ts-node'],
+            features: ['execution', 'transpile', 'linting']
+        },
+        go: {
+            name: 'Go',
+            extensions: ['.go'],
+            compilers: ['go'],
+            features: ['compilation', 'execution']
+        },
+        rust: {
+            name: 'Rust',
+            extensions: ['.rs'],
+            compilers: ['rustc', 'cargo'],
+            features: ['compilation', 'execution']
         }
     };
 

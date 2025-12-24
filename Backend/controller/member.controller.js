@@ -320,6 +320,33 @@ exports.searchMembers = async (req, res) => {
     }
 };
 
+/**
+ * Get current authenticated member profile
+ */
+exports.getCurrentMember = async (req, res) => {
+    try {
+        const user = req.user;
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Not authenticated' });
+        }
+
+        res.json({
+            success: true,
+            data: {
+                id: user._id,
+                username: user.username,
+                email: user.email,
+                subscription: user.subscription || { plan: 'free' },
+                joinDate: user.createdAt,
+                role: user.role
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching current member:', error);
+        res.status(500).json({ success: false, message: 'Error fetching profile', error: error.message });
+    }
+};
+
 // ============================================
 // POST Methods
 // ============================================

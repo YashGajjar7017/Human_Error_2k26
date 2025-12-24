@@ -191,6 +191,10 @@ exports.signUP = async (req, res) => {
                 });
             } catch (createErr) {
                 console.error('Immediate user creation failed:', createErr);
+                if (createErr.code === 11000) {
+                    const key = Object.keys(createErr.keyValue || {})[0] || 'field';
+                    return res.status(400).json({ success: false, error: `${key} already exists.` });
+                }
                 return res.status(500).json({ success: false, error: 'Immediate user creation failed' });
             }
         }
@@ -339,7 +343,16 @@ exports.verifyOtp = async (req, res) => {
             password: signup.password // Password is already hashed in Signup model
         });
 
-        await newUser.save();
+        try {
+            await newUser.save();
+        } catch (saveErr) {
+            console.error('Error saving verified user:', saveErr);
+            if (saveErr.code === 11000) {
+                const key = Object.keys(saveErr.keyValue || {})[0] || 'field';
+                return res.status(400).json({ success: false, error: `${key} already exists.` });
+            }
+            return res.status(500).json({ success: false, error: 'Failed to save user after OTP verification.' });
+        }
 
         // Remove the signup entry after successful user creation
         await SignupModel.deleteOne({ email });
