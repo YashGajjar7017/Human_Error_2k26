@@ -3,7 +3,9 @@ const path = require('path');
 const fs = require('fs');
 
 class GDBCompiler {
-    constructor() {
+    constructor(options = {}) {
+        // Allow tests to inject a fake exec implementation for determinism
+        this.exec = options.exec || exec;
         this.gdbPath = path.join(__dirname, '..', 'GDB Complier');
         this.tempDir = path.join(__dirname, 'temp');
         this.ensureTempDir();
@@ -21,7 +23,7 @@ class GDBCompiler {
             const gccPath = path.join(this.gdbPath, 'gcc');
             const command = `"${gccPath}" "${filePath}" -o "${outputPath}"`;
             
-            exec(command, (error, stdout, stderr) => {
+            this.exec(command, (error, stdout, stderr) => {
                 if (error) {
                     reject({ error: error.message, stderr });
                     return;
@@ -37,7 +39,7 @@ class GDBCompiler {
             const gppPath = path.join(this.gdbPath, 'g++');
             const command = `"${gppPath}" "${filePath}" -o "${outputPath}"`;
             
-            exec(command, (error, stdout, stderr) => {
+            this.exec(command, (error, stdout, stderr) => {
                 if (error) {
                     reject({ error: error.message, stderr });
                     return;
@@ -52,7 +54,7 @@ class GDBCompiler {
             const gdbPath = path.join(this.gdbPath, 'gdb');
             const command = `"${gdbPath}" "${filePath}"`;
             
-            const child = exec(command, (error, stdout, stderr) => {
+            const child = this.exec(command, (error, stdout, stderr) => {
                 if (error) {
                     reject({ error: error.message, stderr });
                     return;
@@ -61,8 +63,12 @@ class GDBCompiler {
             });
 
             // Send initial commands to GDB
-            child.stdin.write('run\n');
-            child.stdin.end();
+            try {
+                child.stdin.write('run\n');
+                child.stdin.end();
+            } catch (e) {
+                // Some exec implementations may not expose stdin in tests; ignore
+            }
         });
     }
 

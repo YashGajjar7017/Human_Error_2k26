@@ -6,7 +6,13 @@
   "scripts": {
     "start:worker": "node src/worker.js",
     "start:client": "node src/client.js",
-    "start:orchestrator": "node src/orchestrator.js"
+    "start:orchestrator": "node src/orchestrator.js",
+    "test": "mocha --exit"
+  },
+  "devDependencies": {
+    "mocha": "^10.2.0",
+    "chai": "^4.3.7",
+    "sinon": "^15.0.0"
   },
   "dependencies": {
     "@libp2p/core": "^0.40.0",
