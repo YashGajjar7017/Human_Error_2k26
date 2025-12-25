@@ -42,6 +42,7 @@ const publicUploadRoutes = require('./Routes/publicUpload.routes');
 const securityRoutes = require('./Routes/security.routes');
 const mlRoutes = require('./Routes/ml.routes');
 const modeRoutes = require('./Routes/mode.routes');
+const { auth, authorize } = require('./middleware/auth.middleware');
 
 // DB Connect
 const DBConnect = require('./DB/DBHandler');
@@ -321,6 +322,20 @@ if (servedBuild) {
     });
 }
 
+// Serve frontend SPA index to support client-side routing (one-way SPA navigation)
+app.get('*', (req, res, next) => {
+    if (req.method !== 'GET') return next();
+    const indexPath = path.join(__dirname, '../Frontend', 'views', 'index.html');
+    try {
+        if (fs.existsSync(indexPath)) {
+            return res.sendFile(indexPath);
+        }
+    } catch (err) {
+        console.error('Error serving SPA index:', err);
+    }
+    next();
+});
+
 // 404 handler for API routes
 app.use('/api/*', function (req, res, next) {
     res.status(404).json({
@@ -337,6 +352,33 @@ app.use((err, req, res, next) => {
         error: 'Internal Server Error',
         message: err.message
     });
+});
+
+// Admin: list all server routes for auditing
+app.get('/api/debug/routes', auth, authorize('admin'), (req, res) => {
+    try {
+        const routes = [];
+        app._router.stack.forEach((middleware) => {
+            if (middleware.route) { // routes registered directly on the app
+                const method = Object.keys(middleware.route.methods)[0];
+                routes.push({ path: middleware.route.path, method });
+            } else if (middleware.name === 'router') { // router middleware
+                middleware.handle.stack.forEach((handler) => {
+                    if (handler.route) {
+                        const method = Object.keys(handler.route.methods)[0];
+                        routes.push({ path: handler.route.path, method });
+                    }
+                });
+            }
+        });
+
+        // Deduplicate and sort
+        const unique = Array.from(new Map(routes.map(r => [r.method + ' ' + r.path, r])).values()).sort((a,b) => (a.path > b.path ? 1 : -1));
+        res.json({ success: true, count: unique.length, routes: unique });
+    } catch (err) {
+        console.error('Failed to list routes:', err);
+        res.status(500).json({ success: false, error: 'Failed to list routes' });
+    }
 });
 
 // Maintenance server is now integrated into the main server

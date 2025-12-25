@@ -1,5 +1,7 @@
 const express = require('express');
 const signUP = require('../controller/SignupApi.controller');
+const { auth } = require('../middleware/auth.middleware');
+const { authorize } = require('../middleware/auth.middleware');
 
 const router = express.Router();
 
@@ -24,5 +26,8 @@ router.get('/:signupToken', (req, res) => {
 router.post('/', signUP.signUP);
 router.post('/otp', signUP.sendOtp);
 router.post('/verify-otp', signUP.verifyOtp);
+
+// Admin helper: force-create a user from a signup entry (for debugging/troubleshooting)
+router.post('/admin/force-verify', auth, authorize('admin'), signUP.forceVerifySignup);
 
 module.exports = router;

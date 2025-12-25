@@ -133,18 +133,22 @@ exports.signUP = async (req, res) => {
         });
 
         if (existingSignup) {
-            if (existingSignup.email === email) {
-                return res.status(400).json({
-                    success: false,
-                    error: "Signup already initiated for this email."
-                });
+            // Update attempt metadata for retry
+            try {
+                await SignupModel.updateOne({ _id: existingSignup._id }, { $inc: { attempts: 1 }, $set: { lastAttemptAt: new Date() } });
+            } catch (updateErr) {
+                console.error('Failed to update existing signup attempts:', updateErr);
             }
-            if (existingSignup.username === username) {
-                return res.status(400).json({
-                    success: false,
-                    error: "Username already taken."
-                });
-            }
+
+            return res.status(200).json({
+                success: true,
+                message: 'Signup already initiated for this email or username. Use the returned signupId to request OTP.',
+                data: {
+                    username: existingSignup.username,
+                    email: existingSignup.email,
+                    signupId: existingSignup._id
+                }
+            });
         }
 
         // Create signup entry - only pass required fields
@@ -153,6 +157,10 @@ exports.signUP = async (req, res) => {
             email,
             password
         });
+
+        // Track attempt metadata
+        newSignup.lastAttemptAt = new Date();
+        newSignup.attempts = (newSignup.attempts || 0) + 1;
 
         await newSignup.save();
 
@@ -390,5 +398,42 @@ exports.verifyOtp = async (req, res) => {
             success: false,
             error: "Failed to verify OTP."
         });
+    }
+};
+
+// Force-verify endpoint (admin only) to convert signup to user (useful for debugging)
+exports.forceVerifySignup = async (req, res) => {
+    try {
+        const { email, signupId } = req.body;
+
+        let signup;
+        if (signupId) signup = await SignupModel.findById(signupId);
+        if (!signup && email) signup = await SignupModel.findOne({ email });
+
+        if (!signup) return res.status(404).json({ success: false, error: 'Signup entry not found' });
+
+        // If user exists already, return error
+        const existingUser = await SignUPModel.findOne({ $or: [{ email: signup.email }, { username: signup.username }] });
+        if (existingUser) return res.status(400).json({ success: false, error: 'User already exists for this signup.' });
+
+        const newUser = new SignUPModel({ username: signup.username, email: signup.email, password: signup.password });
+        try {
+            await newUser.save();
+        } catch (saveErr) {
+            console.error('Force-verify save error:', saveErr);
+            if (saveErr.code === 11000) {
+                const key = Object.keys(saveErr.keyValue || {})[0] || 'field';
+                return res.status(400).json({ success: false, error: `${key} already exists.` });
+            }
+            return res.status(500).json({ success: false, error: 'Failed to create user from signup.' });
+        }
+
+        // Remove signup record on success
+        await SignupModel.deleteOne({ _id: signup._id });
+
+        res.json({ success: true, message: 'User created from signup (admin force-verify).', data: { userId: newUser._id } });
+    } catch (err) {
+        console.error('Force-verify error:', err);
+        res.status(500).json({ success: false, error: 'Failed to force-verify signup' });
     }
 };

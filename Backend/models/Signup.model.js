@@ -29,6 +29,14 @@ const signupSchema = new mongoose.Schema({
     otpExpiresAt: {
         type: Date,
         default: null
+    },
+    attempts: {
+        type: Number,
+        default: 0
+    },
+    lastAttemptAt: {
+        type: Date,
+        default: null
     }
 }, {
     timestamps: true

@@ -8,6 +8,8 @@ const { exec } = require('child_process');
 const util = require('util');
 const execAsync = util.promisify(exec);
 const compilerController = require('../controller/compiler.controller');
+const { optionalAuth } = require('../middleware/auth.middleware');
+const User = require('../models/User.model');
 
 const compiler = new GDBCompiler();
 const upload = multer({ dest: '../../Compling/TemporaryCache/' });
@@ -44,7 +46,7 @@ router.post('/compile', upload.single('file'), async (req, res) => {
 });
 
 // Route to compile from code content
-router.post('/compile-content', async (req, res) => {
+router.post('/compile-content', optionalAuth, async (req, res) => {
     try {
         const { content, language, outputName } = req.body;
 
@@ -55,7 +57,22 @@ router.post('/compile-content', async (req, res) => {
         // Use safe controller that writes to a temp dir and executes with timeout
         const result = await compilerController.compileAndRunFromContent({ content, language, filename: outputName, timeout: 5000 });
         if (!result.success) {
+            // record attempt for authenticated user
+            if (req.user) {
+                await User.findByIdAndUpdate(req.user._id, { $push: { activityLog: { action: 'compilation', timestamp: new Date(), details: `language:${language} status:fail` } } });
+            }
             return res.status(400).json({ success: false, result });
+        }
+
+        // Save compilation result to user's activity log (if authenticated)
+        if (req.user) {
+            const details = {
+                language,
+                stdout: (result.run && result.run.stdout) ? String(result.run.stdout).slice(0, 1024) : '',
+                stderr: (result.run && result.run.stderr) ? String(result.run.stderr).slice(0, 1024) : '',
+                success: true
+            };
+            await User.findByIdAndUpdate(req.user._id, { $push: { activityLog: { action: 'compilation', timestamp: new Date(), details: JSON.stringify(details) } } });
         }
 
         res.json({
@@ -65,10 +82,14 @@ router.post('/compile-content', async (req, res) => {
         });
 
     } catch (error) {
-        res.status(500).json({ 
-            success: false, 
+        // record failure
+        if (req.user) {
+            await User.findByIdAndUpdate(req.user._id, { $push: { activityLog: { action: 'compilation', timestamp: new Date(), details: `language:${req.body.language} error:${error.message}` } } });
+        }
+        res.status(500).json({
+            success: false,
             error: error.error || 'Compilation failed',
-            details: error.stderr 
+            details: error.stderr
         });
     }
 });
@@ -127,7 +148,7 @@ router.get('/version', async (req, res) => {
 });
 
 // Route to compile Python code
-router.post('/compile/python', async (req, res) => {
+router.post('/compile/python', optionalAuth, async (req, res) => {
     try {
         const { content, outputName } = req.body;
 
@@ -136,7 +157,11 @@ router.post('/compile/python', async (req, res) => {
         }
 
         const result = await compilerController.compileAndRunFromContent({ content, language: 'python', filename: outputName, timeout: 10000 });
-        if (!result.success) return res.status(400).json({ success: false, result });
+        if (!result.success) {
+            if (req.user) await User.findByIdAndUpdate(req.user._id, { $push: { activityLog: { action: 'compilation', timestamp: new Date(), details: `python failure` } } });
+            return res.status(400).json({ success: false, result });
+        }
+        if (req.user) await User.findByIdAndUpdate(req.user._id, { $push: { activityLog: { action: 'compilation', timestamp: new Date(), details: `python success` } } });
         res.json({ success: true, result });
 
     } catch (error) {
@@ -149,7 +174,7 @@ router.post('/compile/python', async (req, res) => {
 });
 
 // Route to compile Java code
-router.post('/compile/java', upload.single('file'), async (req, res) => {
+router.post('/compile/java', optionalAuth, upload.single('file'), async (req, res) => {
     try {
         const file = req.file;
 
@@ -172,7 +197,7 @@ router.post('/compile/java', upload.single('file'), async (req, res) => {
 });
 
 // Route to compile JavaScript/Node.js code
-router.post('/compile/javascript', async (req, res) => {
+router.post('/compile/javascript', optionalAuth, async (req, res) => {
     try {
         const { content } = req.body;
 
@@ -207,7 +232,7 @@ router.post('/compile/javascript', async (req, res) => {
 });
 
 // Route to compile TypeScript code
-router.post('/compile/typescript', async (req, res) => {
+router.post('/compile/typescript', optionalAuth, async (req, res) => {
     try {
         const { content, outputName } = req.body;
         if (!content) return res.status(400).json({ error: 'Content is required' });
@@ -220,7 +245,7 @@ router.post('/compile/typescript', async (req, res) => {
 });
 
 // Route to compile Go code
-router.post('/compile/go', async (req, res) => {
+router.post('/compile/go', optionalAuth, async (req, res) => {
     try {
         const { content, outputName } = req.body;
         if (!content) return res.status(400).json({ error: 'Content is required' });
@@ -233,7 +258,7 @@ router.post('/compile/go', async (req, res) => {
 });
 
 // Route to compile Rust code
-router.post('/compile/rust', async (req, res) => {
+router.post('/compile/rust', optionalAuth, async (req, res) => {
     try {
         const { content, outputName } = req.body;
         if (!content) return res.status(400).json({ error: 'Content is required' });
