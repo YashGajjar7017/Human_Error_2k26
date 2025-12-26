@@ -42,6 +42,7 @@ const publicUploadRoutes = require('./Routes/publicUpload.routes');
 const securityRoutes = require('./Routes/security.routes');
 const mlRoutes = require('./Routes/ml.routes');
 const modeRoutes = require('./Routes/mode.routes');
+const paymentRoutes = require('./Routes/payment.routes');
 const { auth, authorize } = require('./middleware/auth.middleware');
 
 // DB Connect
@@ -250,6 +251,7 @@ app.use('/api/mode', modeRoutes);
 app.use('/api', memberRoutes);
 app.use('/', frontendMemberRoutes);
 app.use(publicUploadRoutes);
+app.use('/api/payments', paymentRoutes);
 // Mode management route (web/electron)
 // app.use('/api/mode', modeRoutes);
 

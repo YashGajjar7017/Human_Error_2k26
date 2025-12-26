@@ -9,7 +9,14 @@
     "preview": "vite preview --port 5173",
     "start": "vite preview --port 5173",
     "electron:dev": "concurrently \"npm:dev\" \"wait-on http://localhost:5173 && electron .\"",
-    "electron:build": "npm run build"
+    "electron:build": "npm run build && electron-builder",
+    "convert:html": "node ../tools/html_to_react.js"
+  },
+  "build": {
+    "appId": "com.yourorg.node-compiler",
+    "directories": {
+      "output": "dist_electron"
+    }
   },
   "dependencies": {
     "react": "^18.2.0",
@@ -17,10 +24,11 @@
     "react-router-dom": "^6.14.1"
   },
   "devDependencies": {
-    "vite": "^5.0.0",
     "@vitejs/plugin-react": "^4.0.0",
     "concurrently": "^8.0.0",
+    "electron": "^39.2.7",
+    "vite": "^7.3.0",
     "wait-on": "^7.0.0",
-    "electron": "^26.0.0"
+    "electron-builder": "^24.6.0"
   }
 }

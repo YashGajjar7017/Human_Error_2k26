@@ -29,6 +29,13 @@ This document lists the main API routes in the Backend and their purpose. Use th
 - POST `/api/compiler/rust` — Compile & run Rust.
 - GET `/api/compiler/languages` — Get supported languages.
 
+## Compiler (Native)
+- POST `/api/compiler/compile/native` — Compile and run native C/C++ code using a local native runner (`tools/code_runner`); supported languages: `c`, `cpp`.
+
+## Payments
+- POST `/api/payments/create-intent` — Create a Stripe test PaymentIntent (auth required).
+- POST `/api/payments/webhook` — Webhook endpoint stub for payment provider events.
+
 ## Mode / Electron
 - GET `/api/mode` — Get current app mode (web | electron).
 - POST `/api/mode/set` — (Auth) Set mode (web or electron).
@@ -36,6 +43,15 @@ This document lists the main API routes in the Backend and their purpose. Use th
 
 ## Debug
 - GET `/api/debug/routes` — (Admin only) List all mounted routes and methods.
+
+## HTML legacy renderer & conversion
+
+- Dynamic route: `GET /html/:name` (React route) — renders the exact HTML from `Frontend/views/:name.html` using a dynamic loader (`React-Complier-Frontend/src/pages/HtmlLegacy.jsx`). Use this to preview the original pages exactly.
+- Conversion tool: `tools/html_to_react.js` — converts `Frontend/views/*.html` into React components under `React-Complier-Frontend/src/pages/converted/`. Run `cd React-Complier-Frontend && npm run convert:html` to generate components.
+
+Notes:
+- Generated components use `dangerouslySetInnerHTML` to preserve exact appearance and require manual migration for inline scripts and interactivity.
+- After verification, you can swap routes in the React app to use converted components directly.
 
 ---
 

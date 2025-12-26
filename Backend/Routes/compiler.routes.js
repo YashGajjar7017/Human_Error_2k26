@@ -4,12 +4,14 @@ const GDBCompiler = require('../../Engine_Execution/gdb-setup');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs').promises;
-const { exec } = require('child_process');
+const { exec, spawn } = require('child_process');
 const util = require('util');
 const execAsync = util.promisify(exec);
 const compilerController = require('../controller/compiler.controller');
 const { optionalAuth } = require('../middleware/auth.middleware');
 const User = require('../models/User.model');
+const os = require('os');
+const tmp = require('tmp');
 
 const compiler = new GDBCompiler();
 const upload = multer({ dest: '../../Compling/TemporaryCache/' });
@@ -498,6 +500,57 @@ router.get('/languages', (req, res) => {
         success: true,
         languages: supportedLanguages
     });
+});
+
+// Native compile/run endpoint (C/C++)
+router.post('/compile/native', optionalAuth, async (req, res) => {
+    try {
+        const { content, language, outputName } = req.body;
+        if (!content || !language) return res.status(400).json({ error: 'Content and language are required' });
+        const lang = language.toLowerCase();
+        if (!['c', 'cpp'].includes(lang)) return res.status(400).json({ error: 'Native compile only supports c/cpp' });
+
+        const tmpDirObj = tmp.dirSync({ unsafeCleanup: true });
+        const workDir = tmpDirObj.name;
+        const srcName = lang === 'cpp' ? 'main.cpp' : 'main.c';
+        const srcPath = path.join(workDir, srcName);
+        const exePath = path.join(workDir, outputName || 'a.out');
+        await fs.writeFile(srcPath, content);
+
+        const runnerPath = path.join(__dirname, '..', '..', 'tools', 'code_runner', process.platform === 'win32' ? 'code_runner.exe' : 'code_runner');
+
+        // Compile
+        const compile = spawn(runnerPath, ['compile', srcPath, exePath], { cwd: workDir });
+        let compileOut = '';
+        compile.stdout.on('data', d => compileOut += d.toString());
+        compile.stderr.on('data', d => compileOut += d.toString());
+        const compileCode = await new Promise((resolve) => compile.on('close', (code) => resolve(code)));
+
+        if (compileCode !== 0) {
+            tmpDirObj.removeCallback();
+            if (req.user) await User.findByIdAndUpdate(req.user._id, { $push: { activityLog: { action: 'compilation', timestamp: new Date(), details: `native compile failure` } } });
+            return res.status(400).json({ success: false, compileCode, compileOut });
+        }
+
+        // Run
+        const run = spawn(runnerPath, ['run', exePath], { cwd: workDir });
+        let runOut = '';
+        run.stdout.on('data', d => runOut += d.toString());
+        run.stderr.on('data', d => runOut += d.toString());
+        const runCode = await new Promise((resolve) => run.on('close', (code) => resolve(code)));
+
+        // Log activity
+        if (req.user) {
+            await User.findByIdAndUpdate(req.user._id, { $push: { activityLog: { action: 'compilation', timestamp: new Date(), details: `native success code:${runCode}` } } });
+        }
+
+        tmpDirObj.removeCallback();
+
+        res.json({ success: true, runCode, output: runOut });
+    } catch (err) {
+        console.error('Native compile error:', err);
+        res.status(500).json({ success: false, error: err.message });
+    }
 });
 
 module.exports = router;

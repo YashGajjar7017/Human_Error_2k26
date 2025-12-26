@@ -1,6 +1,7 @@
 const express = require('express');
 const { sessionManager } = require('../controller/session.controller');
 const jwt = require('jsonwebtoken');
+const qrcode = require('qrcode');
 
 const router = express.Router();
 
@@ -137,6 +138,38 @@ router.get('/:sessionId/share', async (req, res) => {
             success: false,
             message: 'Failed to get share code'
         });
+    }
+});
+
+// Return a full join link (frontend URL) for the session
+router.get('/:sessionId/share/link', async (req, res) => {
+    try {
+        const session = await sessionManager.getSession(req.params.sessionId);
+        if (!session) return res.status(404).json({ success: false, message: 'Session not found' });
+
+        const base = process.env.FRONTEND_BASE || `${req.protocol}://${req.get('host')}`;
+        const joinUrl = `${base}/session/join?code=${session.joinCode}`;
+        res.json({ success: true, link: joinUrl });
+    } catch (error) {
+        console.error('Error generating share link:', error);
+        res.status(500).json({ success: false, message: 'Failed to generate share link' });
+    }
+});
+
+// Return a QR code (data URL) for the session join link
+router.get('/:sessionId/share/qr', async (req, res) => {
+    try {
+        const session = await sessionManager.getSession(req.params.sessionId);
+        if (!session) return res.status(404).json({ success: false, message: 'Session not found' });
+
+        const base = process.env.FRONTEND_BASE || `${req.protocol}://${req.get('host')}`;
+        const joinUrl = `${base}/session/join?code=${session.joinCode}`;
+
+        const qr = await qrcode.toDataURL(joinUrl, { errorCorrectionLevel: 'H', margin: 1 });
+        res.json({ success: true, qr, link: joinUrl });
+    } catch (error) {
+        console.error('Error generating QR code:', error);
+        res.status(500).json({ success: false, message: 'Failed to generate QR code' });
     }
 });
 

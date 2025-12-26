@@ -25,6 +25,8 @@ import Collaboration from './pages/Collaboration'
 import Analytics from './pages/Analytics'
 import Achievements from './pages/Achievements'
 import NotFound from './pages/NotFound'
+import Payment from './pages/Payment'
+import HtmlLegacy from './pages/HtmlLegacy'
 
 export default function App(){
   return (
@@ -53,6 +55,9 @@ export default function App(){
         <Route path="/analytics" element={<Analytics />} />
         <Route path="/achievements" element={<Achievements />} />
         <Route path="/otp-1" element={<OTP1 />} />
+        <Route path="/payment" element={<Payment />} />
+        {/* Legacy HTML renderer (exact pages from Frontend/views) */}
+        <Route path="/html/:name" element={<HtmlLegacy />} />
         <Route path="/" element={<Home />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

@@ -158,7 +158,32 @@ async function compileAndRunFromContent({ content, language, filename, stdin = '
     }
 }
 
+async function runNativeCode(content, language, timeout = 5000) {
+    const tmp = require('tmp');
+    const tmpDir = tmp.dirSync({ unsafeCleanup: true });
+    const srcName = language === 'cpp' ? 'main.cpp' : 'main.c';
+    const srcPath = path.join(tmpDir.name, srcName);
+    const exePath = path.join(tmpDir.name, 'a.out');
+    await fs.writeFile(srcPath, content);
+
+    const runner = path.join(__dirname, '..', '..', 'tools', 'code_runner', process.platform === 'win32' ? 'code_runner.exe' : 'code_runner');
+    try {
+        // compile
+        const compile = await spawnWithTimeout(runner, ['compile', srcPath, exePath], { cwd: tmpDir.name, timeout, maxOutput: 1024 * 1024 });
+        if (compile && compile.code !== 0) return { success: false, compile };
+
+        // run
+        const run = await spawnWithTimeout(runner, ['run', exePath], { cwd: tmpDir.name, timeout, maxOutput: 1024 * 1024 });
+        return { success: true, compile, run };
+    } catch (err) {
+        return { success: false, error: String(err) };
+    } finally {
+        tmpDir.removeCallback();
+    }
+}
+
 module.exports = {
     compileAndRunFromContent,
-    spawnWithTimeout
+    spawnWithTimeout,
+    runNativeCode
 };
