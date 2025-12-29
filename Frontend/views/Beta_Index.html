@@ -811,4 +811,23 @@ int main(void)
         appendTerminalLine(
           `<span class="prompt">stdout</span>: response status ${res.status}`
         );
-        appendTerminalLine
+
+        // Show a preview of the JSON response (truncate for safety)
+        const bodyPreview = JSON.stringify(json).slice(0, 800);
+        appendTerminalLine(`<span class="muted">response body:</span> ${bodyPreview}`);
+        appendTerminalLine(`<span class="muted">run complete.</span>`);
+      } catch (err) {
+        console.error('Run error:', err);
+        appendTerminalLine(`<span class="error">Error: ${String(err.message || err)}</span>`);
+      }
+    });
+
+    // small accessibility: allow Ctrl+Enter to run
+    codeArea.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        runBtn.click();
+      }
+    });
+  </script>
+</body>
+</html>
