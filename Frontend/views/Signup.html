@@ -19,12 +19,12 @@
     <div class="signup-container">
         <div class="glass-container">
             <h2 class="glass-title">Create Account</h2>
-            <form id="signupForm">
-                <input class="glass-input" type="text" id="username" required minlength="3" placeholder="Username" />
-                <input class="glass-input" type="email" id="email" required placeholder="Email" />
-                <input class="glass-input" type="password" id="password" required minlength="6" placeholder="Password" />
-                <input class="glass-input" type="password" id="confirmPassword" required minlength="6" placeholder="Confirm Password" />
-                <select class="glass-select" id="role" required>
+            <form id="signupForm" action="/Account/Signup" method="POST">
+                <input class="glass-input" type="text" id="username" name="username" required minlength="3" placeholder="Username" />
+                <input class="glass-input" type="email" id="email" name="email" required placeholder="Email" />
+                <input class="glass-input" type="password" id="password" name="password" required minlength="8" placeholder="Password" />
+                <input class="glass-input" type="password" id="confirmPassword" name="confirmPassword" required minlength="8" placeholder="Confirm Password" />
+                <select class="glass-select" id="role" name="role" required>
                     <option value="user" selected>User</option>
                     <option value="admin">Admin</option>
                 </select>
@@ -44,39 +44,53 @@
             const confirmPassword = document.getElementById('confirmPassword').value;
             const role = document.getElementById('role').value;
             const errorDiv = document.getElementById('error-message');
+
             errorDiv.textContent = '';
+
+            // Client-side validation
+            if (!username || username.length < 3) {
+                errorDiv.textContent = 'Username must be at least 3 characters.';
+                return;
+            }
+
             if (password !== confirmPassword) {
                 errorDiv.textContent = 'Passwords do not match.';
                 return;
             }
+
+            if (password.length < 8) {
+                errorDiv.textContent = 'Password must be at least 8 characters.';
+                return;
+            }
+
+            // Show loading state
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Creating Account...';
+            submitBtn.disabled = true;
+
             try {
-                const res = await fetch('/api/signup', {
+                const res = await fetch('/Account/Signup', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, email, password, confirmPassword, role })
                 });
-                const data = await res.json();
-                if (res.ok && data.success) {
-                    // If server returned tokens (OTP disabled and immediate creation), save and redirect
-                    if (data.data && data.data.accessToken) {
-                        localStorage.setItem('user', JSON.stringify({
-                            id: data.data.user._id || data.data.user.id,
-                            username: data.data.user.username,
-                            token: data.data.accessToken
-                        }));
-                        window.location.href = '/index.html';
-                        return;
-                    }
 
-                    // Otherwise, signup initiated and OTP should be sent separately
-                    alert(data.message || 'Signup initiated. Please check your email for OTP.');
-                    // Optionally redirect to a verification page or show OTP input
-                    window.location.href = '/Account/SignupOTP?email=' + encodeURIComponent(email);
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    // Redirect to OTP verification
+                    window.location.href = data.redirectUrl || `/Account/sendOTP?email=${encodeURIComponent(email)}`;
                 } else {
-                    errorDiv.textContent = data.message || data.error || 'Signup failed.';
+                    errorDiv.textContent = data.error || 'Signup failed.';
                 }
             } catch (err) {
+                console.error('Signup error:', err);
                 errorDiv.textContent = 'Network error. Please try again.';
+            } finally {
+                // Reset button state
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
             }
         });
     </script>

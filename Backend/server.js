@@ -66,7 +66,8 @@ app.set('trust proxy', true);
 app.use(cors())
 
 // Serve static files from Frontend directory
-app.use(express.static(path.join(__dirname, '../Frontend')));
+const config = require('../config/paths');
+app.use(express.static(config.FRONTEND_PATH));
 
 // Serve uploaded files for preview/download
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -302,7 +303,8 @@ app.get('/health', (req, res) => {
 // Serve React production build (if present) and fallback to index.html for client-side routing
 const buildCandidates = [
     path.join(__dirname, '../React-Complier-Frontend/dist'),
-    path.join(__dirname, '../Frontend/react-app/dist')
+    config.REACT_FRONTEND_PATH ? path.join(config.REACT_FRONTEND_PATH, 'dist') : null,
+    path.join(config.FRONTEND_PATH, 'react-app', 'dist')
 ];
 let servedBuild = null;
 for (const p of buildCandidates) {
@@ -327,7 +329,7 @@ if (servedBuild) {
 // Serve frontend SPA index to support client-side routing (one-way SPA navigation)
 app.get('*', (req, res, next) => {
     if (req.method !== 'GET') return next();
-    const indexPath = path.join(__dirname, '../Frontend', 'views', 'index.html');
+    const indexPath = path.join(config.FRONTEND_PATH, 'views', 'index.html');
     try {
         if (fs.existsSync(indexPath)) {
             return res.sendFile(indexPath);

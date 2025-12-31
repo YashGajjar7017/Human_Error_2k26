@@ -4,7 +4,7 @@ const session = require('express-session');
 const path = require('path');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const storeData = new session.MemoryStore();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.FRONTEND_PORT || process.env.PORT || 3000;
 
 // const that express routes
 const adminData = require('./Routes/admin.routes');

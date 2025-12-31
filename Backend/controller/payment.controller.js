@@ -1,10 +1,24 @@
 require('dotenv').config();
 const Stripe = require('stripe');
 const qrcode = require('qrcode');
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '');
+
+// Initialize Stripe only if API key is provided
+let stripe = null;
+if (process.env.STRIPE_SECRET_KEY) {
+    stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+} else {
+    console.warn('STRIPE_SECRET_KEY not found. Payment features will be disabled.');
+}
 
 exports.createIntent = async (req, res) => {
     try {
+        if (!stripe) {
+            return res.status(503).json({
+                success: false,
+                error: 'Payment service not configured. Please set STRIPE_SECRET_KEY.'
+            });
+        }
+
         const { amount = 500, currency = 'usd' } = req.body;
         const paymentIntent = await stripe.paymentIntents.create({ amount, currency });
         res.json({ success: true, clientSecret: paymentIntent.client_secret, id: paymentIntent.id });
@@ -17,6 +31,13 @@ exports.createIntent = async (req, res) => {
 // Create a Checkout Session and return both URL and a QR code data URL for quick payment
 exports.createCheckout = async (req, res) => {
     try {
+        if (!stripe) {
+            return res.status(503).json({
+                success: false,
+                error: 'Payment service not configured. Please set STRIPE_SECRET_KEY.'
+            });
+        }
+
         const { amount = 500, currency = 'usd', description = 'Payment' } = req.body;
         const successUrl = process.env.PAYMENT_SUCCESS_URL || (req.headers.origin ? `${req.headers.origin}/payment/success` : 'http://localhost:3000/payment/success');
         const cancelUrl = process.env.PAYMENT_CANCEL_URL || (req.headers.origin ? `${req.headers.origin}/payment/cancel` : 'http://localhost:3000/payment/cancel');

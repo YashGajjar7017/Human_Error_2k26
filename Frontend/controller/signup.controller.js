@@ -74,9 +74,61 @@ const validateSignupData = (data) => {
     return errors;
 };
 
-// No-op signup handler: frontend should POST directly to backend API
-exports.postSignUp = (req, res) => {
-    res.status(501).json({ error: 'Not implemented. Please POST directly to /Account/Signup.' });
+// Signup form submission handler
+exports.postSignUp = async (req, res) => {
+    try {
+        const { username, email, password, confirmPassword, role } = req.body;
+
+        // Basic validation
+        if (!username || !email || !password || !confirmPassword) {
+            return res.status(400).json({ error: "All fields are required." });
+        }
+
+        if (password !== confirmPassword) {
+            return res.status(400).json({ error: "Passwords do not match." });
+        }
+
+        // Store user profile for OTP verification
+        UserProfile.username = username;
+        UserProfile.email = email;
+
+        // Call backend API for signup through proxy
+        const response = await axios.post(`${API_PREFIX}`, {
+            username,
+            email,
+            password,
+            confirmPassword,
+            role: role || 'user'
+        }, {
+            headers: { 'Content-Type': 'application/json' },
+            timeout: 10000
+        });
+
+        console.log('Signup response:', response.status, response.data);
+
+        if (response.data.success) {
+            // Redirect to OTP verification page
+            res.json({
+                success: true,
+                message: 'Signup initiated successfully. Please verify your email.',
+                redirectUrl: `/Account/sendOTP?email=${encodeURIComponent(email)}`
+            });
+        } else {
+            res.status(400).json({ error: response.data.error || 'Signup failed.' });
+        }
+    } catch (error) {
+        console.error('Signup error:', error.message);
+
+        if (error.response) {
+            res.status(error.response.status || 500).json({
+                error: error.response.data?.error || 'Signup failed.'
+            });
+        } else {
+            res.status(500).json({
+                error: 'Network error. Please try again.'
+            });
+        }
+    }
 };
 
 // OTP handler
@@ -97,7 +149,7 @@ const handleOTP = async (req, res, endpoint) => {
         }
 
         // Call backend API for OTP verification through proxy
-        const response = await axios.post(`${API_PREFIX}/Account/verifyOTP`, {
+        const response = await axios.post(`${API_PREFIX}/verify-otp`, {
             email: verificationEmail,
             otp: otpCode
         }, {
@@ -180,7 +232,7 @@ exports.sendOTP = async (req, res) => {
         console.log('Sending OTP to:', email);
 
         // Call backend API for sending OTP through proxy
-        const response = await axios.post(`${API_PREFIX}/Account/SignupOTP`, {
+        const response = await axios.post(`${API_PREFIX}/otp`, {
             email: email
         }, {
             headers: { 'Content-Type': 'application/json' },

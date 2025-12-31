@@ -1,6 +1,7 @@
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
 const { spawn } = require('child_process');
+const config = require('../config/paths');
 
 let frontendProcess;
 let backendProcess;
@@ -16,11 +17,11 @@ function createWindow () {
   });
 
   // Start the backend server
-  const backendPath = path.join(__dirname, '..', 'Backend');
+  const backendPath = config.BACKEND_PATH;
   backendProcess = spawn('npm', ['start'], { cwd: backendPath, stdio: 'inherit' });
 
   // Start the frontend server
-  const frontendPath = path.join(__dirname, '..', 'Frontend');
+  const frontendPath = config.FRONTEND_PATH;
   frontendProcess = spawn('npm', ['start'], { cwd: frontendPath, stdio: 'inherit' });
 
   // Wait a bit for the servers to start
