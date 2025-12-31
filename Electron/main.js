@@ -1,5 +1,9 @@
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
+const { spawn } = require('child_process');
+
+let frontendProcess;
+let backendProcess;
 
 function createWindow () {
   const mainWindow = new BrowserWindow({
@@ -11,9 +15,19 @@ function createWindow () {
     }
   });
 
-  // Load the Frontend web app - default port 3000
-  const url = process.env.FRONTEND_URL || 'http://localhost:3000/dashboard';
-  mainWindow.loadURL(url);
+  // Start the backend server
+  const backendPath = path.join(__dirname, '..', 'Backend');
+  backendProcess = spawn('npm', ['start'], { cwd: backendPath, stdio: 'inherit' });
+
+  // Start the frontend server
+  const frontendPath = path.join(__dirname, '..', 'Frontend');
+  frontendProcess = spawn('npm', ['start'], { cwd: frontendPath, stdio: 'inherit' });
+
+  // Wait a bit for the servers to start
+  setTimeout(() => {
+    const url = process.env.FRONTEND_URL || 'http://localhost:3000';
+    mainWindow.loadURL(url);
+  }, 5000);
 
   // Optionally open devtools when env set
   if (process.env.ELECTRON_DEBUG === 'true') {
@@ -29,5 +43,11 @@ app.whenReady().then(() => {
 });
 
 app.on('window-all-closed', function () {
+  if (frontendProcess) {
+    frontendProcess.kill();
+  }
+  if (backendProcess) {
+    backendProcess.kill();
+  }
   if (process.platform !== 'darwin') app.quit()
 });
