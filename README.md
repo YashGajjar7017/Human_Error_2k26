@@ -13,7 +13,8 @@ This is latest version of complier 2026 & it was only beta 1.1.0 testing priview
 
 ## Human Erorr
 
-<img width="1366" height="612" alt="image" src="https://github.com/user-attachments/assets/726f3978-9cad-4d1e-ac4f-26b85a32327e" /><hr>
+<img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/f8ab2725-3957-495b-8de4-30d7760e7da0" />
+<hr>
 
 >_ Complier is web-page that hold's user data into machine language without required lot of tools on your local device. just need a intenet & a computer that you can right the code for you ..!_/
 
