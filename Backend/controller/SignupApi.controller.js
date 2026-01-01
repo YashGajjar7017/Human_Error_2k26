@@ -6,9 +6,24 @@ const mongoose = require('mongoose');
 
 require('dotenv').config(); // Load environment variables
 
-// Helper Function: Generate OTP
+// Helper Function: Generate OTP with timestamp
 const generateOTP = (length = 6) => {
     return Array.from({ length }, () => Math.floor(Math.random() * 10)).join('');
+};
+
+// Helper Function: Check OTP attempt rate limiting
+const checkOTPAttempts = async (email) => {
+    const signup = await SignupModel.findOne({ email });
+    if (!signup) return true;
+    
+    const now = new Date();
+    const lastAttempt = signup.lastAttemptAt ? new Date(signup.lastAttemptAt) : null;
+    
+    // Allow max 5 attempts per 15 minutes
+    if (lastAttempt && (now - lastAttempt) < 15 * 60 * 1000 && signup.attempts >= 5) {
+        return false;
+    }
+    return true;
 };
 
 // Helper Function: Enhanced email validation
@@ -37,9 +52,15 @@ const validatePassword = (password) => {
     return { valid: true };
 };
 
-// Helper Function: Send Email
+// Helper Function: Send Email with retry logic
 const sendMail = (email, otp) => {
     return new Promise((resolve, reject) => {
+        // Validate email configuration
+        if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+            console.error('Email configuration missing');
+            return reject(new Error('Email service not configured'));
+        }
+
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             secure: true,
@@ -53,7 +74,14 @@ const sendMail = (email, otp) => {
         const mailOptions = {
             from: process.env.EMAIL_USER,
             to: email,
-            subject: 'Your OTP',
+            subject: 'Your OTP for Sign Up',
+            html: `
+                <h2>Your OTP for Sign Up</h2>
+                <p>Your One-Time Password (OTP) is:</p>
+                <h1 style="color: #007bff; font-size: 32px;">${otp}</h1>
+                <p>This OTP is valid for 10 minutes. Please do not share it with anyone.</p>
+                <p>If you did not request this OTP, please ignore this email.</p>
+            `,
             text: `Your OTP is: ${otp}. This OTP is valid for 10 minutes. Please do not share it with anyone.`,
         };
 
@@ -62,7 +90,7 @@ const sendMail = (email, otp) => {
                 console.error("Email sending failed:", error);
                 reject(error);
             } else {
-                console.log("Email sent:", info.response);
+                console.log("Email sent successfully:", info.messageId);
                 resolve(info.response);
             }
         });
@@ -254,6 +282,15 @@ exports.sendOtp = async (req, res) => {
     }
 
     try {
+        // Check rate limiting
+        const canSendOTP = await checkOTPAttempts(email);
+        if (!canSendOTP) {
+            return res.status(429).json({
+                success: false,
+                error: "Too many OTP attempts. Please try again in 15 minutes."
+            });
+        }
+
         const signup = await SignupModel.findOne({ email });
         if (!signup) {
             return res.status(404).json({
@@ -271,25 +308,37 @@ exports.sendOtp = async (req, res) => {
             {
                 $set: {
                     otp,
-                    otpExpiresAt: new Date(expirationTime)
-                }
+                    otpExpiresAt: new Date(expirationTime),
+                    lastAttemptAt: new Date()
+                },
+                $inc: { attempts: 1 }
             }
         );
 
-        await sendMail(email, otp);
+        try {
+            await sendMail(email, otp);
+        } catch (emailError) {
+            console.error("Email sending failed:", emailError);
+            return res.status(500).json({ 
+                success: false, 
+                error: "Failed to send email. Please try again later.",
+                code: "EMAIL_SEND_FAILED"
+            });
+        }
 
         res.status(200).json({
             success: true,
-            message: "OTP sent successfully.",
+            message: "OTP sent successfully to your email.",
             data: {
-                expiresIn: 600 // 10 minutes in seconds
+                expiresIn: 600, // 10 minutes in seconds
+                email: email.replace(/(.{2})(.*)(@.*)/, '$1***$3')
             }
         });
     } catch (error) {
         console.error("Error sending OTP:", error);
         res.status(500).json({ 
             success: false, 
-            error: "Failed to send OTP." 
+            error: "Failed to send OTP. Please try again later." 
         });
     }
 };
@@ -313,34 +362,45 @@ exports.verifyOtp = async (req, res) => {
         });
     }
 
+    // Validate OTP format (6 digits)
+    if (!/^\d{6}$/.test(otp.trim())) {
+        return res.status(400).json({
+            success: false,
+            error: "OTP must be 6 digits."
+        });
+    }
+
     try {
         const signup = await SignupModel.findOne({ email });
 
         if (!signup) {
             return res.status(404).json({
                 success: false,
-                error: "Signup not found."
+                error: "Signup not found. Please initiate signup first."
             });
         }
 
         if (!signup.otp || !signup.otpExpiresAt) {
             return res.status(400).json({
                 success: false,
-                error: "OTP not found."
+                error: "OTP not found. Please request a new OTP."
             });
         }
 
         if (Date.now() > signup.otpExpiresAt) {
+            // Clear expired OTP
+            await SignupModel.updateOne({ email }, { $set: { otp: null, otpExpiresAt: null } });
             return res.status(400).json({
                 success: false,
-                error: "OTP has expired."
+                error: "OTP has expired. Please request a new OTP.",
+                code: "OTP_EXPIRED"
             });
         }
 
-        if (signup.otp !== otp) {
+        if (signup.otp !== otp.trim()) {
             return res.status(400).json({
                 success: false,
-                error: "Invalid OTP."
+                error: "Invalid OTP. Please check and try again."
             });
         }
 

@@ -43,6 +43,8 @@ const securityRoutes = require('./Routes/security.routes');
 const mlRoutes = require('./Routes/ml.routes');
 const modeRoutes = require('./Routes/mode.routes');
 const paymentRoutes = require('./Routes/payment.routes');
+const userProfileRoutes = require('./Routes/user-profile.routes');
+const validationRoutes = require('./Routes/validation.routes');
 const { auth, authorize } = require('./middleware/auth.middleware');
 
 // DB Connect
@@ -249,6 +251,8 @@ app.use('/api/otp', otpRoutes);
 app.use('/api/security', securityRoutes);
 app.use('/api/ml', mlRoutes);
 app.use('/api/mode', modeRoutes);
+app.use('/api/users', userProfileRoutes);
+app.use('/api/validate', validationRoutes);
 app.use('/api', memberRoutes);
 app.use('/', frontendMemberRoutes);
 app.use(publicUploadRoutes);
