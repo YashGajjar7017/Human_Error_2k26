@@ -8,10 +8,10 @@
 
 This repository ("`Code - OSS`") is where we (YashTechnologyPvtLtd) develop the [Human Error](https://www.youtube.com/@codinghacker007) product together with the community. Not only do we work on code and issues here, we also publish our [roadmap](https://github.com/YashTechnologyPvtLtd/vscode/wiki/Roadmap), [monthly iteration plans](https://github.com/YashTechnologyPvtLtd/vscode/wiki/Iteration-Plans), and our [endgame plans](https://github.com/YashTechnologyPvtLtd/vscode/wiki/Running-the-Endgame). This source code is available to everyone under the standard [MIT license](https://github.com/YashTechnologyPvtLtd/vscode/blob/main/LICENSE.txt).
 
-<B>The Human Complier 2026 (Beta preview) 0.1.1<B><hr>
+<B>Xenithra Technology Pvt Ltd | 2026 (Beta preview) 0.1.1<B><hr>
 This is latest version of complier 2026 & it was only beta 1.1.0 testing priview only deveoplers<hr>
 
-## Human Erorr
+## Xenithra Technology Pvt Ltd
 
 <img width="1366" height="612" alt="image" src="https://github.com/user-attachments/assets/726f3978-9cad-4d1e-ac4f-26b85a32327e" /><hr>
 
@@ -49,9 +49,9 @@ This is latest version of complier 2026 & it was only beta 1.1.0 testing priview
     <tr><td>Update 19</td><td>7 July 2025</td><td>(Gamma Release)</td><td>Critical</td></tr>
     <tr><td>Update 20</td><td>16 November</td><td>(Alpha Preview Part 3)</td><td>Bug Fixes</td></tr>
     <tr><td>Update 21</td><td>12 December</td><td>Beta Release Ver_0.1</td><td>Api Issue</td></tr>
-    <tr><td>Update 21</td><td>31 December</td><td>Release Ver_0.1</td><td>OS Treading Issue</td></tr>
-    <tr><td>Update 22</td><td>1 January 2026</td><td>(Release 1.1)</td><td>Security</td></tr>
-    <tr><td>Update 23</td><td>13 February 2026</td><td>(Testing)</td><td>Critical</td></tr>
+    <tr><td>Update 22</td><td>31 December</td><td>Release Ver_0.1</td><td>OS Treading Issue</td></tr>
+    <tr><td>Update 23</td><td>1 January 2026</td><td>(Release 1.1)</td><td>Security</td></tr>
+    <tr><td>Update 24</td><td>13 February 2026</td><td>(Testing)</td><td>Critical</td></tr>
   </tbody>
 </table>
 
