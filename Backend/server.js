@@ -45,6 +45,9 @@ const modeRoutes = require('./Routes/mode.routes');
 const paymentRoutes = require('./Routes/payment.routes');
 const userProfileRoutes = require('./Routes/user-profile.routes');
 const validationRoutes = require('./Routes/validation.routes');
+const debuggerRoutes = require('./Routes/debugger.routes');
+const { router: routesFlowRouter, initializeRouteFlow } = require('./Routes/routes-flow.routes');
+const sessionTrackingRoutes = require('./Routes/session-tracking.routes');
 const { auth, authorize } = require('./middleware/auth.middleware');
 
 // DB Connect
@@ -253,6 +256,9 @@ app.use('/api/ml', mlRoutes);
 app.use('/api/mode', modeRoutes);
 app.use('/api/users', userProfileRoutes);
 app.use('/api/validate', validationRoutes);
+app.use('/api/debugger', debuggerRoutes);
+app.use('/api/routes', routesFlowRouter);
+app.use('/api/session-tracking', sessionTrackingRoutes);
 app.use('/api', memberRoutes);
 app.use('/', frontendMemberRoutes);
 app.use(publicUploadRoutes);
@@ -411,6 +417,14 @@ server.listen(port, () => {
     }, 60 * 60 * 1000); // 1 hour in milliseconds
 
     console.log(`🕒 Session cleanup scheduled (every 1 hour)`);
+
+    // Initialize route flow manager
+    try {
+        initializeRouteFlow(app);
+        console.log(`📋 Route flow manager initialized`);
+    } catch (error) {
+        console.error('❌ Error initializing route flow manager:', error);
+    }
 });
 
 module.exports = server;
