@@ -205,6 +205,72 @@
         }
       }
 
+      /* Break Timer Menu */
+      .break-timer-menu {
+        position: absolute;
+        left: 16px;
+        top: 630px;
+        width: calc(100% - 32px);
+        background: rgba(11, 26, 56, 0.98);
+        border: 1px solid rgba(255, 0, 200, 0.3);
+        border-radius: 12px;
+        backdrop-filter: blur(20px);
+        padding: 12px;
+        z-index: 1000;
+        box-shadow: 0 8px 32px rgba(255, 0, 200, 0.2),
+          inset 0 1px 1px rgba(255, 255, 255, 0.1);
+        animation: slideDown 0.2s ease-out;
+      }
+
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .timer-header {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: rgba(255, 255, 255, 0.7);
+        margin-bottom: 10px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid rgba(255, 0, 200, 0.2);
+      }
+
+      .timer-option {
+        width: 100% !important;
+        display: block;
+        padding: 8px 12px !important;
+        margin-bottom: 6px !important;
+        background: rgba(255, 255, 255, 0.08) !important;
+        border: 1px solid rgba(0, 229, 255, 0.2) !important;
+        border-radius: 6px !important;
+        color: #fdfdfd;
+        font-size: 12px !important;
+        text-align: left !important;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .timer-option:hover {
+        background: rgba(0, 229, 255, 0.15) !important;
+        border-color: rgba(0, 229, 255, 0.6) !important;
+        box-shadow: 0 0 12px rgba(0, 229, 255, 0.3) !important;
+        transform: translateX(4px);
+      }
+
+      .timer-footer {
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid rgba(255, 0, 200, 0.2);
+      }
+
       /* Main */
       .main {
         flex: 1;
@@ -591,7 +657,7 @@
         <div class="sidebar">
           <div class="logo">
             <div class="logo-box">⚡</div>
-            NovaGlass
+            Xenithra Technology Pvt Ltd
           </div>
           <div class="subtitle">
             Frosted neon playground for modern C/C++ builds.
@@ -601,6 +667,58 @@
           <button>Projects</button>
           <button>Snippets</button>
           <button>Playground</button>
+          <div class="pill-label" style="margin-top: 14px">Productivity</div>
+          <button id="breakTimerBtn" style="position: relative">
+            ⏱️ Break Timer
+            <span
+              id="breakBadge"
+              style="
+                display: none;
+                position: absolute;
+                right: 8px;
+                top: 8px;
+                background: #ff6b6b;
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+              "
+            ></span>
+          </button>
+
+          <!-- Break Timer Dropdown Menu -->
+          <div
+            id="breakTimerMenu"
+            class="break-timer-menu"
+            style="display: none"
+          >
+            <div class="timer-header">Set Break Interval</div>
+            <button class="timer-option" data-minutes="5">5 minutes</button>
+            <button class="timer-option" data-minutes="10">10 minutes</button>
+            <button class="timer-option" data-minutes="15">15 minutes</button>
+            <button class="timer-option" data-minutes="25">
+              25 minutes (Pomodoro)
+            </button>
+            <button class="timer-option" data-minutes="30">30 minutes</button>
+            <button class="timer-option" data-minutes="45">45 minutes</button>
+            <button class="timer-option" data-minutes="60">1 hour</button>
+            <div class="timer-footer">
+              <button
+                id="stopTimerBtn"
+                style="
+                  width: 100%;
+                  padding: 8px;
+                  background: #ff6b6b;
+                  border: none;
+                  color: white;
+                  border-radius: 4px;
+                  cursor: pointer;
+                "
+              >
+                Stop Timer
+              </button>
+            </div>
+          </div>
+
           <div class="pill-label" style="margin-top: 14px">Account</div>
           <button>Profile</button>
           <button>Settings</button>
@@ -658,11 +776,11 @@
                 spellcheck="false"
               >
                 /******************************************************************************
-                NovaGlass Code Studio. Futuristic glassmorphism IDE with neon
+                Xenithra Technology Pvt Ltd Code Studio. Futuristic glassmorphism IDE with neon
                 gradients. Type here, press enter, and enjoy the glow.
                 *******************************************************************************/
                 #include &lt;stdio.h&gt; int main(void) { printf("Hello,
-                NovaGlass!\n"); return 0; }
+                Xenithra Technology Pvt Ltd!\n"); return 0; }
               </div>
             </div>
 
@@ -833,6 +951,116 @@
           );
         }
       });
+
+      // Break Timer Feature
+      const breakTimerBtn = document.getElementById("breakTimerBtn");
+      const breakTimerMenu = document.getElementById("breakTimerMenu");
+      const breakBadge = document.getElementById("breakBadge");
+      const timerOptions = document.querySelectorAll(".timer-option");
+      const stopTimerBtn = document.getElementById("stopTimerBtn");
+
+      let breakTimer = null;
+      let breakTimeRemaining = 0;
+
+      // Load saved break timer preference from localStorage
+      function loadBreakTimerPreference() {
+        const saved = localStorage.getItem("breakTimerMinutes");
+        if (saved) {
+          const minutes = parseInt(saved);
+          breakTimerBtn.textContent = `⏱️ Break Timer (${minutes}m)`;
+        }
+      }
+
+      // Toggle break timer menu
+      breakTimerBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        breakTimerMenu.style.display =
+          breakTimerMenu.style.display === "none" ? "block" : "none";
+      });
+
+      // Handle timer option selection
+      timerOptions.forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const minutes = parseInt(btn.dataset.minutes);
+          startBreakTimer(minutes);
+          breakTimerMenu.style.display = "none";
+          // Save preference
+          localStorage.setItem("breakTimerMinutes", minutes);
+        });
+      });
+
+      // Stop timer button
+      stopTimerBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        stopBreakTimer();
+        breakTimerMenu.style.display = "none";
+      });
+
+      function startBreakTimer(minutes) {
+        // Clear any existing timer
+        if (breakTimer) clearInterval(breakTimer);
+
+        breakTimeRemaining = minutes * 60; // Convert to seconds
+        breakBadge.style.display = "block";
+        breakTimerBtn.style.opacity = "0.9";
+
+        // Update button with countdown
+        breakTimer = setInterval(() => {
+          breakTimeRemaining--;
+
+          const mins = Math.floor(breakTimeRemaining / 60);
+          const secs = breakTimeRemaining % 60;
+          const timeStr = `${mins}:${secs.toString().padStart(2, "0")}`;
+          breakTimerBtn.textContent = `⏱️ ${timeStr}`;
+
+          // Timer complete
+          if (breakTimeRemaining <= 0) {
+            stopBreakTimer();
+            // Show notification
+            if (
+              "Notification" in window &&
+              Notification.permission === "granted"
+            ) {
+              new Notification("Break Time Over!", {
+                body: "Time to get back to coding! ☕→💻",
+                icon: "⏱️",
+              });
+            } else {
+              alert("Break time is over! Time to get back to coding! ☕→💻");
+            }
+          }
+        }, 1000);
+      }
+
+      function stopBreakTimer() {
+        if (breakTimer) {
+          clearInterval(breakTimer);
+          breakTimer = null;
+        }
+        breakTimeRemaining = 0;
+        breakBadge.style.display = "none";
+        breakTimerBtn.style.opacity = "1";
+        loadBreakTimerPreference();
+      }
+
+      // Request notification permission
+      if ("Notification" in window && Notification.permission === "default") {
+        Notification.requestPermission();
+      }
+
+      // Close menu when clicking outside
+      document.addEventListener("click", (e) => {
+        if (
+          !breakTimerBtn.contains(e.target) &&
+          !breakTimerMenu.contains(e.target)
+        ) {
+          breakTimerMenu.style.display = "none";
+        }
+      });
+
+      // Load saved preference on page load
+      loadBreakTimerPreference();
     </script>
   </body>
 </html>

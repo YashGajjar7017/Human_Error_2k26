@@ -1,127 +1,436 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Web Editor | Human Error</title>
-  <link href="/CSS/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    body, html { height: 100%; }
-    .file-tree { height: 80vh; overflow:auto; background:#f7f7f8; }
-    .editor-area { height: 80vh; }
-    .file-item { cursor: pointer; padding:4px 8px; }
-    .file-item:hover { background:#e9ecef; }
-  </style>
-</head>
-<body>
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="#">Web Editor</a>
-    <div class="d-flex">
-      <input id="baseDir" class="form-control form-control-sm me-2" placeholder="Base directory (absolute)" style="min-width:360px;" />
-      <button id="openDir" class="btn btn-sm btn-primary">Open Directory</button>
-    </div>
-  </div>
-</nav>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Web Editor | Human Error</title>
+    <link href="/CSS/Bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+      body,
+      html {
+        height: 100%;
+      }
+      .file-tree {
+        height: 80vh;
+        overflow: auto;
+        background: #f7f7f8;
+      }
+      .editor-area {
+        height: 80vh;
+      }
+      .file-item {
+        cursor: pointer;
+        padding: 4px 8px;
+      }
+      .file-item:hover {
+        background: #e9ecef;
+      }
 
-<div class="container-fluid mt-2">
-  <div class="row">
-    <div class="col-3">
-      <div class="file-tree list-group" id="fileTree"></div>
-    </div>
-    <div class="col-9 d-flex flex-column">
-      <div class="mb-2 d-flex gap-2">
-        <input id="currentPath" class="form-control form-control-sm" readonly />
-        <button id="saveBtn" class="btn btn-sm btn-success">Save</button>
-        <button id="downloadBtn" class="btn btn-sm btn-secondary">Download</button>
+      /* Context Menu Styles */
+      #contextMenu {
+        position: fixed;
+        background: rgba(20, 20, 30, 0.95);
+        border: 1px solid rgba(0, 229, 255, 0.4);
+        border-radius: 8px;
+        padding: 0;
+        z-index: 10000;
+        display: none;
+        min-width: 180px;
+        box-shadow: 0 8px 32px rgba(0, 229, 255, 0.2),
+          inset 0 1px 1px rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        overflow: hidden;
+      }
+
+      .context-menu-item {
+        padding: 10px 16px;
+        cursor: pointer;
+        color: #fdfdfd;
+        display: flex;
+        align-items: center;
+        font-size: 13px;
+        transition: all 0.2s ease;
+        border-bottom: 1px solid rgba(0, 229, 255, 0.1);
+        user-select: none;
+      }
+
+      .context-menu-item:last-child {
+        border-bottom: none;
+      }
+
+      .context-menu-item:hover {
+        background: rgba(0, 229, 255, 0.15);
+        color: #00e5ff;
+        padding-left: 20px;
+      }
+
+      .context-menu-item .icon {
+        margin-right: 10px;
+        font-size: 14px;
+        min-width: 16px;
+      }
+
+      .context-menu-item.danger:hover {
+        background: rgba(255, 107, 107, 0.15);
+        color: #ff6b6b;
+      }
+
+      .context-menu-separator {
+        height: 1px;
+        background: rgba(0, 229, 255, 0.1);
+        margin: 4px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">Web Editor</a>
+        <div class="d-flex">
+          <input
+            id="baseDir"
+            class="form-control form-control-sm me-2"
+            placeholder="Base directory (absolute)"
+            style="min-width: 360px"
+          />
+          <button id="openDir" class="btn btn-sm btn-primary">
+            Open Directory
+          </button>
+        </div>
       </div>
-      <textarea id="editor" class="form-control editor-area" spellcheck="false"></textarea>
+    </nav>
+
+    <div class="container-fluid mt-2">
+      <div class="row">
+        <div class="col-3">
+          <div class="file-tree list-group" id="fileTree"></div>
+        </div>
+        <div class="col-9 d-flex flex-column">
+          <div class="mb-2 d-flex gap-2">
+            <input
+              id="currentPath"
+              class="form-control form-control-sm"
+              readonly
+            />
+            <button id="saveBtn" class="btn btn-sm btn-success">Save</button>
+            <button id="downloadBtn" class="btn btn-sm btn-secondary">
+              Download
+            </button>
+          </div>
+          <textarea
+            id="editor"
+            class="form-control editor-area"
+            spellcheck="false"
+          ></textarea>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
 
-<script>
-  const fileTree = document.getElementById('fileTree');
-  const editor = document.getElementById('editor');
-  const currentPath = document.getElementById('currentPath');
-  const baseDirInput = document.getElementById('baseDir');
-  let baseDir = '';
+    <!-- Context Menu -->
+    <div id="contextMenu">
+      <div class="context-menu-item" id="copyBtn">
+        <span class="icon">📋</span>
+        <span>Copy</span>
+      </div>
+      <div class="context-menu-item" id="cutBtn">
+        <span class="icon">✂️</span>
+        <span>Cut</span>
+      </div>
+      <div class="context-menu-item" id="pasteBtn">
+        <span class="icon">📌</span>
+        <span>Paste</span>
+      </div>
+      <div class="context-menu-separator"></div>
+      <div class="context-menu-item" id="selectAllBtn">
+        <span class="icon">🎯</span>
+        <span>Select All</span>
+      </div>
+      <div class="context-menu-item" id="clearBtn" class="danger">
+        <span class="icon">🗑️</span>
+        <span>Clear All</span>
+      </div>
+      <div class="context-menu-separator"></div>
+      <div class="context-menu-item" id="formatBtn">
+        <span class="icon">🎨</span>
+        <span>Format Code</span>
+      </div>
+      <div class="context-menu-item" id="settingsBtn">
+        <span class="icon">⚙️</span>
+        <span>Settings</span>
+      </div>
+    </div>
 
-  document.getElementById('openDir').addEventListener('click', async () => {
-    baseDir = baseDirInput.value.trim();
-    if (!baseDir) { alert('Enter an absolute base directory path'); return; }
-    await loadDir('.');
-  });
+    <script>
+      const fileTree = document.getElementById("fileTree");
+      const editor = document.getElementById("editor");
+      const currentPath = document.getElementById("currentPath");
+      const baseDirInput = document.getElementById("baseDir");
+      let baseDir = "";
 
-  async function loadDir(relPath) {
-    try {
-      const res = await fetch(`/api/editor/list?base=${encodeURIComponent(baseDir)}&path=${encodeURIComponent(relPath)}`);
-      const data = await res.json();
-      if (!data.success) { alert(data.error || 'Failed to list'); return; }
-      renderList(relPath, data.entries);
-    } catch (err) {
-      alert('Network error while listing directory');
-    }
-  }
+      document.getElementById("openDir").addEventListener("click", async () => {
+        baseDir = baseDirInput.value.trim();
+        if (!baseDir) {
+          alert("Enter an absolute base directory path");
+          return;
+        }
+        await loadDir(".");
+      });
 
-  function renderList(relPath, entries) {
-    fileTree.innerHTML = '';
-    entries.forEach(e => {
-      const el = document.createElement('div');
-      el.className = 'file-item list-group-item';
-      el.textContent = e.name + (e.isDirectory ? '/' : '');
-      el.addEventListener('click', async () => {
-        if (e.isDirectory) {
-          await loadDir((relPath === '.' ? '' : relPath + '/') + e.name);
-        } else {
-          const fileRel = (relPath === '.' ? '' : relPath + '/') + e.name;
-          await openFile(fileRel);
+      async function loadDir(relPath) {
+        try {
+          const res = await fetch(
+            `/api/editor/list?base=${encodeURIComponent(
+              baseDir
+            )}&path=${encodeURIComponent(relPath)}`
+          );
+          const data = await res.json();
+          if (!data.success) {
+            alert(data.error || "Failed to list");
+            return;
+          }
+          renderList(relPath, data.entries);
+        } catch (err) {
+          alert("Network error while listing directory");
+        }
+      }
+
+      function renderList(relPath, entries) {
+        fileTree.innerHTML = "";
+        entries.forEach((e) => {
+          const el = document.createElement("div");
+          el.className = "file-item list-group-item";
+          el.textContent = e.name + (e.isDirectory ? "/" : "");
+          el.addEventListener("click", async () => {
+            if (e.isDirectory) {
+              await loadDir((relPath === "." ? "" : relPath + "/") + e.name);
+            } else {
+              const fileRel = (relPath === "." ? "" : relPath + "/") + e.name;
+              await openFile(fileRel);
+            }
+          });
+          fileTree.appendChild(el);
+        });
+      }
+
+      async function openFile(relPath) {
+        try {
+          const res = await fetch(
+            "/api/editor/read?base=" + encodeURIComponent(baseDir),
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ path: relPath }),
+            }
+          );
+          const data = await res.json();
+          if (!data.success) {
+            alert(data.error || "Failed to open");
+            return;
+          }
+          editor.value = data.content;
+          currentPath.value = relPath;
+        } catch (err) {
+          alert("Network error while opening file");
+        }
+      }
+
+      document.getElementById("saveBtn").addEventListener("click", async () => {
+        const p = currentPath.value;
+        if (!p) return alert("No file open");
+        try {
+          const res = await fetch(
+            "/api/editor/write?base=" + encodeURIComponent(baseDir),
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ path: p, content: editor.value }),
+            }
+          );
+          const data = await res.json();
+          if (!data.success) return alert(data.error || "Save failed");
+          alert("Saved");
+        } catch (err) {
+          alert("Network error while saving file");
         }
       });
-      fileTree.appendChild(el);
-    });
-  }
 
-  async function openFile(relPath) {
-    try {
-      const res = await fetch('/api/editor/read?base=' + encodeURIComponent(baseDir), {
-        method: 'POST', headers: { 'Content-Type':'application/json' },
-        body: JSON.stringify({ path: relPath })
+      document.getElementById("downloadBtn").addEventListener("click", () => {
+        const blob = new Blob([editor.value], { type: "text/plain" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        const name = currentPath.value
+          ? currentPath.value.split("/").pop()
+          : "file.txt";
+        a.download = name;
+        a.click();
+        URL.revokeObjectURL(a.href);
       });
-      const data = await res.json();
-      if (!data.success) { alert(data.error || 'Failed to open'); return; }
-      editor.value = data.content;
-      currentPath.value = relPath;
-    } catch (err) {
-      alert('Network error while opening file');
-    }
-  }
 
-  document.getElementById('saveBtn').addEventListener('click', async () => {
-    const p = currentPath.value;
-    if (!p) return alert('No file open');
-    try {
-      const res = await fetch('/api/editor/write?base=' + encodeURIComponent(baseDir), {
-        method: 'POST', headers: { 'Content-Type':'application/json' },
-        body: JSON.stringify({ path: p, content: editor.value })
+      // Context Menu Implementation
+      const contextMenu = document.getElementById("contextMenu");
+      let selectedText = "";
+
+      editor.addEventListener("contextmenu", (e) => {
+        e.preventDefault();
+
+        // Get selected text
+        selectedText = editor.value.substring(
+          editor.selectionStart,
+          editor.selectionEnd
+        );
+
+        // Position the context menu
+        contextMenu.style.left = e.clientX + "px";
+        contextMenu.style.top = e.clientY + "px";
+        contextMenu.style.display = "block";
+
+        // Disable cut/copy if nothing selected
+        document.getElementById("cutBtn").style.opacity = selectedText
+          ? "1"
+          : "0.5";
+        document.getElementById("cutBtn").style.pointerEvents = selectedText
+          ? "auto"
+          : "none";
+        document.getElementById("copyBtn").style.opacity = selectedText
+          ? "1"
+          : "0.5";
+        document.getElementById("copyBtn").style.pointerEvents = selectedText
+          ? "auto"
+          : "none";
       });
-      const data = await res.json();
-      if (!data.success) return alert(data.error || 'Save failed');
-      alert('Saved');
-    } catch (err) {
-      alert('Network error while saving file');
-    }
-  });
 
-  document.getElementById('downloadBtn').addEventListener('click', () => {
-    const blob = new Blob([editor.value], { type: 'text/plain' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    const name = currentPath.value ? currentPath.value.split('/').pop() : 'file.txt';
-    a.download = name;
-    a.click();
-    URL.revokeObjectURL(a.href);
-  });
-</script>
-</body>
+      // Copy to clipboard
+      document.getElementById("copyBtn").addEventListener("click", () => {
+        if (selectedText) {
+          navigator.clipboard.writeText(selectedText).then(() => {
+            console.log("Copied to clipboard");
+          });
+        }
+        contextMenu.style.display = "none";
+      });
+
+      // Cut to clipboard
+      document.getElementById("cutBtn").addEventListener("click", () => {
+        if (selectedText) {
+          navigator.clipboard.writeText(selectedText).then(() => {
+            const start = editor.selectionStart;
+            const end = editor.selectionEnd;
+            editor.value =
+              editor.value.substring(0, start) + editor.value.substring(end);
+            console.log("Cut to clipboard");
+          });
+        }
+        contextMenu.style.display = "none";
+      });
+
+      // Paste from clipboard
+      document.getElementById("pasteBtn").addEventListener("click", () => {
+        navigator.clipboard
+          .readText()
+          .then((text) => {
+            const start = editor.selectionStart;
+            const end = editor.selectionEnd;
+            editor.value =
+              editor.value.substring(0, start) +
+              text +
+              editor.value.substring(end);
+            editor.selectionStart = start + text.length;
+            editor.selectionEnd = start + text.length;
+          })
+          .catch((err) => {
+            console.error("Failed to read clipboard:", err);
+          });
+        contextMenu.style.display = "none";
+      });
+
+      // Select all
+      document.getElementById("selectAllBtn").addEventListener("click", () => {
+        editor.select();
+        contextMenu.style.display = "none";
+      });
+
+      // Clear all
+      document.getElementById("clearBtn").addEventListener("click", () => {
+        if (confirm("Are you sure you want to clear all content?")) {
+          editor.value = "";
+          currentPath.value = "";
+        }
+        contextMenu.style.display = "none";
+      });
+
+      // Format code (simple indentation)
+      document.getElementById("formatBtn").addEventListener("click", () => {
+        try {
+          const formatted = formatCode(editor.value);
+          editor.value = formatted;
+          console.log("Code formatted");
+        } catch (err) {
+          console.error("Format error:", err);
+        }
+        contextMenu.style.display = "none";
+      });
+
+      // Settings (show editor info)
+      document.getElementById("settingsBtn").addEventListener("click", () => {
+        const lineCount = editor.value.split("\n").length;
+        const charCount = editor.value.length;
+        const wordCount = editor.value.trim().split(/\s+/).length;
+        alert(
+          `Editor Stats:\n\nLines: ${lineCount}\nCharacters: ${charCount}\nWords: ${wordCount}`
+        );
+        contextMenu.style.display = "none";
+      });
+
+      // Simple code formatter
+      function formatCode(code) {
+        let lines = code.split("\n");
+        let formatted = "";
+        let indentLevel = 0;
+
+        for (let line of lines) {
+          let trimmed = line.trim();
+          if (!trimmed) {
+            formatted += "\n";
+            continue;
+          }
+
+          // Decrease indent for closing braces
+          if (
+            trimmed.startsWith("}") ||
+            trimmed.startsWith("]") ||
+            trimmed.startsWith(")")
+          ) {
+            indentLevel = Math.max(0, indentLevel - 1);
+          }
+
+          formatted += "  ".repeat(indentLevel) + trimmed + "\n";
+
+          // Increase indent for opening braces
+          if (
+            trimmed.endsWith("{") ||
+            trimmed.endsWith("[") ||
+            trimmed.endsWith("(")
+          ) {
+            indentLevel++;
+          }
+        }
+
+        return formatted.trim();
+      }
+
+      // Close context menu when clicking elsewhere
+      document.addEventListener("click", (e) => {
+        if (e.target !== editor && !contextMenu.contains(e.target)) {
+          contextMenu.style.display = "none";
+        }
+      });
+
+      // Close context menu with Escape key
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          contextMenu.style.display = "none";
+        }
+      });
+    </script>
+  </body>
 </html>
