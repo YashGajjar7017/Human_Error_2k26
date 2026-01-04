@@ -1,7 +1,7 @@
 const express = require('express');
 const { body, validationResult } = require('express-validator');
 const rateLimit = require('express-rate-limit');
-const otpController = require('../controller/otp.controller');
+const otpController = require('../controller/otp-improved.controller');
 
 const router = express.Router();
 
@@ -90,7 +90,7 @@ router.post(
             .withMessage('Purpose must be one of: verification, password_reset, email_verification')
     ],
     handleValidationErrors,
-    otpController.sendOTP
+    otpController.sendOTPImproved
 );
 
 router.post(
@@ -111,7 +111,7 @@ router.post(
             .withMessage('Purpose must be one of: verification, password_reset, email_verification')
     ],
     handleValidationErrors,
-    otpController.verifyOTP
+    otpController.verifyOTPImproved
 );
 
 router.post(
@@ -128,7 +128,7 @@ router.post(
             .withMessage('Purpose must be one of: verification, password_reset, email_verification')
     ],
     handleValidationErrors,
-    otpController.resendOTP
+    otpController.resendOTPImproved
 );
 
 module.exports = router;

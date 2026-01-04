@@ -1,4 +1,6 @@
 const User = require('../models/User.model');
+const OTP = require('../models/otpHandler.models');
+const EmailService = require('../util/EmailService');
 const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
 const mongoose = require('mongoose');
@@ -36,39 +38,7 @@ const validatePassword = (password) => {
     return { valid: true };
 };
 
-// Helper Function: Send Email
-const sendMail = (email, otp) => {
-    return new Promise((resolve, reject) => {
-        const transporter = nodemailer.createTransporter({
-            service: 'gmail',
-            secure: true,
-            port: 465,
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS,
-            },
-        });
-
-        const mailOptions = {
-            from: process.env.EMAIL_USER,
-            to: email,
-            subject: 'Password Reset OTP',
-            text: `Your password reset OTP is: ${otp}. This OTP is valid for 10 minutes. Please do not share it with anyone.`,
-        };
-
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                console.error("Email sending failed:", error);
-                reject(error);
-            } else {
-                console.log("Email sent:", info.response);
-                resolve(info.response);
-            }
-        });
-    });
-};
-
-// Request Password Reset - Send OTP
+// Request Password Reset - Send OTP - Using centralized OTP model
 exports.requestPasswordReset = async (req, res) => {
     const { email } = req.body;
 
@@ -97,21 +67,51 @@ exports.requestPasswordReset = async (req, res) => {
             });
         }
 
+        // Check for existing valid OTP
+        const existingOTP = await OTP.findOne({
+            email,
+            purpose: 'password_reset',
+            isVerified: false,
+            expiresAt: { $gt: new Date() }
+        });
+
+        if (existingOTP) {
+            const timeRemaining = Math.ceil((existingOTP.expiresAt - new Date()) / 1000);
+            return res.status(429).json({
+                success: false,
+                error: "OTP already sent. Please wait before requesting a new one.",
+                data: {
+                    expiresIn: timeRemaining
+                }
+            });
+        }
+
         // Generate OTP
         const otp = generateOTP(6);
-        const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
-        // Save OTP to user
-        await User.updateOne(
-            { email },
-            {
-                otp: otp,
-                otpExpiresAt: otpExpiresAt
-            }
-        );
+        // Save OTP to centralized database
+        const otpRecord = new OTP({
+            email,
+            otp,
+            purpose: 'password_reset',
+            isVerified: false,
+            attempts: 0,
+            expiresAt: new Date(Date.now() + 10 * 60 * 1000) // 10 minutes
+        });
 
-        // Send OTP email
-        await sendMail(email, otp);
+        await otpRecord.save();
+
+        // Send OTP email using EmailService
+        try {
+            await EmailService.sendOTPEmail(email, otp, 'password_reset');
+        } catch (emailError) {
+            console.error("Email sending failed:", emailError);
+            await OTP.deleteOne({ _id: otpRecord._id });
+            return res.status(500).json({
+                success: false,
+                error: "Failed to send password reset OTP."
+            });
+        }
 
         res.status(200).json({
             success: true,
@@ -129,7 +129,7 @@ exports.requestPasswordReset = async (req, res) => {
     }
 };
 
-// Verify Password Reset OTP
+// Verify Password Reset OTP - Using centralized OTP model
 exports.verifyPasswordResetOTP = async (req, res) => {
     const { email, otp } = req.body;
 
@@ -158,38 +158,64 @@ exports.verifyPasswordResetOTP = async (req, res) => {
             });
         }
 
-        if (!user.otp || !user.otpExpiresAt) {
+        // Find OTP record from centralized database
+        const otpRecord = await OTP.findOne({
+            email,
+            purpose: 'password_reset',
+            isVerified: false
+        });
+
+        if (!otpRecord) {
             return res.status(400).json({
                 success: false,
                 error: "OTP not found. Please request a new password reset."
             });
         }
 
-        if (Date.now() > user.otpExpiresAt) {
+        // Check if OTP is expired
+        if (new Date() > otpRecord.expiresAt) {
+            await OTP.deleteOne({ _id: otpRecord._id });
             return res.status(400).json({
                 success: false,
                 error: "OTP has expired. Please request a new password reset."
             });
         }
 
-        if (user.otp !== otp) {
-            return res.status(400).json({
+        // Check attempts
+        if (otpRecord.attempts >= 5) {
+            await OTP.deleteOne({ _id: otpRecord._id });
+            return res.status(429).json({
                 success: false,
-                error: "Invalid OTP."
+                error: "Too many failed attempts. Please request a new OTP."
             });
         }
+
+        // Verify OTP
+        if (otpRecord.otp !== otp.trim()) {
+            otpRecord.attempts += 1;
+            await otpRecord.save();
+            const attemptsLeft = 5 - otpRecord.attempts;
+            return res.status(400).json({
+                success: false,
+                error: `Invalid OTP. ${attemptsLeft} attempts remaining.`
+            });
+        }
+
+        // Mark OTP as verified
+        otpRecord.isVerified = true;
+        otpRecord.verifiedAt = new Date();
+        await otpRecord.save();
 
         // Generate a temporary reset token (valid for 15 minutes)
         const resetToken = require('crypto').randomBytes(32).toString('hex');
         const resetTokenExpiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
 
-        // Save reset token and clear OTP
+        // Save reset token
         await User.updateOne(
             { email },
             {
                 resetToken: resetToken,
-                resetTokenExpiresAt: resetTokenExpiresAt,
-                $unset: { otp: "", otpExpiresAt: "" }
+                resetTokenExpiresAt: resetTokenExpiresAt
             }
         );
 
