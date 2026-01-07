@@ -131,4 +131,31 @@ router.post(
     otpController.resendOTPImproved
 );
 
-module.exports = router;
+// Enhanced verification with database backup methods
+router.post(
+    '/verify-advanced',
+    verifyLimiter,
+    [
+        body('email')
+            .isEmail()
+            .normalizeEmail()
+            .withMessage('Please provide a valid email address'),
+        body('otp')
+            .isLength({ min: 6, max: 6 })
+            .isNumeric()
+            .withMessage('OTP must be a 6-digit number'),
+        body('purpose')
+            .optional()
+            .isIn(['verification', 'password_reset', 'email_verification'])
+            .withMessage('Purpose must be one of: verification, password_reset, email_verification')
+    ],
+    handleValidationErrors,
+    (req, res) => otpController.verifyOTPWithDBBackup(req, res)
+);
+
+// Get verification status
+router.get(
+    '/status/:email',
+    (req, res) => otpController.getOTPVerificationStatus(req, res)
+);
+

@@ -360,6 +360,170 @@ class OTPController {
             });
         }
     }
-}
 
-module.exports = new OTPController();
+    /**
+     * Verify OTP with Database Backup Methods
+     * Multiple verification strategies for reliability
+     */
+    async verifyOTPWithDBBackup(req, res) {
+        const { email, otp, purpose = 'signup_verification' } = req.body;
+
+        if (!email || !otp) {
+            return res.status(400).json({
+                success: false,
+                error: "Email and OTP are required."
+            });
+        }
+
+        try {
+            // Method 1: Direct OTP table lookup
+            const otpRecord = await OTP.findOne({
+                email: { $eq: email },
+                purpose: { $eq: purpose },
+                isVerified: { $eq: false },
+                expiresAt: { $gt: new Date() }
+            }).lean();
+
+            if (!otpRecord) {
+                console.log(`[OTP] No valid OTP record found for ${email}`);
+                return res.status(404).json({
+                    success: false,
+                    error: "OTP not found or expired",
+                    method: "direct_lookup"
+                });
+            }
+
+            // Method 2: Verify OTP value
+            const isOTPValid = otpRecord.otp === otp.trim();
+            
+            if (!isOTPValid) {
+                // Increment attempts
+                await OTP.findByIdAndUpdate(otpRecord._id, {
+                    $inc: { attempts: 1 }
+                });
+
+                return res.status(401).json({
+                    success: false,
+                    error: "Invalid OTP",
+                    method: "otp_verification"
+                });
+            }
+
+            // Method 3: Check if user exists in User collection (for additional verification)
+            let userExists = false;
+            try {
+                userExists = await User.exists({ email: email });
+            } catch (err) {
+                console.warn("[OTP] Warning: Could not check user existence", err.message);
+            }
+
+            // Method 4: Verify using Signup table if applicable
+            let signupRecord = null;
+            if (purpose === 'signup_verification') {
+                try {
+                    signupRecord = await Signup.findOne({ email: email }).lean();
+                } catch (err) {
+                    console.warn("[OTP] Warning: Could not check signup record", err.message);
+                }
+            }
+
+            // Method 5: Mark OTP as verified in database
+            const updateResult = await OTP.findByIdAndUpdate(
+                otpRecord._id,
+                {
+                    isVerified: true,
+                    verifiedAt: new Date(),
+                    verificationMethod: 'otp_code',
+                    userExists: userExists,
+                    signupExists: !!signupRecord
+                },
+                { new: true }
+            );
+
+            if (!updateResult) {
+                return res.status(500).json({
+                    success: false,
+                    error: "Failed to mark OTP as verified",
+                    method: "update_verification"
+                });
+            }
+
+            console.log(`[OTP] Successfully verified OTP for ${email}`);
+
+            return res.status(200).json({
+                success: true,
+                message: "OTP verified successfully with database confirmation",
+                data: {
+                    email: email,
+                    verified: true,
+                    method: "multi_verify",
+                    verificationDetails: {
+                        otpMatched: isOTPValid,
+                        userExists: userExists,
+                        signupExists: !!signupRecord,
+                        verifiedAt: updateResult.verifiedAt,
+                        purpose: purpose
+                    }
+                }
+            });
+
+        } catch (error) {
+            console.error("[OTP] Error in multi-method verification:", error);
+            return res.status(500).json({
+                success: false,
+                error: "Verification error",
+                method: "error",
+                details: process.env.NODE_ENV === 'development' ? error.message : undefined
+            });
+        }
+    }
+
+    /**
+     * Get OTP verification status from database
+     */
+    async getOTPVerificationStatus(req, res) {
+        const { email, purpose = 'signup_verification' } = req.query;
+
+        if (!email) {
+            return res.status(400).json({
+                success: false,
+                error: "Email is required"
+            });
+        }
+
+        try {
+            const otpRecord = await OTP.findOne({
+                email: email,
+                purpose: purpose,
+                isVerified: true
+            }).lean();
+
+            if (!otpRecord) {
+                return res.status(404).json({
+                    success: false,
+                    verified: false,
+                    error: "No verified OTP found for this email"
+                });
+            }
+
+            return res.status(200).json({
+                success: true,
+                verified: true,
+                data: {
+                    email: email,
+                    purpose: purpose,
+                    verifiedAt: otpRecord.verifiedAt,
+                    verificationMethod: otpRecord.verificationMethod,
+                    userExists: otpRecord.userExists,
+                    signupExists: otpRecord.signupExists
+                }
+            });
+
+        } catch (error) {
+            console.error("[OTP] Error getting verification status:", error);
+            return res.status(500).json({
+                success: false,
+                error: "Failed to get verification status"
+            });
+        }
+    }
