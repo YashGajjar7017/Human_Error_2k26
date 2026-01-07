@@ -527,3 +527,7 @@ class OTPController {
             });
         }
     }
+}
+
+// Export an instance of OTPController
+module.exports = new OTPController();
