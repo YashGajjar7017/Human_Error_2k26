@@ -97,12 +97,30 @@ See our [wiki](https://github.com/YashTechnologyPvtLtd/vscode/wiki/Feedback-Chan
 
 ## Update Phase Correction:
 
-`B : Beta Update/ preview` - 0 to 10 : Crictical - 10 to 50 : important - 50 to 100 : Skippable
-`T : Testing ` - 0 to 10 : Crictical - 10 to 50 : important - 50 to 100 : Skippable
-`BF : Bug Fixes` - 0 to 10 : Crictical - 10 to 50 : important - 50 to 100 : Skippable
-`C : Critical` - 0 to 10 : Crictical - 10 to 50 : important - 50 to 100 : Skippable
-`I/e : Immediatly / ememery update ` - 0 to 10 : Crictical - 10 to 50 : important - 50 to 100 : Skippable
-`SP : Security Patch ` - 0 to 10 : Crictical - 10 to 50 : important - 50 to 100 : Skippable
+`B : Beta Update/ preview` <br> 
+- 0 to 10 : Crictical <br> 
+- 10 to 50 : important <br> 
+- 50 to 100 : Skippable<br> 
+`T : Testing `  <br> 
+- 0 to 10 : Crictical <br> 
+- 10 to 50 : important <br> 
+- 50 to 100 : Skippable<br> 
+`BF : Bug Fixes`  <br> 
+- 0 to 10 : Crictical <br> 
+- 10 to 50 : important <br> 
+- 50 to 100 : Skippable<br> 
+`C : Critical` <br> 
+- 0 to 10 : Crictical <br> 
+- 10 to 50 : important <br> 
+- 50 to 100 : Skippable<br> 
+`I/e : Immediatly / ememery update ` <br> 
+- 0 to 10 : Crictical <br> 
+- 10 to 50 : important <br> 
+- 50 to 100 : Skippable<br> 
+`SP : Security Patch ` <br> 
+- 0 to 10 : Crictical <br> 
+- 10 to 50 : important <br> 
+- 50 to 100 : Skippable<br> 
 
 ## Related Projects
 
