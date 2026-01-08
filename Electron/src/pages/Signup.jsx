@@ -44,7 +44,8 @@ export default function Signup() {
       })
 
       if (response.success) {
-        navigate('/login', { state: { email: formData.email } })
+        // Redirect to OTP page after successful signup
+        navigate('/otp')
       } else {
         setError(response.data?.message || 'Signup failed')
       }

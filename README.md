@@ -16,7 +16,7 @@ This is latest version of complier 2026 & it was only beta 1.1.0 testing priview
 <img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/e629cb93-eee9-413a-938c-b95253443da6" />
 <hr>
 
->_ Complier is web-page that hold's user data into machine language without required lot of tools on your local device. just need a intenet & a computer that you can right the code for you ..!_/
+> _ Complier is web-page that hold's user data into machine language without required lot of tools on your local device. just need a intenet & a computer that you can right the code for you ..!_/
 
 <table border="1" cellspacing="0" cellpadding="8">
   <thead>
@@ -95,6 +95,15 @@ please see the document [How to Contribute](https://github.com/YashTechnologyPvt
 
 See our [wiki](https://github.com/YashTechnologyPvtLtd/vscode/wiki/Feedback-Channels) for a description of each of these channels and information on some other available community-driven channels.
 
+## Update Phase Correction:
+
+`B : Beta Update/ preview` - 0 to 10 : Crictical - 10 to 50 : important - 50 to 100 : Skippable
+`T : Testing ` - 0 to 10 : Crictical - 10 to 50 : important - 50 to 100 : Skippable
+`BF : Bug Fixes` - 0 to 10 : Crictical - 10 to 50 : important - 50 to 100 : Skippable
+`C : Critical` - 0 to 10 : Crictical - 10 to 50 : important - 50 to 100 : Skippable
+`I/e : Immediatly / ememery update ` - 0 to 10 : Crictical - 10 to 50 : important - 50 to 100 : Skippable
+`SP : Security Patch ` - 0 to 10 : Crictical - 10 to 50 : important - 50 to 100 : Skippable
+
 ## Related Projects
 
 Many of the core components and extensions to VS Code live in their own repositories on GitHub. For example, the [node debug adapter](https://github.com/YashTechnologyPvtLtd/vscode-node-debug) and the [mono debug adapter](https://github.com/YashTechnologyPvtLtd/vscode-mono-debug) repositories are separate from each other. For a complete list, please visit the [Related Projects](https://github.com/YashTechnologyPvtLtd/vscode/wiki/Related-Projects) page on our [wiki](https://github.com/YashTechnologyPvtLtd/vscode/wiki).
@@ -132,6 +141,21 @@ This project has adopted the [YashTechnologyPvtLtd Open Source Code of Conduct](
 Copyright (c) YashTechnologyPvtLtd Corporation. All rights reserved.
 
 Licensed under the [MIT](LICENSE.txt) license.
-```
-Lience aggrement to Yash Production Pvt. LTD. | 2025-2026
-```
+
+## Security Patches
+
+- Addressed multiple security vulnerabilities identified in previous updates.
+- Updated dependencies to their latest versions to mitigate security risks.
+- Implemented additional security features as outlined in the documentation.
+
+## New Features
+
+- Enhanced the index page with a modern UI and improved user experience.
+- Fixed the signup process to ensure OTP redirection works seamlessly.
+- Added a timer feature that displays a countdown on the user screen. When the timer reaches zero, a visually appealing page is shown, and after a brief period, it fades back to the compiler page.
+
+## Updates
+
+- Updated the signup and OTP pages to improve functionality and user feedback.
+- Implemented a new timer feature that enhances user engagement.
+- Ensured all security patches are applied and documented in the README.

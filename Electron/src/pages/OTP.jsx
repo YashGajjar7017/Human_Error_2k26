@@ -129,6 +129,16 @@ export default function OTP() {
     await handleSendOTP()
   }
 
+  // Handle OTP submit
+  const handleOTPSubmit = async () => {
+    // Logic to verify OTP
+    if (otpVerified) {
+        navigate('/dashboard');
+    } else {
+        setError('OTP verification failed');
+    }
+};
+
   return (
     <div className="otp-container">
       <div className="otp-wrapper">
