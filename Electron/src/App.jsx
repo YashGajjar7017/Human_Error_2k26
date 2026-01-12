@@ -1,14 +1,20 @@
-import { useState, useEffect, createContext, useContext } from 'react'
+import { useState, useEffect, createContext, useContext, Suspense, lazy } from 'react'
 import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom'
-import Login from './pages/Login'
-import Signup from './pages/Signup'
-import OTP from './pages/OTP'
-import Dashboard from './pages/Dashboard'
-import ForgotPassword from './pages/ForgotPassword'
-import Profile from './pages/Profile'
-import Settings from './pages/Settings'
-import NotFound from './pages/NotFound'
 import './App.css'
+
+// Lazy load pages for better performance
+const Login = lazy(() => import('./pages/Login'))
+const Signup = lazy(() => import('./pages/Signup'))
+const OTP = lazy(() => import('./pages/OTP'))
+const Dashboard = lazy(() => import('./pages/Dashboard'))
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword'))
+const Profile = lazy(() => import('./pages/Profile'))
+const Settings = lazy(() => import('./pages/Settings'))
+const NotFound = lazy(() => import('./pages/NotFound'))
+const Help = lazy(() => import('./pages/Help'))
+const About = lazy(() => import('./pages/About'))
+const Privacy = lazy(() => import('./pages/Privacy'))
+const Terms = lazy(() => import('./pages/Terms'))
 
 // Auth Context
 const AuthContext = createContext(null)
@@ -78,8 +84,36 @@ export const useAuth = () => {
   return context
 }
 
+// Page Transition Wrapper Component
+function PageTransition({ children, animation = 'fadeInUp' }) {
+  const animations = {
+    fadeInUp: 'page-transition-fadeInUp',
+    fadeIn: 'page-transition-fadeIn',
+    slideInLeft: 'page-transition-slideInLeft',
+    slideInRight: 'page-transition-slideInRight',
+    scaleIn: 'page-transition-scaleIn',
+    bounceIn: 'page-transition-bounceIn'
+  }
+
+  return (
+    <div className={`page-transition ${animations[animation] || animations.fadeInUp}`}>
+      {children}
+    </div>
+  )
+}
+
+// Loading Fallback Component
+function PageLoading() {
+  return (
+    <div className="page-loading">
+      <div className="spinner"></div>
+      <p>Loading...</p>
+    </div>
+  )
+}
+
 // Protected Route Component
-function ProtectedRoute({ children }) {
+function ProtectedRoute({ children, animation = 'fadeInUp' }) {
   const { isLoggedIn, loading } = useAuth()
   const location = useLocation()
 
@@ -97,11 +131,15 @@ function ProtectedRoute({ children }) {
     return <Navigate to="/login" state={{ from: location }} replace />
   }
 
-  return children
+  return (
+    <PageTransition animation={animation}>
+      {children}
+    </PageTransition>
+  )
 }
 
 // Public Route Component (redirects to dashboard if already logged in)
-function PublicRoute({ children }) {
+function PublicRoute({ children, animation = 'fadeInUp' }) {
   const { isLoggedIn, loading } = useAuth()
   const location = useLocation()
 
@@ -119,7 +157,27 @@ function PublicRoute({ children }) {
     return <Navigate to="/dashboard" state={{ from: location }} replace />
   }
 
-  return children
+  return (
+    <PageTransition animation={animation}>
+      {children}
+    </PageTransition>
+  )
+}
+
+// Home Route - redirects to dashboard if logged in, login if not
+function HomeRoute() {
+  const { isLoggedIn, loading } = useAuth()
+  
+  if (loading) {
+    return (
+      <div className="loading-container">
+        <div className="spinner"></div>
+        <p>Loading Human Error...</p>
+      </div>
+    )
+  }
+
+  return isLoggedIn ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />
 }
 
 function App() {
@@ -145,74 +203,110 @@ function App() {
 
   return (
     <div className="app">
-      <Routes>
-        {/* Public Routes */}
-        <Route
-          path="/login"
-          element={
-            <PublicRoute>
-              <Login onSuccess={handleLoginWithNavigation} />
-            </PublicRoute>
-          }
-        />
-        <Route
-          path="/signup"
-          element={
-            <PublicRoute>
-              <Signup />
-            </PublicRoute>
-          }
-        />
-        <Route
-          path="/otp"
-          element={<OTP />}
-        />
-        <Route
-          path="/forgot-password"
-          element={
-            <PublicRoute>
-              <ForgotPassword />
-            </PublicRoute>
-          }
-        />
+      <Suspense fallback={<PageLoading />}>
+        <Routes>
+          {/* Home Route - redirects based on auth state */}
+          <Route path="/" element={<HomeRoute />} />
+          <Route path="/home" element={<HomeRoute />} />
 
-        {/* Protected Routes */}
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <Dashboard user={user} onLogout={handleLogout} />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Dashboard user={user} onLogout={handleLogout} />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute>
-              <Profile user={user} onLogout={handleLogout} />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/settings"
-          element={
-            <ProtectedRoute>
-              <Settings user={user} />
-            </ProtectedRoute>
-          }
-        />
+          {/* Public Routes */}
+          <Route
+            path="/login"
+            element={
+              <PublicRoute animation="slideInRight">
+                <Login onSuccess={handleLoginWithNavigation} />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/signup"
+            element={
+              <PublicRoute animation="slideInLeft">
+                <Signup />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/otp"
+            element={
+              <PublicRoute animation="scaleIn">
+                <OTP />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/forgot-password"
+            element={
+              <PublicRoute animation="slideInRight">
+                <ForgotPassword />
+              </PublicRoute>
+            }
+          />
 
-        {/* 404 Route */}
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+          {/* Info Pages (Public) */}
+          <Route
+            path="/help"
+            element={
+              <PublicRoute animation="fadeInUp">
+                <Help />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/about"
+            element={
+              <PublicRoute animation="fadeInUp">
+                <About />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/privacy"
+            element={
+              <PublicRoute animation="fadeInUp">
+                <Privacy />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/terms"
+            element={
+              <PublicRoute animation="fadeInUp">
+                <Terms />
+              </PublicRoute>
+            }
+          />
+
+          {/* Protected Routes */}
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute animation="fadeInUp">
+                <Dashboard user={user} onLogout={handleLogout} />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute animation="slideInLeft">
+                <Profile user={user} onLogout={handleLogout} />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute animation="slideInRight">
+                <Settings user={user} />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* 404 Route */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
     </div>
   )
 }
@@ -225,3 +319,4 @@ export default function AppWrapper() {
     </AuthProvider>
   )
 }
+

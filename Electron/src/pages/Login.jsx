@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import '../styles/Auth.css'
 
 export default function Login({ onSuccess }) {
@@ -10,6 +10,7 @@ export default function Login({ onSuccess }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+  const [focusedField, setFocusedField] = useState(null)
 
   // Load saved credentials
   useEffect(() => {
@@ -78,7 +79,9 @@ export default function Login({ onSuccess }) {
         <p>Login to Human Error</p>
 
         <form onSubmit={handleLogin}>
-          <div className="form-group">
+          <div 
+            className={`form-group ${focusedField === 'username' ? 'focused' : ''}`}
+          >
             <label>Username or Email</label>
             <input
               type="text"
@@ -88,10 +91,15 @@ export default function Login({ onSuccess }) {
               required
               disabled={loading}
               autoComplete="username"
+              onFocus={() => setFocusedField('username')}
+              onBlur={() => setFocusedField(null)}
+              className="input-focus"
             />
           </div>
 
-          <div className="form-group">
+          <div 
+            className={`form-group ${focusedField === 'password' ? 'focused' : ''}`}
+          >
             <label>Password</label>
             <div className="password-input-wrapper">
               <input
@@ -102,6 +110,9 @@ export default function Login({ onSuccess }) {
                 required
                 disabled={loading}
                 autoComplete="current-password"
+                onFocus={() => setFocusedField('password')}
+                onBlur={() => setFocusedField(null)}
+                className="input-focus"
               />
               <button
                 type="button"
@@ -133,9 +144,13 @@ export default function Login({ onSuccess }) {
             </button>
           </div>
 
-          {error && <div className="error-message">{error}</div>}
+          {error && (
+            <div className="error-message shake">
+              {error}
+            </div>
+          )}
 
-          <button type="submit" disabled={loading}>
+          <button type="submit" disabled={loading} className="btn-hover-lift ripple">
             {loading ? (
               <>
                 <span className="spinner-mini"></span> Logging in...
@@ -183,7 +198,12 @@ export default function Login({ onSuccess }) {
         <p className="auth-link">
           Don't have an account? <a href="/signup">Sign up</a>
         </p>
+        
+        <p className="help-link">
+          Need help? <Link to="/help">Visit Help Center</Link>
+        </p>
       </div>
     </div>
   )
 }
+

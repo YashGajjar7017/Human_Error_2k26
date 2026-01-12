@@ -343,10 +343,44 @@ form button:disabled {
   color: #667eea;
   text-decoration: none;
   font-weight: 600;
+  transition: all 0.3s ease;
 }
 
 .auth-link a:hover {
   text-decoration: underline;
+  color: #764ba2;
+}
+
+/* Help Link */
+.help-link {
+  text-align: center;
+  font-size: 14px;
+  color: #999;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.help-link a {
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.help-link a:hover {
+  color: #764ba2;
+  text-decoration: underline;
+}
+
+/* Form Group Focus Animation */
+.form-group.focused label {
+  color: #667eea;
+}
+
+.form-group.focused input {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
 }
 
 /* OTP Email Display */
