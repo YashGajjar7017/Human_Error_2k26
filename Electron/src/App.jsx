@@ -1,6 +1,8 @@
 import { useState, useEffect, createContext, useContext, Suspense, lazy } from 'react'
 import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom'
 import './App.css'
+import './styles/Theme.css'
+import './styles/SharedComponents.css'
 
 // Lazy load pages for better performance
 const Login = lazy(() => import('./pages/Login'))
@@ -15,6 +17,17 @@ const Help = lazy(() => import('./pages/Help'))
 const About = lazy(() => import('./pages/About'))
 const Privacy = lazy(() => import('./pages/Privacy'))
 const Terms = lazy(() => import('./pages/Terms'))
+
+// New pages
+const Compiler = lazy(() => import('./pages/Compiler'))
+const Achievements = lazy(() => import('./pages/Achievements'))
+const Collaboration = lazy(() => import('./pages/Collaboration'))
+const Classroom = lazy(() => import('./pages/Classroom'))
+const Analytics = lazy(() => import('./pages/Analytics'))
+const Snippets = lazy(() => import('./pages/Snippets'))
+const Notifications = lazy(() => import('./pages/Notifications'))
+const Leaderboard = lazy(() => import('./pages/Leaderboard'))
+const Admin = lazy(() => import('./pages/Admin'))
 
 // Auth Context
 const AuthContext = createContext(null)
@@ -299,6 +312,80 @@ function App() {
             element={
               <ProtectedRoute animation="slideInRight">
                 <Settings user={user} />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* New Feature Routes */}
+          <Route
+            path="/compiler"
+            element={
+              <ProtectedRoute animation="fadeInUp">
+                <Compiler />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/achievements"
+            element={
+              <ProtectedRoute animation="fadeInUp">
+                <Achievements user={user} />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/collaboration"
+            element={
+              <ProtectedRoute animation="fadeInUp">
+                <Collaboration />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/classroom"
+            element={
+              <ProtectedRoute animation="fadeInUp">
+                <Classroom />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/analytics"
+            element={
+              <ProtectedRoute animation="fadeInUp">
+                <Analytics />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/snippets"
+            element={
+              <ProtectedRoute animation="fadeInUp">
+                <Snippets />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/notifications"
+            element={
+              <ProtectedRoute animation="fadeInUp">
+                <Notifications />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/leaderboard"
+            element={
+              <ProtectedRoute animation="fadeInUp">
+                <Leaderboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute animation="fadeInUp">
+                <Admin />
               </ProtectedRoute>
             }
           />

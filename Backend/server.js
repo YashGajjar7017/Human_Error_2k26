@@ -48,6 +48,9 @@ const validationRoutes = require('./Routes/validation.routes');
 const debuggerRoutes = require('./Routes/debugger.routes');
 const { router: routesFlowRouter, initializeRouteFlow } = require('./Routes/routes-flow.routes');
 const sessionTrackingRoutes = require('./Routes/session-tracking.routes');
+const userPreferencesRoutes = require('./Routes/user-preferences.routes');
+const challengesRoutes = require('./Routes/challenges.routes');
+const gamificationRoutes = require('./Routes/gamification.routes');
 const { auth, authorize } = require('./middleware/auth.middleware');
 
 // DB Connect
@@ -263,6 +266,9 @@ app.use('/api', memberRoutes);
 app.use('/', frontendMemberRoutes);
 app.use(publicUploadRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/preferences', userPreferencesRoutes);
+app.use('/api/challenges', challengesRoutes);
+app.use('/api/gamification', gamificationRoutes);
 // Mode management route (web/electron)
 // app.use('/api/mode', modeRoutes);
 
