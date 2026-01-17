@@ -58,6 +58,21 @@
   padding: 8px 16px;
   background: rgba(255, 255, 255, 0.15);
   border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.quick-stat:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-3px);
+}
+
+.stat-bounce {
+  animation: statBounce 0.6s ease infinite;
+}
+
+@keyframes statBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
 }
 
 .quick-stat .stat-icon {
@@ -147,6 +162,12 @@
   font-size: 14px;
   font-weight: 500;
   color: var(--text-primary);
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+.quick-action.animate-scale-in {
+  animation: scaleIn 0.4s ease forwards;
 }
 
 .quick-action:hover {
@@ -169,6 +190,12 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  opacity: 0;
+  transform: scale(0.95);
+}
+
+.welcome-card.animate-scale-in {
+  animation: scaleIn 0.5s ease forwards;
 }
 
 .welcome-content h2 {
@@ -222,11 +249,17 @@
   transition: all 0.3s ease;
   cursor: pointer;
   border-top: 4px solid var(--accent-primary);
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.feature-card.animate-card-enter {
+  animation: fadeInUp 0.5s ease forwards;
 }
 
 .feature-card:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-lg);
 }
 
 .feature-icon {
@@ -268,10 +301,17 @@
   border: 1px solid var(--border-color);
   border-radius: 12px;
   transition: all 0.3s ease;
+  opacity: 0;
+  transform: translateX(-20px);
+}
+
+.activity-card.animate-slide-in-left {
+  animation: slideInLeft 0.5s ease forwards;
 }
 
 .activity-card:hover {
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-md);
+  transform: translateX(5px);
 }
 
 .activity-icon {
@@ -331,6 +371,7 @@
 
 .admin-card:hover {
   background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+  transform: translateY(-3px);
 }
 
 .admin-icon {
@@ -357,6 +398,157 @@
   font-size: 24px;
   color: var(--accent-primary);
 }
+
+/* Animation Keyframes */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes iconBounce {
+  0%, 100% { transform: scale(1); }
+  25% { transform: scale(1.2); }
+  50% { transform: scale(0.95); }
+  75% { transform: scale(1.1); }
+}
+
+@keyframes iconRotate {
+  from { transform: rotate(-180deg) scale(0.5); opacity: 0; }
+  to { transform: rotate(0deg) scale(1); opacity: 1; }
+}
+
+@keyframes textSlide {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes btnPop {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+@keyframes progressExpand {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* Animation Classes */
+.animate-fade-in {
+  animation: fadeIn 0.4s ease forwards;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s ease forwards;
+}
+
+.animate-fade-in-down {
+  animation: fadeInDown 0.5s ease forwards;
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.5s ease forwards;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.5s ease forwards;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.4s ease forwards;
+}
+
+.animate-bounce {
+  animation: bounce 0.6s ease infinite;
+}
+
+.animate-icon-bounce {
+  animation: iconBounce 0.6s ease;
+}
+
+.animate-icon-rotate {
+  animation: iconRotate 0.6s ease;
+}
+
+.animate-text-slide {
+  animation: textSlide 0.4s ease forwards;
+}
+
+.animate-btn-pop {
+  animation: btnPop 0.2s ease;
+}
+
+.animate-progress-expand {
+  transform-origin: left;
+  animation: progressExpand 0.6s ease;
+}
+
+/* Delay Classes */
+.delay-1 { animation-delay: 0.1s; }
+.delay-2 { animation-delay: 0.2s; }
+.delay-3 { animation-delay: 0.3s; }
+.delay-4 { animation-delay: 0.4s; }
+.delay-5 { animation-delay: 0.5s; }
 
 /* Profile Page Styles */
 .profile-layout {

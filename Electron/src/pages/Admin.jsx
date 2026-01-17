@@ -1,9 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import '../styles/SharedComponents.css'
 
 export default function Admin() {
   const [activeTab, setActiveTab] = useState('dashboard')
   const [selectedUser, setSelectedUser] = useState(null)
+  const [animatedStats, setAnimatedStats] = useState({})
+  const [visibleItems, setVisibleItems] = useState([])
 
   const stats = {
     totalUsers: 12458,
@@ -44,60 +46,128 @@ export default function Admin() {
     { id: 3, type: 'Profile', title: 'Fake account', reportedBy: 'Multiple users', severity: 'low', date: '1 day ago' }
   ]
 
+  // Animation on mount
+  useEffect(() => {
+    // Animate stat counters
+    setTimeout(() => {
+      setAnimatedStats({
+        totalUsers: { value: 0, target: 12458 },
+        activeToday: { value: 0, target: 342 },
+        totalChallenges: { value: 0, target: 856 },
+        completionsToday: { value: 0, target: 1245 },
+        revenue: { value: 0, target: 28500 },
+        newSignups: { value: 0, target: 156 }
+      })
+    }, 100)
+
+    // Stagger visible items
+    [0, 1, 2, 3, 4, 5].forEach((index) => {
+      setTimeout(() => {
+        setVisibleItems(prev => [...prev, index])
+      }, 200 + index * 100)
+    })
+  }, [])
+
+  // Counter animation effect
+  useEffect(() => {
+    const duration = 1500
+    const steps = 60
+    const interval = duration / steps
+
+    const timers = []
+
+    Object.keys(animatedStats).forEach(key => {
+      if (animatedStats[key] && animatedStats[key].value < animatedStats[key].target) {
+        const increment = animatedStats[key].target / steps
+        
+        const timer = setInterval(() => {
+          setAnimatedStats(prev => {
+            const current = prev[key]
+            if (!current) return prev
+            
+            const newValue = Math.min(
+              current.value + increment,
+              current.target
+            )
+            
+            return {
+              ...prev,
+              [key]: {
+                ...current,
+                value: newValue
+              }
+            }
+          })
+        }, interval)
+        
+        timers.push(timer)
+      }
+    })
+
+    return () => timers.forEach(clearInterval)
+  }, [animatedStats])
+
+  const formatNumber = (num) => {
+    if (typeof num === 'number') {
+      return Math.floor(num).toLocaleString()
+    }
+    return num
+  }
+
   return (
     <div className="admin-container">
       <header className="admin-header">
         <div className="header-content">
-          <h1>⚙️ Admin Dashboard</h1>
-          <p>System administration and user management</p>
+          <h1 className="animate-fade-in-up">⚙️ Admin Dashboard</h1>
+          <p className="animate-fade-in-up delay-1">System administration and user management</p>
         </div>
         <div className="header-actions">
-          <button className="admin-btn">🔄 Refresh</button>
-          <button className="admin-btn">📊 Export Report</button>
+          <button className="admin-btn animate-btn-pop">🔄 Refresh</button>
+          <button className="admin-btn animate-btn-pop delay-1">📊 Export Report</button>
         </div>
       </header>
 
       {/* Stats Overview */}
       <div className="admin-stats">
-        <div className="stat-card">
-          <div className="stat-icon">👥</div>
+        <div className={`stat-card animate-scale-in ${visibleItems.includes(0) ? 'visible' : ''}`} style={{ animationDelay: '0.1s' }}>
+          <div className="stat-icon animate-icon-bounce">👥</div>
           <div className="stat-content">
-            <span className="stat-value">{stats.totalUsers.toLocaleString()}</span>
+            <span className="stat-value">{formatNumber(animatedStats.totalUsers?.value || 0)}</span>
             <span className="stat-label">Total Users</span>
           </div>
         </div>
-        <div className="stat-card">
-          <div className="stat-icon">🟢</div>
+        <div className={`stat-card animate-scale-in ${visibleItems.includes(1) ? 'visible' : ''}`} style={{ animationDelay: '0.15s' }}>
+          <div className="stat-icon animate-icon-bounce">🟢</div>
           <div className="stat-content">
-            <span className="stat-value">{stats.activeToday}</span>
+            <span className="stat-value">{formatNumber(animatedStats.activeToday?.value || 0)}</span>
             <span className="stat-label">Active Today</span>
           </div>
         </div>
-        <div className="stat-card">
-          <div className="stat-icon">🎯</div>
+        <div className={`stat-card animate-scale-in ${visibleItems.includes(2) ? 'visible' : ''}`} style={{ animationDelay: '0.2s' }}>
+          <div className="stat-icon animate-icon-bounce">🎯</div>
           <div className="stat-content">
-            <span className="stat-value">{stats.totalChallenges}</span>
+            <span className="stat-value">{formatNumber(animatedStats.totalChallenges?.value || 0)}</span>
             <span className="stat-label">Total Challenges</span>
           </div>
         </div>
-        <div className="stat-card">
-          <div className="stat-icon">✅</div>
+        <div className={`stat-card animate-scale-in ${visibleItems.includes(3) ? 'visible' : ''}`} style={{ animationDelay: '0.25s' }}>
+          <div className="stat-icon animate-icon-bounce">✅</div>
           <div className="stat-content">
-            <span className="stat-value">{stats.completionsToday.toLocaleString()}</span>
+            <span className="stat-value">{formatNumber(animatedStats.completionsToday?.value || 0)}</span>
             <span className="stat-label">Completions Today</span>
           </div>
         </div>
-        <div className="stat-card">
-          <div className="stat-icon">💰</div>
+        <div className={`stat-card animate-scale-in ${visibleItems.includes(4) ? 'visible' : ''}`} style={{ animationDelay: '0.3s' }}>
+          <div className="stat-icon animate-icon-bounce">💰</div>
           <div className="stat-content">
-            <span className="stat-value">${stats.revenue.toLocaleString()}</span>
+            <span className="stat-value">${formatNumber(animatedStats.revenue?.value || 0)}</span>
             <span className="stat-label">Monthly Revenue</span>
           </div>
         </div>
-        <div className="stat-card">
-          <div className="stat-icon">📈</div>
+        <div className={`stat-card animate-scale-in ${visibleItems.includes(5) ? 'visible' : ''}`} style={{ animationDelay: '0.35s' }}>
+          <div className="stat-icon animate-icon-bounce">📈</div>
           <div className="stat-content">
-            <span className="stat-value">+{stats.newSignups}</span>
+            <span className="stat-value">+{formatNumber(animatedStats.newSignups?.value || 0)}</span>
             <span className="stat-label">New Signups Today</span>
           </div>
         </div>
@@ -106,31 +176,31 @@ export default function Admin() {
       {/* Admin Tabs */}
       <div className="admin-tabs">
         <button 
-          className={`tab ${activeTab === 'dashboard' ? 'active' : ''}`}
+          className={`tab animate-fade-in-up delay-1 ${activeTab === 'dashboard' ? 'active' : ''}`}
           onClick={() => setActiveTab('dashboard')}
         >
           📊 Dashboard
         </button>
         <button 
-          className={`tab ${activeTab === 'users' ? 'active' : ''}`}
+          className={`tab animate-fade-in-up delay-2 ${activeTab === 'users' ? 'active' : ''}`}
           onClick={() => setActiveTab('users')}
         >
           👥 Users
         </button>
         <button 
-          className={`tab ${activeTab === 'system' ? 'active' : ''}`}
+          className={`tab animate-fade-in-up delay-3 ${activeTab === 'system' ? 'active' : ''}`}
           onClick={() => setActiveTab('system')}
         >
           🖥️ System
         </button>
         <button 
-          className={`tab ${activeTab === 'content' ? 'active' : ''}`}
+          className={`tab animate-fade-in-up delay-4 ${activeTab === 'content' ? 'active' : ''}`}
           onClick={() => setActiveTab('content')}
         >
           🚨 Content Moderation
         </button>
         <button 
-          className={`tab ${activeTab === 'analytics' ? 'active' : ''}`}
+          className={`tab animate-fade-in-up delay-5 ${activeTab === 'analytics' ? 'active' : ''}`}
           onClick={() => setActiveTab('analytics')}
         >
           📈 Analytics
@@ -140,18 +210,22 @@ export default function Admin() {
       {/* Tab Content */}
       <div className="admin-content">
         {activeTab === 'dashboard' && (
-          <div className="dashboard-content">
+          <div className="dashboard-content animate-fade-in">
             <div className="activity-section">
-              <h3>📋 Recent System Activity</h3>
+              <h3 className="animate-slide-in-left">📋 Recent System Activity</h3>
               <div className="activity-table">
-                <div className="table-header">
+                <div className="table-header animate-fade-in">
                   <span>Action</span>
                   <span>User</span>
                   <span>Details</span>
                   <span>Time</span>
                 </div>
-                {recentActivity.map(item => (
-                  <div key={item.id} className="table-row">
+                {recentActivity.map((item, index) => (
+                  <div 
+                    key={item.id} 
+                    className={`table-row animate-slide-in-left ${visibleItems.includes(index) ? 'visible' : ''}`}
+                    style={{ animationDelay: `${index * 0.1}s` }}
+                  >
                     <span className="action-type">{item.action}</span>
                     <span className="user-name">{item.user}</span>
                     <span className="details">{item.details}</span>
@@ -164,10 +238,10 @@ export default function Admin() {
         )}
 
         {activeTab === 'users' && (
-          <div className="users-content">
+          <div className="users-content animate-fade-in">
             <div className="users-header">
-              <h3>👥 User Management</h3>
-              <div className="user-filters">
+              <h3 className="animate-slide-in-left">👥 User Management</h3>
+              <div className="user-filters animate-fade-in-up delay-1">
                 <input type="text" placeholder="Search users..." className="search-input" />
                 <select className="filter-select">
                   <option>All Status</option>
@@ -187,8 +261,12 @@ export default function Admin() {
                 <span>Joined</span>
                 <span>Actions</span>
               </div>
-              {recentUsers.map(user => (
-                <div key={user.id} className="table-row">
+              {recentUsers.map((user, index) => (
+                <div 
+                  key={user.id} 
+                  className={`table-row animate-slide-in-left ${visibleItems.includes(index) ? 'visible' : ''}`}
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
                   <span className="user-id">#{user.id}</span>
                   <span className="user-name">{user.name}</span>
                   <span className="user-email">{user.email}</span>
@@ -196,9 +274,9 @@ export default function Admin() {
                   <span className={`status-badge ${user.status}`}>{user.status}</span>
                   <span className="join-date">{user.joined}</span>
                   <div className="action-buttons">
-                    <button className="action-btn" title="View">👁️</button>
-                    <button className="action-btn" title="Edit">✏️</button>
-                    <button className="action-btn" title="Suspend">⚠️</button>
+                    <button className="action-btn animate-btn-pop" title="View">👁️</button>
+                    <button className="action-btn animate-btn-pop delay-1" title="Edit">✏️</button>
+                    <button className="action-btn animate-btn-pop delay-2" title="Suspend">⚠️</button>
                   </div>
                 </div>
               ))}
@@ -207,11 +285,15 @@ export default function Admin() {
         )}
 
         {activeTab === 'system' && (
-          <div className="system-content">
-            <h3>🖥️ System Health</h3>
+          <div className="system-content animate-fade-in">
+            <h3 className="animate-slide-in-left">🖥️ System Health</h3>
             <div className="health-grid">
               {systemHealth.map((system, index) => (
-                <div key={index} className={`health-card ${system.status}`}>
+                <div 
+                  key={index} 
+                  className={`health-card ${system.status} animate-scale-in ${visibleItems.includes(index) ? 'visible' : ''}`}
+                  style={{ animationDelay: `${0.2 + index * 0.1}s` }}
+                >
                   <div className="health-header">
                     <span className="health-name">{system.name}</span>
                     <span className={`health-status ${system.status}`}>
@@ -219,38 +301,53 @@ export default function Admin() {
                     </span>
                   </div>
                   <div className="health-stats">
-                    <div className="health-stat">
+                    <div className="health-stat animate-scale-in" style={{ animationDelay: '0.4s' }}>
                       <span className="stat-label">Uptime</span>
                       <span className="stat-value">{system.uptime}</span>
                     </div>
-                    <div className="health-stat">
+                    <div className="health-stat animate-scale-in" style={{ animationDelay: '0.5s' }}>
                       <span className="stat-label">Latency</span>
                       <span className="stat-value">{system.latency}</span>
                     </div>
                   </div>
+                  {system.status === 'warning' && (
+                    <div className="health-pulse animate-pulse"></div>
+                  )}
                 </div>
               ))}
             </div>
 
-            <div className="server-logs">
-              <h3>📜 Recent Server Logs</h3>
+            <div className="server-logs animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
+              <h3 className="animate-slide-in-left">📜 Recent Server Logs</h3>
               <div className="logs-container">
-                <div className="log-entry info">[INFO] API request: GET /api/challenges - 45ms</div>
-                <div className="log-entry info">[INFO] User authenticated: user_1234</div>
-                <div className="log-entry success">[SUCCESS] Challenge completed: binary_search</div>
-                <div className="log-entry warning">[WARN] High latency detected: ML service</div>
-                <div className="log-entry error">[ERROR] Database connection timeout</div>
+                {['[INFO] API request: GET /api/challenges - 45ms', 
+                  '[INFO] User authenticated: user_1234', 
+                  '[SUCCESS] Challenge completed: binary_search',
+                  '[WARN] High latency detected: ML service',
+                  '[ERROR] Database connection timeout'].map((log, index) => (
+                  <div 
+                    key={index} 
+                    className={`log-entry ${log.includes('[INFO]') ? 'info' : log.includes('[SUCCESS]') ? 'success' : log.includes('[WARN]') ? 'warning' : 'error'} animate-slide-in-left`}
+                    style={{ animationDelay: `${0.5 + index * 0.1}s` }}
+                  >
+                    {log}
+                  </div>
+                ))}
               </div>
             </div>
           </div>
         )}
 
         {activeTab === 'content' && (
-          <div className="content-moderation">
-            <h3>🚨 Flagged Content</h3>
+          <div className="content-moderation animate-fade-in">
+            <h3 className="animate-slide-in-left">🚨 Flagged Content</h3>
             <div className="flagged-list">
-              {contentFlagged.map(item => (
-                <div key={item.id} className="flagged-item">
+              {contentFlagged.map((item, index) => (
+                <div 
+                  key={item.id} 
+                  className={`flagged-item animate-slide-in-left ${visibleItems.includes(index) ? 'visible' : ''}`}
+                  style={{ animationDelay: `${index * 0.15}s` }}
+                >
                   <div className="flagged-info">
                     <span className={`severity-badge ${item.severity}`}>{item.severity}</span>
                     <span className="flagged-type">{item.type}</span>
@@ -261,9 +358,9 @@ export default function Admin() {
                     <span>{item.date}</span>
                   </div>
                   <div className="flagged-actions">
-                    <button className="action-btn approve">✓ Approve</button>
-                    <button className="action-btn reject">✕ Remove</button>
-                    <button className="action-btn ban">🚫 Ban User</button>
+                    <button className="action-btn approve animate-btn-pop">✓ Approve</button>
+                    <button className="action-btn reject animate-btn-pop delay-1">✕ Remove</button>
+                    <button className="action-btn ban animate-btn-pop delay-2">🚫 Ban User</button>
                   </div>
                 </div>
               ))}
@@ -272,24 +369,41 @@ export default function Admin() {
         )}
 
         {activeTab === 'analytics' && (
-          <div className="analytics-content">
-            <h3>📈 Advanced Analytics</h3>
+          <div className="analytics-content animate-fade-in">
+            <h3 className="animate-slide-in-left">📈 Advanced Analytics</h3>
             <div className="analytics-cards">
-              <div className="analytics-card">
+              <div className="analytics-card animate-scale-in" style={{ animationDelay: '0.1s' }}>
                 <h4>User Growth</h4>
                 <div className="mini-chart">
                   {[40, 65, 45, 80, 55, 90, 70, 85, 60, 95, 75, 100].map((h, i) => (
-                    <div key={i} className="chart-bar" style={{ height: `${h}%` }}></div>
+                    <div 
+                      key={i} 
+                      className="chart-bar animate-progress-expand"
+                      style={{ 
+                        height: `${h}%`,
+                        animationDelay: `${i * 0.05}s`
+                      }}
+                    ></div>
                   ))}
                 </div>
-                <p className="trend up">↑ 15% from last month</p>
+                <p className="trend up animate-fade-in-up delay-1">↑ 15% from last month</p>
               </div>
-              <div className="analytics-card">
+              <div className="analytics-card animate-scale-in" style={{ animationDelay: '0.2s' }}>
                 <h4>Challenge Completion Rate</h4>
                 <div className="progress-ring">
                   <svg viewBox="0 0 100 100">
                     <circle cx="50" cy="50" r="40" fill="none" stroke="#e0e0e0" strokeWidth="10" />
-                    <circle cx="50" cy="50" r="40" fill="none" stroke="url(#gradient)" strokeWidth="10" strokeDasharray="220" strokeDashoffset="44" />
+                    <circle 
+                      cx="50" 
+                      cy="50" 
+                      r="40" 
+                      fill="none" 
+                      stroke="url(#gradient)" 
+                      strokeWidth="10" 
+                      strokeDasharray="220" 
+                      strokeDashoffset="44"
+                      className="progress-circle-animate"
+                    />
                     <defs>
                       <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
                         <stop offset="0%" stopColor="#667eea" />
@@ -297,21 +411,21 @@ export default function Admin() {
                       </linearGradient>
                     </defs>
                   </svg>
-                  <span className="progress-value">80%</span>
+                  <span className="progress-value animate-bounce">80%</span>
                 </div>
               </div>
-              <div className="analytics-card">
+              <div className="analytics-card animate-scale-in" style={{ animationDelay: '0.3s' }}>
                 <h4>Revenue Trend</h4>
                 <div className="revenue-stats">
-                  <div className="revenue-item">
+                  <div className="revenue-item animate-scale-in" style={{ animationDelay: '0.4s' }}>
                     <span className="label">This Month</span>
                     <span className="value">$28,500</span>
                   </div>
-                  <div className="revenue-item">
+                  <div className="revenue-item animate-scale-in" style={{ animationDelay: '0.5s' }}>
                     <span className="label">Last Month</span>
                     <span className="value">$24,200</span>
                   </div>
-                  <div className="revenue-item positive">
+                  <div className="revenue-item positive animate-scale-in" style={{ animationDelay: '0.6s' }}>
                     <span className="label">Growth</span>
                     <span className="value">+18%</span>
                   </div>

@@ -1,9 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import '../styles/SharedComponents.css'
 
 export default function Classroom() {
   const [activeTab, setActiveTab] = useState('courses')
   const [selectedCourse, setSelectedCourse] = useState(null)
+  const [visibleCards, setVisibleCards] = useState([])
+  const [animateProgress, setAnimateProgress] = useState({})
 
   const courses = [
     {
@@ -95,24 +97,41 @@ export default function Classroom() {
     { id: 6, icon: '🔷', title: 'Type Hero', earned: false }
   ]
 
+  // Animation on mount
+  useEffect(() => {
+    // Stagger course card entrance
+    courses.forEach((_, index) => {
+      setTimeout(() => {
+        setVisibleCards(prev => [...prev, index])
+      }, index * 100)
+    })
+
+    // Animate progress bars with delay
+    courses.forEach((course, index) => {
+      setTimeout(() => {
+        setAnimateProgress(prev => ({ ...prev, [course.id]: true }))
+      }, 500 + index * 100)
+    })
+  }, [])
+
   return (
     <div className="classroom-container">
       <header className="classroom-header">
         <div className="header-content">
-          <h1>📚 Learning Classroom</h1>
-          <p>Structured courses to improve your coding skills</p>
+          <h1 className="animate-fade-in-up">📚 Learning Classroom</h1>
+          <p className="animate-fade-in-up delay-1">Structured courses to improve your coding skills</p>
         </div>
-        <div className="header-stats">
-          <div className="stat">
-            <span className="stat-value">6</span>
+        <div className="header-stats animate-fade-in-up delay-2">
+          <div className="stat stat-bounce">
+            <span className="stat-value">{courses.length}</span>
             <span className="stat-label">Courses</span>
           </div>
-          <div className="stat">
-            <span className="stat-value">62</span>
+          <div className="stat stat-bounce delay-1">
+            <span className="stat-value">{courses.reduce((acc, c) => acc + c.totalLessons, 0)}</span>
             <span className="stat-label">Lessons</span>
           </div>
-          <div className="stat">
-            <span className="stat-value">3</span>
+          <div className="stat stat-bounce delay-2">
+            <span className="stat-value">{achievements.filter(a => a.earned).length}</span>
             <span className="stat-label">Certificates</span>
           </div>
         </div>
@@ -120,19 +139,19 @@ export default function Classroom() {
 
       <div className="classroom-tabs">
         <button 
-          className={`tab ${activeTab === 'courses' ? 'active' : ''}`}
+          className={`tab animate-fade-in-up delay-1 ${activeTab === 'courses' ? 'active' : ''}`}
           onClick={() => setActiveTab('courses')}
         >
           📖 My Courses
         </button>
         <button 
-          className={`tab ${activeTab === 'upcoming' ? 'active' : ''}`}
+          className={`tab animate-fade-in-up delay-2 ${activeTab === 'upcoming' ? 'active' : ''}`}
           onClick={() => setActiveTab('upcoming')}
         >
           📅 Upcoming
         </button>
         <button 
-          className={`tab ${activeTab === 'certificates' ? 'active' : ''}`}
+          className={`tab animate-fade-in-up delay-3 ${activeTab === 'certificates' ? 'active' : ''}`}
           onClick={() => setActiveTab('certificates')}
         >
           🎓 Certificates
@@ -143,37 +162,38 @@ export default function Classroom() {
         {activeTab === 'courses' && (
           <>
             <div className="courses-grid">
-              {courses.map(course => (
+              {courses.map((course, index) => (
                 <div 
                   key={course.id} 
-                  className="course-card"
+                  className={`course-card ${visibleCards.includes(index) ? 'animate-card-enter' : ''}`}
                   onClick={() => setSelectedCourse(course)}
+                  style={{ animationDelay: `${index * 0.1}s` }}
                 >
-                  <div className="course-icon">{course.icon}</div>
+                  <div className="course-icon animate-icon-bounce">{course.icon}</div>
                   <div className="course-info">
-                    <span className={`course-level ${course.level.toLowerCase()}`}>
+                    <span className={`course-level ${course.level.toLowerCase()} animate-level-pop`}>
                       {course.level}
                     </span>
-                    <h3>{course.title}</h3>
-                    <p>{course.description}</p>
-                    <div className="course-meta">
+                    <h3 className="animate-text-slide">{course.title}</h3>
+                    <p className="animate-text-slide delay-1">{course.description}</p>
+                    <div className="course-meta animate-fade-in delay-2">
                       <span>👨‍🏫 {course.instructor}</span>
                       <span>⏱️ {course.duration}</span>
                     </div>
                   </div>
-                  <div className="course-progress">
+                  <div className="course-progress animate-progress-expand">
                     <div className="progress-info">
                       <span>{course.completedLessons}/{course.totalLessons} lessons</span>
-                      <span>{course.progress}%</span>
+                      <span className="progress-percent">{animateProgress[course.id] ? `${course.progress}%` : '0%'}</span>
                     </div>
                     <div className="progress-bar">
                       <div 
-                        className="progress-fill" 
-                        style={{ width: `${course.progress}%` }}
+                        className={`progress-fill ${animateProgress[course.id] ? 'animate-progress-fill' : ''}`}
+                        style={{ width: animateProgress[course.id] ? `${course.progress}%` : '0%' }}
                       />
                     </div>
                   </div>
-                  <button className="continue-btn">
+                  <button className="continue-btn animate-btn-pop">
                     {course.progress === 0 ? 'Start Course' : 'Continue Learning'}
                   </button>
                 </div>
@@ -183,20 +203,24 @@ export default function Classroom() {
         )}
 
         {activeTab === 'upcoming' && (
-          <div className="upcoming-section">
-            <h3>📅 Scheduled Lessons</h3>
+          <div className="upcoming-section animate-fade-in">
+            <h3 className="animate-slide-in-left">📅 Scheduled Lessons</h3>
             <div className="upcoming-list">
-              {upcomingLessons.map(lesson => (
-                <div key={lesson.id} className="upcoming-item">
+              {upcomingLessons.map((lesson, index) => (
+                <div 
+                  key={lesson.id} 
+                  className="upcoming-item animate-slide-in-left"
+                  style={{ animationDelay: `${index * 0.15}s` }}
+                >
                   <div className="upcoming-time">
-                    <span className="date">{lesson.time.split(',')[0]}</span>
-                    <span className="clock">{lesson.time.split(',')[1]}</span>
+                    <span className="date animate-bounce">{lesson.time.split(',')[0]}</span>
+                    <span className="clock animate-bounce delay-1">{lesson.time.split(',')[1]}</span>
                   </div>
                   <div className="upcoming-info">
-                    <h4>{lesson.title}</h4>
-                    <p>{lesson.course} • {lesson.instructor}</p>
+                    <h4 className="animate-text-slide">{lesson.title}</h4>
+                    <p className="animate-text-slide delay-1">{lesson.course} • {lesson.instructor}</p>
                   </div>
-                  <button className="join-class-btn">Join Class</button>
+                  <button className="join-class-btn animate-btn-pop">Join Class</button>
                 </div>
               ))}
             </div>
@@ -204,26 +228,33 @@ export default function Classroom() {
         )}
 
         {activeTab === 'certificates' && (
-          <div className="certificates-section">
-            <h3>🎓 Your Certificates</h3>
+          <div className="certificates-section animate-fade-in">
+            <h3 className="animate-slide-in-left">🎓 Your Certificates</h3>
             <div className="certificates-grid">
-              <div className="certificate-card">
-                <div className="cert-badge">🟨</div>
-                <h4>JavaScript Fundamentals</h4>
-                <p>Completed on Jan 20, 2024</p>
-                <button className="download-btn">⬇️ Download</button>
+              {courses.filter(c => c.progress >= 100).slice(0, 3).map((course, index) => (
+                <div 
+                  key={course.id} 
+                  className="certificate-card animate-card-enter"
+                  style={{ animationDelay: `${index * 0.15}s` }}
+                >
+                  <div className="cert-badge animate-icon-rotate">{course.icon}</div>
+                  <h4 className="animate-text-slide">{course.title}</h4>
+                  <p className="animate-text-slide delay-1">Completed on Jan {20 + index * 5}, 2024</p>
+                  <button className="download-btn animate-btn-pop">⬇️ Download</button>
+                </div>
+              ))}
+              {/* Mock certificates for display */}
+              <div className="certificate-card animate-card-enter" style={{ animationDelay: '0.3s' }}>
+                <div className="cert-badge animate-icon-rotate">⚛️</div>
+                <h4 className="animate-text-slide">React Pro</h4>
+                <p className="animate-text-slide delay-1">Completed on Feb 10, 2024</p>
+                <button className="download-btn animate-btn-pop">⬇️ Download</button>
               </div>
-              <div className="certificate-card">
-                <div className="cert-badge">⚛️</div>
-                <h4>React Pro</h4>
-                <p>Completed on Feb 10, 2024</p>
-                <button className="download-btn">⬇️ Download</button>
-              </div>
-              <div className="certificate-card">
-                <div className="cert-badge">🐍</div>
-                <h4>Python Starter</h4>
-                <p>Completed on Feb 25, 2024</p>
-                <button className="download-btn">⬇️ Download</button>
+              <div className="certificate-card animate-card-enter" style={{ animationDelay: '0.45s' }}>
+                <div className="cert-badge animate-icon-rotate">🐍</div>
+                <h4 className="animate-text-slide">Python Starter</h4>
+                <p className="animate-text-slide delay-1">Completed on Feb 25, 2024</p>
+                <button className="download-btn animate-btn-pop">⬇️ Download</button>
               </div>
             </div>
           </div>
@@ -233,43 +264,43 @@ export default function Classroom() {
       {/* Course Detail Modal */}
       {selectedCourse && (
         <>
-          <div className="modal-overlay" onClick={() => setSelectedCourse(null)} />
-          <div className="modal-content course-detail-modal">
-            <button className="close-btn" onClick={() => setSelectedCourse(null)}>✕</button>
+          <div className="modal-overlay animate-fade-in" onClick={() => setSelectedCourse(null)} />
+          <div className="modal-content course-detail-modal animate-modal-pop">
+            <button className="close-btn animate-btn-pop" onClick={() => setSelectedCourse(null)}>✕</button>
             <div className="course-detail-header">
-              <span className="course-icon-large">{selectedCourse.icon}</span>
+              <span className="course-icon-large animate-icon-bounce">{selectedCourse.icon}</span>
               <div>
-                <h2>{selectedCourse.title}</h2>
-                <p>{selectedCourse.description}</p>
+                <h2 className="animate-text-slide">{selectedCourse.title}</h2>
+                <p className="animate-text-slide delay-1">{selectedCourse.description}</p>
               </div>
             </div>
             <div className="course-stats">
-              <div className="stat-item">
+              <div className="stat-item animate-scale-in" style={{ animationDelay: '0.1s' }}>
                 <span className="stat-icon">📖</span>
                 <span className="stat-value">{selectedCourse.totalLessons}</span>
                 <span className="stat-label">Lessons</span>
               </div>
-              <div className="stat-item">
+              <div className="stat-item animate-scale-in" style={{ animationDelay: '0.15s' }}>
                 <span className="stat-icon">⏱️</span>
                 <span className="stat-value">{selectedCourse.duration}</span>
                 <span className="stat-label">Duration</span>
               </div>
-              <div className="stat-item">
+              <div className="stat-item animate-scale-in" style={{ animationDelay: '0.2s' }}>
                 <span className="stat-icon">📊</span>
                 <span className="stat-value">{selectedCourse.level}</span>
                 <span className="stat-label">Level</span>
               </div>
-              <div className="stat-item">
+              <div className="stat-item animate-scale-in" style={{ animationDelay: '0.25s' }}>
                 <span className="stat-icon">👨‍🏫</span>
                 <span className="stat-value">{selectedCourse.instructor}</span>
                 <span className="stat-label">Instructor</span>
               </div>
             </div>
-            <div className="course-curriculum">
+            <div className="course-curriculum animate-fade-in" style={{ animationDelay: '0.3s' }}>
               <h4>Course Curriculum</h4>
               <div className="curriculum-list">
-                {[1, 2, 3, 4, 5].map(num => (
-                  <div key={num} className={`curriculum-item ${num <= Math.floor(selectedCourse.progress / 20) ? 'completed' : ''}`}>
+                {[1, 2, 3, 4, 5].map((num) => (
+                  <div key={num} className={`curriculum-item ${num <= Math.floor(selectedCourse.progress / 20) ? 'completed animate-item-check' : 'animate-item-unchecked'}`}>
                     <span className="lesson-number">{num}</span>
                     <span className="lesson-title">Lesson {num}: {num === 1 ? 'Introduction' : num === 2 ? 'Core Concepts' : num === 3 ? 'Hands-on Practice' : num === 4 ? 'Advanced Topics' : 'Final Project'}</span>
                     <span className="lesson-status">{num <= Math.floor(selectedCourse.progress / 20) ? '✓' : '○'}</span>
@@ -277,7 +308,7 @@ export default function Classroom() {
                 ))}
               </div>
             </div>
-            <button className="btn-primary continue-learning-btn">
+            <button className="btn-primary continue-learning-btn animate-btn-pop">
               {selectedCourse.progress === 0 ? 'Start Learning' : 'Continue Learning'}
             </button>
           </div>
