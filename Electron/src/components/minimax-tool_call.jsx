@@ -1,4 +1,3 @@
-ter name="content">
 import { useState, useEffect, useRef } from 'react'
 import '../styles/SharedComponents.css'
 
@@ -154,6 +153,7 @@ function useLocalStorage(key, initialValue) {
                 </p>
               ))}
             </div>
+          </div>
         ))}
         
         {isTyping && (
@@ -181,6 +181,7 @@ function useLocalStorage(key, initialValue) {
               </button>
             ))}
           </div>
+        </div>
       )}
 
       <div className="ai-input-container">
@@ -196,5 +197,7 @@ function useLocalStorage(key, initialValue) {
           ➤
         </button>
       </div>
+    </div>
   )
 }
+
