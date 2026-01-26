@@ -81,6 +81,8 @@ app.use('/snippets', snippetsRoutes);
 app.use('/projects', projectsRoutes);
 app.use('/dashboard', dashboardRoutes);
 app.use('/members', memberRoutes);
+app.use('/clock', clockRoutes);
+app.use('/github', githubRoutes);
 app.use(mailServer);
 
 // Home page route with dashboard access link

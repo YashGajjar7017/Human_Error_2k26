@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="../Public/images/Human Error.png" style="height: 2000px;width: 2000px;">
+    <title>GitHub Integration | Yash's Machine</title>
+
+    <!-- ================= Css =============== -->
+    <link rel='stylesheet' href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css'>
+    <link href="/CSS/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/CSS/style.css">
+    <link rel="stylesheet" href="/CSS/navbar-glassy.css">
+    <link rel="stylesheet" href="/CSS/sidenav-glassy.css">
+
+    <!-- ================= Js =============== -->
+    <script src="js/Jquery/jquery.js"></script>
+    <script src="js/Boxicons/boxicons.js"></script>
+    <script src="/JS/Bootstrap/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body class="animated-gradient-bg">
+    <div id="main">
+        <!-- Glassy Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-glassy fixed-top">
+            <div class="container-fluid">
+                <!-- Brand -->
+                <a class="navbar-brand" href="/">🖥️ Human Error</a>
+
+                <!-- Toggler Button for Mobile -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Navbar Menu -->
+                <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item"><a href="/" class="nav-link text-white" title="Home"><i class='bx bx-home'></i> Home</a></li>
+                        <li class="nav-item"><a href="/clock" class="nav-link text-white" title="Clock & Timer"><i class='bx bx-time-five'></i> Clock</a></li>
+                        <li class="nav-item"><a href="/github" class="nav-link text-info active" title="GitHub Integration"><i class='bx bxl-github'></i> GitHub</a></li>
+                        <li class="nav-item" id="dashboard-link" style="display: none;"><a href="/Account/Dashboard" class="nav-link" title="Go to Dashboard"><i class='bx bxs-dashboard'></i> Dashboard</a></li>
+                    </ul>
+                </div>
+
+                <!-- Right Section: User -->
+                <div class="d-flex align-items-center ms-auto gap-3">
+                    <!-- User Profile -->
+                    <div class="user d-flex align-items-center sexy-login" id="user" style="cursor: pointer;" title="User Menu">
+                        <img src="images/User_icon.png" alt="User" class="me-2" style="height: 20px;width: 20px;">
+                        <span id="username">Login</span>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="container-fluid" style="margin-top: 10vh;">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <!-- GitHub User Search -->
+                    <div class="card bg-dark text-white mb-4">
+                        <div class="card-header">
+                            <h3 class="card-title mb-0"><i class='bx bxl-github'></i> GitHub User Profile</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="input-group mb-3">
+                                <input type="text" id="github-username" class="form-control" placeholder="Enter GitHub username" aria-label="GitHub username">
+                                <button id="search-user" class="btn btn-primary" type="button"><i class='bx bx-search'></i> Search</button>
+                            </div>
+                            <div id="user-profile" class="row" style="display: none;">
+                                <div class="col-md-3 text-center">
+                                    <img id="user-avatar" src="" alt="Avatar" class="img-fluid rounded-circle mb-3" style="max-width: 150px;">
+                                    <h4 id="user-name"></h4>
+                                    <p id="user-login" class="text-muted"></p>
+                                    <a id="user-url" href="#" target="_blank" class="btn btn-outline-light btn-sm"><i class='bx bx-link-external'></i> View on GitHub</a>
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="row text-center mb-3">
+                                        <div class="col">
+                                            <div class="h3 text-info" id="user-repos"></div>
+                                            <small class="text-muted">Repositories</small>
+                                        </div>
+                                        <div class="col">
+                                            <div class="h3 text-success" id="user-followers"></div>
+                                            <small class="text-muted">Followers</small>
+                                        </div>
+                                        <div class="col">
+                                            <div class="h3 text-warning" id="user-following"></div>
+                                            <small class="text-muted">Following</small>
+                                        </div>
+                                    </div>
+                                    <p id="user-bio" class="mb-3"></p>
+                                    <div id="user-details">
+                                        <small class="text-muted">
+                                            <i class='bx bx-map-pin'></i> <span id="user-location"></span><br>
+                                            <i class='bx bx-building'></i> <span id="user-company"></span><br>
+                                            <i class='bx bx-link'></i> <span id="user-blog"></span><br>
+                                            <i class='bx bx-calendar'></i> Joined <span id="user-joined"></span>
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Repositories Section -->
+                    <div id="repos-section" class="card bg-dark text-white" style="display: none;">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h4 class="card-title mb-0"><i class='bx bx-folder'></i> Repositories</h4>
+                            <div class="input-group" style="width: auto;">
+                                <select id="sort-repos" class="form-select form-select-sm">
+                                    <option value="updated">Recently Updated</option>
+                                    <option value="created">Recently Created</option>
+                                    <option value="pushed">Recently Pushed</option>
+                                    <option value="full_name">Name</option>
+                                    <option value="stargazers_count">Stars</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div id="repos-list" class="row">
+                                <!-- Repositories will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Repository Details Modal -->
+                    <div class="modal fade" id="repoModal" tabindex="-1" aria-labelledby="repoModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content bg-dark text-white">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="repoModalLabel">Repository Details</h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body" id="repo-details">
+                                    <!-- Repository details will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/JS/github.js"></script>
+    <script type="text/javascript">
+        // User authentication logic (similar to index.html)
+        $(document).ready(function () {
+            // Function to get a specific cookie by name
+            function getCookie(name) {
+                let cookies = document.cookie.split('; ');
+                for (let cookie of cookies) {
+                    let [key, value] = cookie.split('=');
+                    if (key === name) return decodeURIComponent(value);
+                }
+                return null;
+            }
+
+            // Logout function
+            window.logout = function() {
+                document.cookie = 'username=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/';
+                document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/';
+                document.cookie = 'role=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/';
+                location.reload();
+            };
+
+            let username = getCookie('username');
+            if (!username) {
+                document.getElementById('username').innerText = 'Login';
+                document.getElementById('user').onclick = function() {
+                    window.location.href = '/Account/login';
+                };
+                document.getElementById('dashboard-link').style.display = 'none';
+            } else {
+                document.getElementById('username').innerText = username;
+                document.getElementById('user').onclick = function() {
+                    // Open user menu (you can implement this)
+                    alert('User menu not implemented yet');
+                };
+                document.getElementById('dashboard-link').style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
