@@ -23,6 +23,8 @@ const snippetsRoutes = require('./Routes/snippets.routes');
 const projectsRoutes = require('./Routes/projects.routes');
 const dashboardRoutes = require('./Routes/dashboard.routes');
 const memberRoutes = require('./Routes/Member.routes');
+const clockRoutes = require('./Routes/clock.routes');
+const githubRoutes = require('./Routes/github.routes');
 
 // make an object of express
 const app = express();

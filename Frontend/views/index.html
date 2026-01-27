@@ -59,7 +59,7 @@
                     </ul>
                 </div>
 
-                <!-- Right Section: Language, Theme, User -->
+                <!-- Right Section: Language, Theme, Auth Buttons, User -->
                 <div class="d-flex align-items-center ms-auto gap-3">
                     <!-- Language Selector -->
                     <div id="Languages">
@@ -89,6 +89,16 @@
                             <i class='bx bx-x cancel' onclick="closeNav()" style="display: none;"></i>
                             <i class='bx bx-search search' onclick="openNav()"></i>
                         </div>
+                    </div>
+
+                    <!-- Auth Buttons -->
+                    <div class="auth-buttons d-flex align-items-center gap-2" id="auth-buttons">
+                        <a href="/Account/signup" class="btn btn-outline-primary btn-sm px-3 py-2 rounded-pill fw-semibold" title="Create Account">
+                            <i class='bx bx-user-plus me-1'></i>Sign Up
+                        </a>
+                        <a href="/Account/login" class="btn btn-primary btn-sm px-3 py-2 rounded-pill fw-semibold" title="Login to Account">
+                            <i class='bx bx-log-in me-1'></i>Login
+                        </a>
                     </div>
 
                     <!-- User Profile -->
