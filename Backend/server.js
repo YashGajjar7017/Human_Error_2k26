@@ -46,12 +46,22 @@ const paymentRoutes = require('./Routes/payment.routes');
 const userProfileRoutes = require('./Routes/user-profile.routes');
 const validationRoutes = require('./Routes/validation.routes');
 const debuggerRoutes = require('./Routes/debugger.routes');
+const codeEngineRoutes = require('./Routes/codeEngine.routes');
 const { router: routesFlowRouter, initializeRouteFlow } = require('./Routes/routes-flow.routes');
 const sessionTrackingRoutes = require('./Routes/session-tracking.routes');
 const userPreferencesRoutes = require('./Routes/user-preferences.routes');
 const challengesRoutes = require('./Routes/challenges.routes');
 const gamificationRoutes = require('./Routes/gamification.routes');
 const { auth, authorize } = require('./middleware/auth.middleware');
+
+// Import clock and github routes
+const clockRoutes = require('./Routes/clock.routes');
+const githubRoutes = require('./Routes/github.routes');
+
+// Import background services
+const codeEngine = require('./service/codeEngine.service');
+const backgroundWorker = require('./service/backgroundWorker.service');
+const debuggerService = require('./service/debugger.service');
 
 // DB Connect
 const DBConnect = require('./DB/DBHandler');
@@ -228,7 +238,7 @@ app.post('/api/maintenance/login', rawBody, async (req, res, next) => {
 app.use(maintenanceController.maintenanceMiddleware);
 
 // DB Connect
-DBConnect();
+// DBConnect(); // Commented out for testing
 
 // Mount all routes with proper prefixes
 app.use('/api/auth', authRoutes);
@@ -260,6 +270,7 @@ app.use('/api/mode', modeRoutes);
 app.use('/api/users', userProfileRoutes);
 app.use('/api/validate', validationRoutes);
 app.use('/api/debugger', debuggerRoutes);
+app.use('/api/code-engine', codeEngineRoutes);
 app.use('/api/routes', routesFlowRouter);
 app.use('/api/session-tracking', sessionTrackingRoutes);
 app.use('/api', memberRoutes);
@@ -269,6 +280,8 @@ app.use('/api/payments', paymentRoutes);
 app.use('/api/preferences', userPreferencesRoutes);
 app.use('/api/challenges', challengesRoutes);
 app.use('/api/gamification', gamificationRoutes);
+app.use('/api/clock', clockRoutes);
+app.use('/api/github', githubRoutes);
 // Mode management route (web/electron)
 // app.use('/api/mode', modeRoutes);
 
@@ -409,6 +422,11 @@ server.listen(port, () => {
     console.log(`📡 WebSocket server ready`);
     console.log(`🔗 Health check: http://localhost:${port}/health`);
     console.log(`🔧 Maintenance mode integrated`);
+    console.log(`⚙️  Code Engine initialized`);
+    console.log(`👷 Background Worker initialized with ${backgroundWorker.maxWorkers} workers`);
+    console.log(`🕒 Clock API initialized`);
+    console.log(`🐙 GitHub API initialized`);
+    console.log(`🐛 Enhanced Debugger initialized`);
 
     // Start periodic session cleanup (every 1 hour)
     setInterval(async () => {
@@ -422,7 +440,56 @@ server.listen(port, () => {
         }
     }, 60 * 60 * 1000); // 1 hour in milliseconds
 
+    // Clean up expired code execution sessions (every 30 minutes)
+    setInterval(async () => {
+        try {
+            await codeEngine.cleanupExpiredSessions();
+            console.log(`🧹 Code Engine: Cleaned up expired sessions`);
+        } catch (error) {
+            console.error('❌ Error during code engine cleanup:', error);
+        }
+    }, 30 * 60 * 1000); // 30 minutes
+
+    // Clean up old background worker tasks (every 1 hour)
+    setInterval(async () => {
+        try {
+            await backgroundWorker.clearOldTasks();
+            console.log(`🧹 Background Worker: Cleaned up old tasks`);
+        } catch (error) {
+            console.error('❌ Error during worker cleanup:', error);
+        }
+    }, 60 * 60 * 1000); // 1 hour
+
+    // Listen to code engine events
+    codeEngine.on('code:success', ({ sessionId }) => {
+        console.log(`✅ Code Engine: Execution success - ${sessionId}`);
+    });
+
+    codeEngine.on('code:error', ({ sessionId, error }) => {
+        console.log(`❌ Code Engine: Execution failed - ${sessionId}: ${error}`);
+    });
+
+    // Listen to background worker events
+    backgroundWorker.on('task:complete', ({ taskId, duration }) => {
+        console.log(`✅ Worker: Task completed - ${taskId} (${duration}ms)`);
+    });
+
+    backgroundWorker.on('task:error', ({ taskId, error }) => {
+        console.log(`❌ Worker: Task failed - ${taskId}: ${error}`);
+    });
+
+    // Listen to debugger events
+    debuggerService.on('debug:started', ({ sessionId }) => {
+        console.log(`🐛 Debugger: Session started - ${sessionId}`);
+    });
+
+    debuggerService.on('debug:paused', ({ sessionId, reason }) => {
+        console.log(`⏸️  Debugger: Paused - ${sessionId} (${reason})`);
+    });
+
     console.log(`🕒 Session cleanup scheduled (every 1 hour)`);
+    console.log(`🕒 Code Engine cleanup scheduled (every 30 minutes)`);
+    console.log(`🕒 Worker cleanup scheduled (every 1 hour)`);
 
     // Initialize route flow manager
     try {
