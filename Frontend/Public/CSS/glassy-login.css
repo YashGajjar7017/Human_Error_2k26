@@ -1,32 +1,32 @@
 /* Glassy Login & Signup Base Styles */
 
 .glass-container {
-  background: rgba(255, 255, 255, 0.35);
+  background: rgba(20, 20, 35, 0.85);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
   border-radius: 24px;
-  box-shadow: 0 0 15px 2px rgba(118, 75, 162, 0.7);
-  border: 1.5px solid rgba(118, 75, 162, 0.8);
+  box-shadow: 0 0 15px 2px rgba(102, 126, 234, 0.5);
+  border: 1.5px solid rgba(102, 126, 234, 0.6);
   padding: 48px 36px;
   max-width: 480px;
   margin: 60px auto;
   transition: all 0.4s ease;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  color: #f0f0f5;
+  color: #e0e0e0;
 }
 
 .glass-container:hover {
-  box-shadow: 0 0 30px 8px rgba(118, 75, 162, 0.9);
+  box-shadow: 0 0 30px 8px rgba(102, 126, 234, 0.6);
 }
 
 .glass-title {
   font-size: 2.2rem;
   font-weight: 700;
-  color: #ffffffcc;
+  color: #e0e0e0;
   text-align: center;
   margin-bottom: 30px;
   letter-spacing: 1.15px;
-  text-shadow: 0 2px 8px rgba(102, 126, 234, 0.8);
+  text-shadow: 0 2px 8px rgba(102, 126, 234, 0.6);
 }
 
 /* Enhanced Login Page Specific Styles */
@@ -36,12 +36,12 @@
   margin: 40px auto;
   padding: 40px 30px;
   border-radius: 24px;
-  background: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37),
+  background: rgba(25, 25, 45, 0.9);
+  box-shadow: 0 8px 32px 0 rgba(102, 126, 234, 0.3),
     0 0 10px 2px rgba(102, 126, 234, 0.4);
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
-  color: #e9e9fb;
+  color: #e0e0e0;
   text-align: center;
   transition: box-shadow 0.4s ease;
   position: relative;
@@ -70,26 +70,26 @@
   margin-bottom: 20px;
   border: none;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.25);
-  color: #ffffffdd;
+  background: rgba(60, 60, 90, 0.6);
+  color: #e0e0e0;
   font-size: 1rem;
-  box-shadow: inset 2px 2px 6px rgba(255, 255, 255, 0.15),
+  box-shadow: inset 2px 2px 6px rgba(255, 255, 255, 0.1),
     inset -2px -2px 6px rgba(0, 0, 0, 0.3);
   transition: background 0.3s ease, color 0.3s ease;
 }
 
 .glass-input::placeholder {
-  color: #ddd;
+  color: #999;
 }
 
 .glass-input:focus {
-  background: rgba(255, 255, 255, 0.4);
+  background: rgba(80, 80, 120, 0.8);
   outline: none;
-  color: #000;
+  color: #e0e0e0;
 }
 
 .glass-checkbox-label {
-  color: #f0f0f5cc;
+  color: #d0d0d0;
   user-select: none;
   font-weight: 500;
   margin-left: 8px;
@@ -123,7 +123,7 @@
   text-align: center;
   display: block;
   margin-top: 15px;
-  color: #b3b3cc;
+  color: #90a0ff;
   font-weight: 600;
   cursor: pointer;
   text-decoration: none;
@@ -131,7 +131,7 @@
 }
 
 .glass-link:hover {
-  color: #e0e0ff;
+  color: #b0d0ff;
   text-decoration: underline;
 }
 

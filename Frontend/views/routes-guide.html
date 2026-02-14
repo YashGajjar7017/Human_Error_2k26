@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Routes & API Guide | Human Error</title>
+    <link rel="icon" type="image/x-icon" href="../Public/images/Human Error.png">
+    <link rel='stylesheet' href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css'>
+    <link href="/CSS/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/CSS/style.css">
+    <link rel="stylesheet" href="/CSS/navbar-glassy.css">
+    <style>
+        .route-card {
+            background: #1f1f1f;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        .route-card:hover {
+            background: #252525;
+            border-color: #667eea;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        .route-title {
+            color: #667eea;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        .route-list {
+            list-style: none;
+            padding: 0;
+        }
+        .route-item {
+            color: #d0d0d0;
+            padding: 8px 0;
+            border-bottom: 1px solid #333;
+        }
+        .route-item:last-child {
+            border-bottom: none;
+        }
+        .route-method {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-right: 10px;
+        }
+        .method-get {
+            background: rgba(52, 211, 153, 0.2);
+            color: #34d399;
+        }
+        .method-post {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+        }
+        .method-put {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+        .method-delete {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+        .section-title {
+            color: #667eea;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+        .container-routes {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            margin-top: 80px;
+        }
+    </style>
+</head>
+<body class="dark">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-glassy fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">🖥️ Human Error</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a href="/" class="nav-link"><i class='bx bxs-home'></i> Home</a></li>
+                    <li class="nav-item"><a href="/editor" class="nav-link"><i class='bx bxs-code'></i> Editor</a></li>
+                    <li class="nav-item"><a href="/api-docs" class="nav-link"><i class='bx bxs-book'></i> API Docs</a></li>
+                    <li class="nav-item"><a href="/Account/Dashboard" class="nav-link"><i class='bx bxs-dashboard'></i> Dashboard</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-routes">
+        <h1 style="color: #e0e0e0; margin-bottom: 30px;">🛣️ Complete Routes & API Guide</h1>
+        
+        <!-- Authentication Routes -->
+        <h2 class="section-title">🔐 Authentication Routes</h2>
+        <div class="route-card">
+            <div class="route-title">Auth Routes (/api/auth)</div>
+            <ul class="route-list">
+                <li class="route-item"><span class="route-method method-post">POST</span>/register - Register new user</li>
+                <li class="route-item"><span class="route-method method-post">POST</span>/login - Login user</li>
+                <li class="route-item"><span class="route-method method-post">POST</span>/logout - Logout user</li>
+                <li class="route-item"><span class="route-method method-get">GET</span>/me - Get current user</li>
+                <li class="route-item"><span class="route-method method-post">POST</span>/send-otp - Send OTP</li>
+                <li class="route-item"><span class="route-method method-post">POST</span>/verify-otp - Verify OTP</li>
+            </ul>
+        </div>
+
+        <div class="route-card">
+            <div class="route-title">Login Routes (/api/login)</div>
+            <ul class="route-list">
+                <li class="route-item"><span class="route-method method-post">POST</span>/authenticate - Authenticate user</li>
+                <li class="route-item"><span class="route-method method-get">GET</span>/session - Get session info</li>
+            </ul>
+        </div>
+
+        <div class="route-card">
+            <div class="route-title">Account Routes (/api/account)</div>
+            <ul class="route-list">
+                <li class="route-item"><span class="route-method method-get">GET</span>/profile - Get user profile</li>
+                <li class="route-item"><span class="route-method method-put">PUT</span>/profile - Update profile</li>
+                <li class="route-item"><span class="route-method method-post">POST</span>/change-password - Change password</li>
+            </ul>
+        </div>
+
+        <!-- Compiler & Code Execution -->
+        <h2 class="section-title">⚙️ Compiler & Code Execution Routes</h2>
+        <div class="route-card">
+            <div class="route-title">Compiler Routes (/api/compiler)</div>
+            <ul class="route-list">
+                <li class="route-item"><span class="route-method method-post">POST</span>/compile - Compile code</li>
+                <li class="route-item"><span class="route-method method-post">POST</span>/execute - Execute code</li>
+                <li class="route-item"><span class="route-method method-get">GET</span>/languages - Get supported languages</li>
+            </ul>
+        </div>
+
+        <div class="route-card">
+            <div class="route-title">Code Engine Routes (/api/code-engine)</div>
+            <ul class="route-list">
+                <li class="route-item"><span class="route-method method-post">POST</span>/execute - Execute with engine</li>
+                <li class="route-item"><span class="route-method method-get">GET</span>/status - Get execution status</li>
+            </ul>
+        </div>
+
+        <!-- Editor & File Management -->
+        <h2 class="section-title">📝 Editor & File Management Routes</h2>
+        <div class="route-card">
+            <div class="route-title">Editor Routes (/api/editor)</div>
+            <ul class="route-list">
+                <li class="route-item"><span class="route-method method-get">GET</span>/list - List files</li>
+                <li class="route-item"><span class="route-method method-post">POST</span>/read - Read file</li>
+                <li class="route-item"><span class="route-method method-post">POST</span>/write - Write file</li>
+                <li class="route-item"><span class="route-method method-post">POST</span>/sync - Sync files</li>
+            </ul>
+        </div>
+
+        <div class="route-card">
+            <div class="route-title">File Manager Routes (/api/files)</div>
+            <ul class="route-list">
+                <li class="route-item"><span class="route-method method-get">GET</span>/list - List files</li>
+                <li class="route-item"><span class="route-method method-post">POST</span>/upload - Upload file</li>
+                <li class="route-item"><span class="route-method method-delete">DELETE</span>/:id - Delete file</li>
+            </ul>
+        </div>
+
+        <!-- Projects & Collaboration -->
+        <h2 class="section-title">🤝 Projects & Collaboration Routes</h2>
+        <div class="route-card">
+            <div class="route-title">Projects Routes (/api/projects)</div>
+            <ul class="route-list">
+                <li class="route-item"><span class="route-method method-get">GET</span>/ - List projects</li>
+                <li class="route-item"><span class="route-method method-post">POST</span>/ - Create project</li>
+                <li class="route-item"><span class="route-method method-put">PUT</span>/:id - Update project</li>
+                <li class="route-item"><span class="route-method method-delete">DELETE</span>/:id - Delete project</li>
+            </ul>
+        </div>
+
+        <div class="route-card">
+            <div class="route-title">Collaboration Routes (/api/collaboration)</div>
+            <ul class="route-list">
+                <li class="route-item"><span class="route-method method-post">POST</span>/session - Create session</li>
+                <li class="route-item"><span class="route-method method-get">GET</span>/session/:id - Get session</li>
+                <li class="route-item"><span class="route-method method-post">POST</span>/invite - Invite user</li>
+            </ul>
+        </div>
+
+        <!-- Learning & Achievements -->
+        <h2 class="section-title">🎓 Learning & Achievements Routes</h2>
+        <div class="route-card">
+            <div class="route-title">Classroom Routes (/api/classrooms)</div>
+            <ul class="route-list">
+                <li class="route-item"><span class="route-method method-get">GET</span>/ - List classrooms</li>
+                <li class="route-item"><span class="route-method method-post">POST</span>/ - Create classroom</li>
+                <li class="route-item"><span class="route-method method-get">GET</span>/:id - Get classroom</li>
+            </ul>
+        </div>
+
+        <div class="route-card">
+            <div class="route-title">Challenges Routes (/api/challenges)</div>
+            <ul class="route-list">
+                <li class="route-item"><span class="route-method method-get">GET</span>/ - List challenges</li>
+                <li class="route-item"><span class="route-method method-post">POST</span>/submit - Submit solution</li>
+                <li class="route-item"><span class="route-method method-get">GET</span>/:id - Get challenge</li>
+            </ul>
+        </div>
+
+        <div class="route-card">
+            <div class="route-title">Achievements Routes (/api/achievements)</div>
+            <ul class="route-list">
+                <li class="route-item"><span class="route-method method-get">GET</span>/ - List achievements</li>
+                <li class="route-item"><span class="route-method method-get">GET</span>/user/:userId - User achievements</li>
+            </ul>
+        </div>
+
+        <!-- Additional Features -->
+        <h2 class="section-title">⭐ Additional Features Routes</h2>
+        <div class="route-card">
+            <div class="route-title">Snippets Routes (/api/snippets)</div>
+            <ul class="route-list">
+                <li class="route-item"><span class="route-method method-get">GET</span>/ - List snippets</li>
+                <li class="route-item"><span class="route-method method-post">POST</span>/ - Create snippet</li>
+                <li class="route-item"><span class="route-method method-delete">DELETE</span>/:id - Delete snippet</li>
+            </ul>
+        </div>
+
+        <div class="route-card">
+            <div class="route-title">Analytics Routes (/api/analytics)</div>
+            <ul class="route-list">
+                <li class="route-item"><span class="route-method method-get">GET</span>/dashboard - Get analytics dashboard</li>
+                <li class="route-item"><span class="route-method method-get">GET</span>/stats - Get user stats</li>
+            </ul>
+        </div>
+
+        <div class="route-card">
+            <div class="route-title">Notifications Routes (/api/notifications)</div>
+            <ul class="route-list">
+                <li class="route-item"><span class="route-method method-get">GET</span>/ - List notifications</li>
+                <li class="route-item"><span class="route-method method-post">POST</span>/mark-read - Mark as read</li>
+                <li class="route-item"><span class="route-method method-delete">DELETE</span>/:id - Delete notification</li>
+            </ul>
+        </div>
+
+        <!-- Security & Admin -->
+        <h2 class="section-title">🔒 Security & Admin Routes</h2>
+        <div class="route-card">
+            <div class="route-title">Security Routes (/api/security)</div>
+            <ul class="route-list">
+                <li class="route-item"><span class="route-method method-post">POST</span>/two-factor - Enable 2FA</li>
+                <li class="route-item"><span class="route-method method-get">GET</span>/audit-log - Get audit log</li>
+            </ul>
+        </div>
+
+        <div class="route-card">
+            <div class="route-title">Admin Routes (/api/admin)</div>
+            <ul class="route-list">
+                <li class="route-item"><span class="route-method method-get">GET</span>/users - List users</li>
+                <li class="route-item"><span class="route-method method-delete">DELETE</span>/users/:id - Delete user</li>
+                <li class="route-item"><span class="route-method method-get">GET</span>/stats - Get system stats</li>
+            </ul>
+        </div>
+
+        <!-- WebRTC & Real-time -->
+        <h2 class="section-title">🎥 WebRTC & Real-time Routes</h2>
+        <div class="route-card">
+            <div class="route-title">WebRTC Routes (/api/webrtc)</div>
+            <ul class="route-list">
+                <li class="route-item"><span class="route-method method-post">POST</span>/signal - Send signal</li>
+                <li class="route-item"><span class="route-method method-post">POST</span>/peer - Create peer connection</li>
+            </ul>
+        </div>
+
+        <div class="route-card">
+            <div class="route-title">Session Routes (/api/sessions)</div>
+            <ul class="route-list">
+                <li class="route-item"><span class="route-method method-get">GET</span>/ - List sessions</li>
+                <li class="route-item"><span class="route-method method-post">POST</span>/ - Create session</li>
+                <li class="route-item"><span class="route-method method-post">POST</span>/join - Join session</li>
+            </ul>
+        </div>
+
+        <!-- Navigation Links -->
+        <h2 class="section-title">🗂️ Frontend Pages</h2>
+        <div class="row" style="margin-top: 20px;">
+            <div class="col-md-6">
+                <div class="route-card">
+                    <h5 style="color: #667eea; margin-bottom: 15px;">Main Pages</h5>
+                    <ul class="route-list">
+                        <li class="route-item"><a href="/" style="color: #90a0ff;">🏠 Home</a></li>
+                        <li class="route-item"><a href="/editor" style="color: #90a0ff;">✏️ Code Editor</a></li>
+                        <li class="route-item"><a href="/Account/Dashboard" style="color: #90a0ff;">📊 Dashboard</a></li>
+                        <li class="route-item"><a href="/projects" style="color: #90a0ff;">📁 Projects</a></li>
+                        <li class="route-item"><a href="/collaboration" style="color: #90a0ff;">👥 Collaboration</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="route-card">
+                    <h5 style="color: #667eea; margin-bottom: 15px;">Learning & Tools</h5>
+                    <ul class="route-list">
+                        <li class="route-item"><a href="/classroom" style="color: #90a0ff;">🎓 Classroom</a></li>
+                        <li class="route-item"><a href="/challenges" style="color: #90a0ff;">⚡ Challenges</a></li>
+                        <li class="route-item"><a href="/achievements" style="color: #90a0ff;">🏆 Achievements</a></li>
+                        <li class="route-item"><a href="/snippets" style="color: #90a0ff;">📝 Snippets</a></li>
+                        <li class="route-item"><a href="/analytics" style="color: #90a0ff;">📈 Analytics</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/JS/Bootstrap/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

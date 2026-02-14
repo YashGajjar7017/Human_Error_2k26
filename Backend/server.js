@@ -55,7 +55,7 @@ const gamificationRoutes = require('./Routes/gamification.routes');
 const { auth, authorize } = require('./middleware/auth.middleware');
 
 // Import clock and github routes
-const clockRoutes = require('./Routes/clock.routes');
+const clockRoutes = require('../Frontend/Routes/clock.routes');
 const githubRoutes = require('./Routes/github.routes');
 
 // Import background services
