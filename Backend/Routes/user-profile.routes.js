@@ -16,10 +16,50 @@ const router = express.Router();
  */
 router.get('/profile', auth, (req, res) => {
     // Implementation would go here
-    res.json({ 
-        message: 'User profile endpoint',
-        userId: req.user._id
+    // If authentication middleware provided user info return a fuller profile
+    const user = req.user || { _id: null };
+    const sampleProfile = {
+        id: user._id || 'guest',
+        name: user.name || 'Guest User',
+        email: user.email || 'guest@example.com',
+        address: user.address || {
+            line1: '123 Example St',
+            city: 'Sample City',
+            state: 'State',
+            postalCode: '00000',
+            country: 'Nowhere'
+        },
+        bio: user.bio || 'This is a sample profile. Update your profile to show real data.',
+        uploads: user.uploads || [],
+        createdAt: user.createdAt || new Date().toISOString()
+    };
+
+    res.json({
+        success: true,
+        profile: sampleProfile
     });
+});
+
+/**
+ * Public profile route used by frontend when user is not authenticated.
+ * GET /api/users/profile/public
+ */
+router.get('/profile/public', (req, res) => {
+    const sampleProfile = {
+        id: 'guest',
+        name: 'Guest User',
+        email: 'guest@example.com',
+        address: {
+            line1: '123 Example St',
+            city: 'Sample City',
+            state: 'State',
+            postalCode: '00000',
+            country: 'Nowhere'
+        },
+        bio: 'This is a public sample profile to demonstrate the frontend.',
+        uploads: []
+    };
+    res.json({ success: true, profile: sampleProfile });
 });
 
 /**

@@ -86,6 +86,10 @@
 
                 <!-- Right Section: Language, Theme, Auth Buttons, User -->
                 <div class="d-flex align-items-center ms-auto gap-3">
+                    <!-- Close persistent sidebar button -->
+                    <button id="closePersistentBtn" class="btn btn-sm btn-outline-light" title="Close Sidebar" onclick="togglePersistentSidebar()" style="display:inline-flex;align-items:center;gap:6px;">
+                        <i class='bx bx-x'></i>
+                    </button>
                     <!-- Language Selector -->
                     <div id="Languages">
                         <select id="lang" class="form-select" onclick="LangSelector()" title="Select Programming Language">
@@ -133,8 +137,95 @@
                     </div>
                 </div>
             </div>
-        </nav>
+    </nav>
         <!-- Navbar ended -->
+
+        <!-- Persistent Sidebar Navigation -->
+        <div class="persistent-sidebar" id="persistentSidebar">
+            <div class="sidebar-header">
+                <h3><i class='bx bx-menu'></i> Navigation</h3>
+            </div>
+            
+            <ul class="sidebar-nav">
+                <li class="sidebar-nav-item">
+                    <a href="/" class="sidebar-nav-link active">
+                        <i class='bx bx-code-alt'></i>
+                        <span>Code Editor</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="/Account/Dashboard" class="sidebar-nav-link">
+                        <i class='bx bxs-dashboard'></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="/classroom" class="sidebar-nav-link">
+                        <i class='bx bx-book'></i>
+                        <span>Classroom</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="/questions" class="sidebar-nav-link">
+                        <i class='bx bx-help-circle'></i>
+                        <span>Questions</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="sidebar-divider"></div>
+            
+            <p class="sidebar-section-title">Tools</p>
+            
+            <ul class="sidebar-nav">
+                <li class="sidebar-nav-item">
+                    <a href="../extension" class="sidebar-nav-link">
+                        <i class='bx bx-extension'></i>
+                        <span>Extensions</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="../games/games.html" class="sidebar-nav-link">
+                        <i class='bx bx-game'></i>
+                        <span>Games</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="../theme.html" class="sidebar-nav-link">
+                        <i class='bx bx-palette'></i>
+                        <span>Themes</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="sidebar-divider"></div>
+            
+            <ul class="sidebar-nav">
+                <li class="sidebar-nav-item">
+                    <a href="../other/contactUs.html" class="sidebar-nav-link">
+                        <i class='bx bx-envelope'></i>
+                        <span>Contact</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="/feedback" class="sidebar-nav-link">
+                        <i class='bx bx-message-detail'></i>
+                        <span>Feedback</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <!-- User Section -->
+            <div class="sidebar-user" id="sidebarUser">
+                <div class="sidebar-user-avatar">
+                    <i class='bx bx-user'></i>
+                </div>
+                <div class="sidebar-user-info">
+                    <p class="sidebar-user-name" id="sidebarUsername">Guest</p>
+                    <p class="sidebar-user-role" id="sidebarUserRole">Click to Login</p>
+                </div>
+            </div>
+        </div>
 
         <!-- Main Content -->
         <main class="container-fluid" style="margin-top: 3vh;">
@@ -508,34 +599,94 @@ void main()
     //     });
     // });
 
-    // Navigation functions
+    // Navigation functions (improved: toggle classes + click-outside to close)
     function openNav() {
-        document.getElementById("mySidenav").style.width = "250px";
+        const s = document.getElementById("mySidenav");
+        s.style.width = "250px";
+        document.body.classList.add('sidenav-open');
     }
 
     function closeNav() {
-        document.getElementById("mySidenav").style.width = "0";
+        const s = document.getElementById("mySidenav");
+        if (s) s.style.width = "0";
+        document.body.classList.remove('sidenav-open');
     }
 
     function openNav1() {
-        document.getElementById("mySidenav2").style.width = "250px";
+        const s = document.getElementById("mySidenav2");
+        s.style.width = "250px";
+        document.body.classList.add('sidenav-open');
     }
 
     function closeNav1() {
-        document.getElementById("mySidenav2").style.width = "0";
+        const s = document.getElementById("mySidenav2");
+        if (s) s.style.width = "0";
+        document.body.classList.remove('sidenav-open');
     }
 
     function openNav3() {
-        document.getElementById("mySidenav4").style.width = "250px";
+        const s = document.getElementById("mySidenav4");
+        s.style.width = "250px";
+        document.body.classList.add('sidenav-open');
     }
 
     function closeNav3() {
-        document.getElementById("mySidenav4").style.width = "0";
+        const s = document.getElementById("mySidenav4");
+        if (s) s.style.width = "0";
+        document.body.classList.remove('sidenav-open');
     }
 
     function closeNav2() {
-        document.getElementById("myNav").style.height = "0%";
+        const s = document.getElementById("myNav");
+        if (s) s.style.height = "0%";
     }
+
+    // Close sidenav when clicking outside of it
+    document.addEventListener('click', function (ev) {
+        const open = document.body.classList.contains('sidenav-open');
+        if (!open) return;
+        const sidebarEls = ['mySidenav','mySidenav2','mySidenav4'];
+        const inSidebar = sidebarEls.some(id => {
+            const el = document.getElementById(id);
+            return el && el.contains(ev.target);
+        });
+        const isToggle = ev.target.closest('.searchToggle') || ev.target.closest('.navbar-toggler');
+        if (!inSidebar && !isToggle) {
+            closeNav(); closeNav1(); closeNav3();
+        }
+    });
+
+    // Close on escape
+    document.addEventListener('keydown', function (ev) {
+        if (ev.key === 'Escape') { closeNav(); closeNav1(); closeNav3(); }
+    });
+
+    // Persistent sidebar toggle (navbar cross button)
+    function togglePersistentSidebar() {
+        const ps = document.getElementById('persistentSidebar');
+        if (!ps) return;
+        const hidden = ps.classList.toggle('hidden');
+        document.body.classList.toggle('sidebar-hidden', hidden);
+        // adjust body class for layout
+        if (!document.body.classList.contains('with-persistent-sidebar')) {
+            document.body.classList.add('with-persistent-sidebar');
+        }
+        if (hidden) {
+            document.body.classList.add('sidebar-hidden');
+        } else {
+            document.body.classList.remove('sidebar-hidden');
+        }
+    }
+
+    // Ensure layout reflects sidebar state on load
+    document.addEventListener('DOMContentLoaded', function () {
+        const ps = document.getElementById('persistentSidebar');
+        if (!ps) return;
+        document.body.classList.add('with-persistent-sidebar');
+        if (ps.classList.contains('hidden')) {
+            document.body.classList.add('sidebar-hidden');
+        }
+    });
 
     function downloadFile() {
         const link = document.createElement("a");
@@ -611,6 +762,86 @@ void main()
         iframeDoc.write(htmlContent);
         iframeDoc.close();
     }
+
+    // =================== Autocomplete setup ===================
+    (function () {
+        let prefixMap = null;
+
+        async function loadAutocomplete() {
+            try {
+                const res = await fetch('/assets/autocomplete.json');
+                if (!res.ok) throw new Error('no-json');
+                prefixMap = await res.json();
+            } catch (e) {
+                prefixMap = {};
+            }
+        }
+
+        function getCurrentWord(textarea) {
+            const pos = textarea.selectionStart;
+            const val = textarea.value.slice(0, pos);
+            const m = val.match(/[A-Za-z0-9_]+$/);
+            return m ? m[0].toLowerCase() : '';
+        }
+
+        function showSuggestions(list, textarea) {
+            let box = document.getElementById('autocompleteBox');
+            if (!box) {
+                box = document.createElement('div');
+                box.id = 'autocompleteBox';
+                box.style.position = 'absolute';
+                box.style.background = '#222';
+                box.style.color = '#fff';
+                box.style.border = '1px solid #444';
+                box.style.zIndex = 9999;
+                box.style.padding = '6px';
+                box.style.maxWidth = '400px';
+                document.body.appendChild(box);
+            }
+            if (!list || list.length === 0) { box.style.display = 'none'; return; }
+
+            box.innerHTML = list.map(s => `<div class="ac-item" style="padding:4px;cursor:pointer;">${s}</div>`).join('');
+            const rect = textarea.getBoundingClientRect();
+            box.style.left = (rect.left + 10) + 'px';
+            box.style.top = (rect.top + textarea.offsetHeight + 6) + 'px';
+            box.style.display = 'block';
+
+            box.querySelectorAll('.ac-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    insertSuggestion(textarea, item.textContent);
+                    box.style.display = 'none';
+                });
+            });
+        }
+
+        function insertSuggestion(textarea, suggestion) {
+            const pos = textarea.selectionStart;
+            const before = textarea.value.slice(0, pos);
+            const after = textarea.value.slice(pos);
+            const m = before.match(/[A-Za-z0-9_]+$/);
+            const start = m ? pos - m[0].length : pos;
+            textarea.value = textarea.value.slice(0, start) + suggestion + after;
+            textarea.selectionStart = textarea.selectionEnd = start + suggestion.length;
+            textarea.focus();
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadAutocomplete();
+            const ta = document.getElementById('source');
+            if (!ta) return;
+            ta.addEventListener('keyup', (e) => {
+                const w = getCurrentWord(ta);
+                if (!w || w.length < 1) { showSuggestions([], ta); return; }
+                const list = prefixMap[w] || prefixMap[w.slice(0, Math.min(5,w.length))] || [];
+                showSuggestions(list.slice(0, 8), ta);
+            });
+            // click outside hides suggestions
+            document.addEventListener('click', (ev) => {
+                const box = document.getElementById('autocompleteBox');
+                if (box && !box.contains(ev.target)) box.style.display = 'none';
+            });
+        });
+    })();
 </script>
 
 </html>

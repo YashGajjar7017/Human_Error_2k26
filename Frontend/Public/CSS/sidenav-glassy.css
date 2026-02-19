@@ -1,5 +1,236 @@
 /* ===== MODERN GLASSY SIDENAV STYLING ===== */
 
+/* ===== PERSISTENT LEFT SIDEBAR (Always Visible) ===== */
+.persistent-sidebar {
+    position: fixed;
+    left: 0;
+    top: 60px; /* Below navbar */
+    width: 250px;
+    height: calc(100vh - 60px);
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 8px 0 32px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    z-index: 999;
+    overflow-y: auto;
+    padding: 20px 0;
+}
+
+/* Hidden state moves sidebar fully off-screen to left */
+.persistent-sidebar.hidden {
+    transform: translateX(-110%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Dark mode persistent sidebar */
+body.dark .persistent-sidebar {
+    background: rgba(30, 30, 35, 0.85);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 8px 0 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Sidebar header */
+.persistent-sidebar .sidebar-header {
+    padding: 0 20px 15px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 15px;
+}
+
+.persistent-sidebar .sidebar-header h3 {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+body.dark .persistent-sidebar .sidebar-header h3 {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+/* Sidebar navigation items */
+.persistent-sidebar .sidebar-nav {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.persistent-sidebar .sidebar-nav-item {
+    margin: 5px 10px;
+}
+
+.persistent-sidebar .sidebar-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 15px;
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-size: 15px;
+}
+
+.persistent-sidebar .sidebar-nav-link:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    transform: translateX(5px);
+}
+
+.persistent-sidebar .sidebar-nav-link.active {
+    background: linear-gradient(135deg, rgba(100, 150, 255, 0.3), rgba(150, 100, 255, 0.2));
+    color: #fff;
+    border-left: 3px solid rgba(100, 150, 255, 0.6);
+}
+
+.persistent-sidebar .sidebar-nav-link i {
+    font-size: 20px;
+    width: 24px;
+    text-align: center;
+}
+
+/* Sidebar section divider */
+.persistent-sidebar .sidebar-divider {
+    height: 1px;
+    background: linear-gradient(90deg, 
+        rgba(255, 255, 255, 0), 
+        rgba(255, 255, 255, 0.2), 
+        rgba(255, 255, 255, 0));
+    margin: 15px 20px;
+}
+
+/* Sidebar section title */
+.persistent-sidebar .sidebar-section-title {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 10px 20px 5px 20px;
+    margin: 0;
+}
+
+/* Sidebar user info */
+.persistent-sidebar .sidebar-user {
+    padding: 15px 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.persistent-sidebar .sidebar-user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(100, 150, 255, 0.5), rgba(150, 100, 255, 0.5));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 600;
+}
+
+.persistent-sidebar .sidebar-user-info {
+    flex: 1;
+}
+
+.persistent-sidebar .sidebar-user-name {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
+    font-weight: 500;
+    margin: 0;
+}
+
+.persistent-sidebar .sidebar-user-role {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 12px;
+    margin: 0;
+}
+
+/* Sidebar toggle button (for mobile) */
+.persistent-sidebar .sidebar-toggle {
+    position: absolute;
+    top: 10px;
+    right: -15px;
+    width: 30px;
+    height: 30px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.7);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.persistent-sidebar .sidebar-toggle:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
+
+/* Main content adjustment when sidebar is present */
+body.with-persistent-sidebar {
+    margin-left: 250px;
+}
+
+/* When sidebar is hidden, remove left offset from body */
+body.with-persistent-sidebar.sidebar-hidden {
+    margin-left: 0;
+}
+
+body.with-persistent-sidebar .container-fluid,
+body.with-persistent-sidebar main {
+    margin-left: 0;
+}
+
+/* Collapsed sidebar state */
+.persistent-sidebar.collapsed {
+    width: 70px;
+}
+
+.persistent-sidebar.collapsed .sidebar-header h3,
+.persistent-sidebar.collapsed .sidebar-nav-link span,
+.persistent-sidebar.collapsed .sidebar-section-title,
+.persistent-sidebar.collapsed .sidebar-user-info {
+    display: none;
+}
+
+.persistent-sidebar.collapsed .sidebar-nav-link {
+    justify-content: center;
+    padding: 12px;
+}
+
+.persistent-sidebar.collapsed .sidebar-user {
+    justify-content: center;
+}
+
+/* Responsive sidebar */
+@media (max-width: 992px) {
+    .persistent-sidebar {
+        transform: translateX(-100%);
+    }
+    
+    .persistent-sidebar.mobile-open {
+        transform: translateX(0);
+    }
+    
+    .persistent-sidebar .sidebar-toggle {
+        display: flex;
+    }
+    
+    body.with-persistent-sidebar {
+        margin-left: 0;
+    }
+}
+
 /* Base sidenav glassmorphism styling */
 .sidenav-glassy {
     background: rgba(255, 255, 255, 0.08);
