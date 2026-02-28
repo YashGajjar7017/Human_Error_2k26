@@ -87,6 +87,13 @@ function run() {
     });
 }
 
+// Expose legacy `run` to global scope for inline handlers
+try {
+    window.run = run;
+} catch (e) {
+    // if running in environments without window, ignore
+}
+
 
 $("body").keydown(function (e) {
     if (e.ctrlKey && e.keyCode == 13) {
