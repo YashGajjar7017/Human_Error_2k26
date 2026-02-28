@@ -1,7 +1,7 @@
 const express = require('express');
 const { body, validationResult } = require('express-validator');
 const rateLimit = require('express-rate-limit');
-const otpController = require('../controller/otp.controller');
+const otpController = require('../controller/otp-improved.controller');
 
 const router = express.Router();
 
@@ -10,6 +10,7 @@ const otpLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 5, // limit each IP to 5 OTP requests per windowMs
     message: {
+        success: false,
         error: 'Too many OTP requests, please try again later.'
     }
 });
@@ -18,6 +19,7 @@ const verifyLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 10, // limit each IP to 10 OTP verification attempts per windowMs
     message: {
+        success: false,
         error: 'Too many OTP verification attempts, please try again later.'
     }
 });
@@ -49,7 +51,7 @@ router.get('/', (req, res) => {
                 description: 'Send OTP to email for verification',
                 body: {
                     email: 'string (required, valid email)',
-                    purpose: 'string (optional, e.g., "verification", "password_reset")'
+                    purpose: 'string (optional, e.g., "signup_verification", "password_reset", "email_verification")'
                 }
             },
             verifyOTP: {
@@ -59,7 +61,7 @@ router.get('/', (req, res) => {
                 body: {
                     email: 'string (required, valid email)',
                     otp: 'string (required, 6 digits)',
-                    purpose: 'string (optional, e.g., "verification", "password_reset")'
+                    purpose: 'string (optional, e.g., "signup_verification", "password_reset", "email_verification")'
                 }
             },
             resendOTP: {
@@ -68,7 +70,7 @@ router.get('/', (req, res) => {
                 description: 'Resend OTP to email',
                 body: {
                     email: 'string (required, valid email)',
-                    purpose: 'string (optional, e.g., "verification", "password_reset")'
+                    purpose: 'string (optional, e.g., "signup_verification", "password_reset", "email_verification")'
                 }
             }
         }
@@ -86,11 +88,11 @@ router.post(
             .withMessage('Please provide a valid email address'),
         body('purpose')
             .optional()
-            .isIn(['verification', 'password_reset', 'email_verification'])
-            .withMessage('Purpose must be one of: verification, password_reset, email_verification')
+            .isIn(['signup_verification', 'password_reset', 'email_verification'])
+            .withMessage('Purpose must be one of: signup_verification, password_reset, email_verification')
     ],
     handleValidationErrors,
-    otpController.sendOTP
+    otpController.sendOTPImproved
 );
 
 router.post(
@@ -107,11 +109,11 @@ router.post(
             .withMessage('OTP must be a 6-digit number'),
         body('purpose')
             .optional()
-            .isIn(['verification', 'password_reset', 'email_verification'])
-            .withMessage('Purpose must be one of: verification, password_reset, email_verification')
+            .isIn(['signup_verification', 'password_reset', 'email_verification'])
+            .withMessage('Purpose must be one of: signup_verification, password_reset, email_verification')
     ],
     handleValidationErrors,
-    otpController.verifyOTP
+    otpController.verifyOTPImproved
 );
 
 router.post(
@@ -124,11 +126,40 @@ router.post(
             .withMessage('Please provide a valid email address'),
         body('purpose')
             .optional()
-            .isIn(['verification', 'password_reset', 'email_verification'])
-            .withMessage('Purpose must be one of: verification, password_reset, email_verification')
+            .isIn(['signup_verification', 'password_reset', 'email_verification'])
+            .withMessage('Purpose must be one of: signup_verification, password_reset, email_verification')
     ],
     handleValidationErrors,
-    otpController.resendOTP
+    otpController.resendOTPImproved
+);
+
+// Enhanced verification with database backup methods
+router.post(
+    '/verify-advanced',
+    verifyLimiter,
+    [
+        body('email')
+            .isEmail()
+            .normalizeEmail()
+            .withMessage('Please provide a valid email address'),
+        body('otp')
+            .isLength({ min: 6, max: 6 })
+            .isNumeric()
+            .withMessage('OTP must be a 6-digit number'),
+        body('purpose')
+            .optional()
+            .isIn(['signup_verification', 'password_reset', 'email_verification'])
+            .withMessage('Purpose must be one of: signup_verification, password_reset, email_verification')
+    ],
+    handleValidationErrors,
+    (req, res) => otpController.verifyOTPWithDBBackup(req, res)
+);
+
+// Get verification status
+router.get(
+    '/status/:email',
+    (req, res) => otpController.getOTPVerificationStatus(req, res)
 );
 
 module.exports = router;
+

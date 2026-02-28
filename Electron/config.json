@@ -1,0 +1,44 @@
+{
+  "appName": "Human Error",
+  "version": "1.0.0",
+  "author": "Development Team",
+  "description": "Modern desktop application for code compilation and learning",
+  "apiConfig": {
+    "baseURL": "http://localhost:5000",
+    "timeout": 30000,
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  },
+  "otp": {
+    "enabled": true,
+    "expiryTime": 600,
+    "maxAttempts": 5,
+    "resendCooldown": 60,
+    "length": 6,
+    "rateLimit": {
+      "windowMs": 900000,
+      "maxRequests": 5
+    }
+  },
+  "security": {
+    "contextIsolation": true,
+    "nodeIntegration": false,
+    "sandbox": true,
+    "enableDevTools": true
+  },
+  "storage": {
+    "persistent": true,
+    "location": "userData"
+  },
+  "backend": {
+    "port": 5000,
+    "autoStart": true,
+    "environment": "development"
+  },
+  "ui": {
+    "theme": "dark",
+    "animations": true,
+    "glassmorphism": true
+  }
+}

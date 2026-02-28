@@ -11,6 +11,7 @@
     <!-- ================= Css =============== -->
     <!-- <link rel='stylesheet' href='\CSS\boxicons\boxicons.min.css'> -->
     <link rel='stylesheet' href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css'>
+    <link rel="stylesheet" href="/Public/CSS/neon.css">
     <link href="/CSS/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
      <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"> -->
     <link rel="stylesheet" href="/CSS/style.css">
@@ -26,7 +27,31 @@
     <!-- ================= Database Connection =============== -->
 </head>
 
-<body class="animated-gradient-bg">
+<body class="neon-glass">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="../Public/images/Human Error.png" style="height: 2000px;width: 2000px;">
+    <title>Home | Yash's Machine</title>
+
+    <!-- ================= Css =============== -->
+    <!-- <link rel='stylesheet' href='\CSS\boxicons\boxicons.min.css'> -->
+    <link rel='stylesheet' href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css'>
+    <link rel="stylesheet" href="/Public/CSS/neon.css">
+    <link href="/CSS/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
+     <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"> -->
+    <link rel="stylesheet" href="/CSS/style.css">
+    <link rel="stylesheet" href="/CSS/navbar-glassy.css">
+    <link rel="stylesheet" href="/CSS/sidenav-glassy.css">
+
+    <!-- ================= Js =============== -->
+    <script src="js/Jquery/jquery.js"></script>
+    <script src="js/Boxicons/boxicons.js"></script>
+    <script src="/JS/Bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script> -->
+
+    <!-- ================= Database Connection =============== -->
+</head>
+
+<body class="neon-glass">
     <div id="main">
         <!-- Glassy Navbar -->
         <nav class="navbar navbar-expand-lg navbar-glassy fixed-top">
@@ -59,7 +84,833 @@
                     </ul>
                 </div>
 
-                <!-- Right Section: Language, Theme, User -->
+                <!-- Right Section: Language, Theme, Auth Buttons, User -->
+                <div class="d-flex align-items-center ms-auto gap-3">
+                    <!-- Close persistent sidebar button -->
+                    <button id="closePersistentBtn" class="btn btn-sm btn-outline-light" title="Close Sidebar" onclick="togglePersistentSidebar()" style="display:inline-flex;align-items:center;gap:6px;">
+                        <i class='bx bx-x'></i>
+                    </button>
+                    <!-- Language Selector -->
+                    <div id="Languages">
+                        <select id="lang" class="form-select" onclick="LangSelector()" title="Select Programming Language">
+                            <option value="select" selected>🌐 Language</option>
+                            <option value="C">C</option>
+                            <option value="C++">C++</option>
+                            <option value="Python">Python</option>
+                            <option value="Java">Java</option>
+                            <option value="Html">HTML, CSS, JS</option>
+                            <option value="Text">Text File</option>
+                            <option value="VB">VB.Net*</option>
+                            <option value="Node">NodeJS*</option>
+                            <option value="Applet">Applet*</option>
+                            <option value="Hacking">Kali Linux</option>
+                            <option value="Encrypt">Encrypt Msg</option>
+                        </select>
+                    </div>
+
+                    <!-- Dark/Light Mode & Search -->
+                    <div class="darkLight-searchBox d-flex align-items-center gap-2">
+                        <div class="dark-light" title="Toggle Dark/Light Mode">
+                            <i class='bx bx-moon moon'></i>
+                            <i class='bx bx-sun sun'></i>
+                        </div>
+                        <div class="searchToggle" title="Search Code">
+                            <i class='bx bx-x cancel' onclick="closeNav()" style="display: none;"></i>
+                            <i class='bx bx-search search' onclick="openNav()"></i>
+                        </div>
+                    </div>
+
+                    <!-- Auth Buttons
+                    <div class="auth-buttons d-flex align-items-center gap-2" id="auth-buttons">
+                        <a href="/Account/signup" class="btn btn-outline-primary btn-sm px-3 py-2 rounded-pill fw-semibold" title="Create Account">
+                            <i class='bx bx-user-plus me-1'></i>Sign Up
+                        </a>
+                        <a href="/Account/login" class="btn btn-primary btn-sm px-3 py-2 rounded-pill fw-semibold" title="Login to Account">
+                            <i class='bx bx-log-in me-1'></i>Login
+                        </a>
+                    </div> -->
+
+                    <!-- User Profile -->
+                    <div class="user d-flex align-items-center sexy-login" id="user" style="cursor: pointer;" title="User Menu" >
+                        <img src="images/User_icon.png" alt="User" class="me-2" style="height: 20px;width: 20px;">
+                        <span id="username">Login</span>
+                    </div>
+                </div>
+            </div>
+    </nav>
+        <!-- Navbar ended -->
+
+        <!-- Persistent Sidebar Navigation -->
+        <div class="persistent-sidebar" id="persistentSidebar">
+            <div class="sidebar-header">
+                <h3><i class='bx bx-menu'></i> Navigation</h3>
+            </div>
+            
+            <ul class="sidebar-nav">
+                <li class="sidebar-nav-item">
+                    <a href="/" class="sidebar-nav-link active">
+                        <i class='bx bx-code-alt'></i>
+                        <span>Code Editor</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="/Account/Dashboard" class="sidebar-nav-link">
+                        <i class='bx bxs-dashboard'></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="/classroom" class="sidebar-nav-link">
+                        <i class='bx bx-book'></i>
+                        <span>Classroom</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="/questions" class="sidebar-nav-link">
+                        <i class='bx bx-help-circle'></i>
+                        <span>Questions</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="sidebar-divider"></div>
+            
+            <p class="sidebar-section-title">Tools</p>
+            
+            <ul class="sidebar-nav">
+                <li class="sidebar-nav-item">
+                    <a href="../extension" class="sidebar-nav-link">
+                        <i class='bx bx-extension'></i>
+                        <span>Extensions</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="../games/games.html" class="sidebar-nav-link">
+                        <i class='bx bx-game'></i>
+                        <span>Games</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="../theme.html" class="sidebar-nav-link">
+                        <i class='bx bx-palette'></i>
+                        <span>Themes</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="sidebar-divider"></div>
+            
+            <ul class="sidebar-nav">
+                <li class="sidebar-nav-item">
+                    <a href="../other/contactUs.html" class="sidebar-nav-link">
+                        <i class='bx bx-envelope'></i>
+                        <span>Contact</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="/feedback" class="sidebar-nav-link">
+                        <i class='bx bx-message-detail'></i>
+                        <span>Feedback</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <!-- User Section -->
+            <div class="sidebar-user" id="sidebarUser">
+                <div class="sidebar-user-avatar">
+                    <i class='bx bx-user'></i>
+                </div>
+                <div class="sidebar-user-info">
+                    <p class="sidebar-user-name" id="sidebarUsername">Guest</p>
+                    <p class="sidebar-user-role" id="sidebarUserRole">Click to Login</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="container-fluid" style="margin-top: 3vh;">
+
+    <!-------------- sidenav1--------- -->
+    <div id="mySidenav" class="sidenav sidenav-glassy" style="font-size: 17px;">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <a href="/SearchCode" onclick="window.prompt('enter the word you want to search')"><input type="search"
+                name="searchcode" class="search1-glassy" placeholder="search code"></a>
+        <!-- <hr style="color: white;">
+            <a href="#">AI search</a>
+            <hr style="color: white;"> -->
+
+        <!-- <a href="/other-pages/contactUs.html">Contact us</a> -->
+        <!-- <a href="#" title="admin only">Maintenance</a> -->
+        <p id="fontcont-glassy">Font Size: <select name="" id="fontsize">
+                <option value="12">12</option>
+                <option value="14">14</option>
+                <option value="16">16</option>
+                <option value="18">18</option>
+                <option value="20">20</option>
+                <option value="22">22</option>
+            </select></p>
+        <p class="colorPicker-glassy">Background : <input type="color" name="" class="colors" id="color1"></p>
+        <p class="colorPicker-glassy">FontColor : <input type="color" name="" class="colors" id="color2"></p>
+        <input type="submit" class="defaultcolors-glassy" id="defaultcolors" value="default Theme">
+        <hr style="color: #fff;">
+        <a href="../extension">→ Extension</a>
+        <a href="../games/games.html">→ Games</a>
+        <a href="../theme.html">→ Themes</a>
+        <a href="#" style="font-size: 12px;float: center;margin-top: 3vh;">Copyright to Yash Production</a>
+
+    </div>
+
+    <!-------- Sidebar2-------- -->
+    <div id="mySidenav2" class="sidenav sidenav-glassy sidebarOpen" style="font-size: 17px;">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav1()">&times;</a>
+        <!-- <a href="#"><input type="search" name="searchcode" class="search1" placeholder="search code"></a> -->
+        <!-- <hr style="color: white;">
+            <a href="#">AI search</a>
+            <hr style="color: white;"> -->
+        <a href="../extension">Extension</a>
+        <a href="../games/games.html">Games</a>
+        <a href="../other/contactUs.html">Contact us</a>
+        <a href="/Maintenance" title="admin only" id="Maintenance">Maintenance</a>
+        <a href="/feedback" title="admin only">Feedback</a>
+        <a href="/404" title="admin only">Source Code</a>
+        <a href="/classroom" title="admin only">Classroom</a>
+        <a href="/questions" title="admin only">Ask your question</a>
+        <a href="/404" title="admin only">Hire a Developer</a>
+        <hr style="color: #fff;">
+        <a href="javascript:void(0);" onclick="logout()" id="logout" class="logout-btn-glassy">Logout</a>
+
+        <a style="font-size: 13px;float: center;margin-top: 1vh;">Copyright to Yash Production</a>
+
+    </div>
+    <!-- sidenav2 ended -->
+    <!-- sidenav4 -->
+    <div id="mySidenav4" class="sidenav sidenav-glassy" style="font-size: 17px;">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav3()">&times;</a><br>
+        <input type="text" id="" style="margin-left: 2%; width: 95%;" placeholder="Paste Link" class="search1-glassy">
+        <a href="/join"><button
+                style="background-image: linear-gradient(120deg, #f093fb 0%, #f5576c 100%); color: white;padding: 5px;">Join
+                Session</button></a>
+        <hr style="color: white;">
+        <a href="/share"><button
+                style="background-image: linear-gradient(120deg, #f093fb 0%, #f5576c 100%); color: white;padding: 5px;">Share
+                Code</button></a>
+    </div>
+    <!-- sidenav4 ended-->
+
+    <!-- MAIN TEXTAREA STARTTED CONTENT -->
+    <!-- input source -->
+    <div class="row">
+        <div class="col-12">
+            <div class="source_code" id="mainContainer">
+        <!-- <textarea id="source" class="textarea_code" style="height: 350px;"></textarea> -->
+
+        <!-- line no. -->
+        <Div><textarea id='lineCounter' wrap='off' readonly>1.</textarea>
+            <!-- text area  id='codeEditor'-->
+            <textarea id="source" wrap='off'>
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    Welcome to the complier of Coder's .This is complier give all templete to code, that is usefull for you. Also you can 
+    Download the file from the download button.. and more new feauture! Try once's come again..   
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
+
+#include<stdio.h>
+void main()
+{
+    printf("Hello world...");
+}
+        </textarea>
+
+        </Div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Html-css editor -->
+    <div id="htmlEditor" class="htmlEditor">
+        <textarea id='lineCounter1' wrap='off' readonly>1.</textarea>
+
+        <textarea class="box1" id="htmlTextarea" onkeyup="refresh()" placeholder="Your Html code goes here!"></textarea>
+        <!-- <textarea class="box1" id="htmlTextarea1" placeholder="Output here"></textarea> -->
+        <iframe src="" class="box1" frameborder="4" id="htmlTextarea1"></iframe>
+    </div>
+
+    <!-- kali editor -->
+    <div class="kali" style="border: 1px solid black; border-radius: 10px;padding: 100px;background-color: white;">
+        <!-- <iframe src="http://192.168.1.8:8888" sandbox="allow-forms allow-modals allow-scripts allow-same-origin allow-top-navigation" name="kali" id="kali"></iframe> -->
+        <div class="container" style="margin-top: 1%;">
+            <center>
+                <h3>Redirect Notice</h2><br>
+                    <h6>In case you can't redirect to another page then click on below button to start connect to
+                        virtual machine and use it for sometime </h6><br>
+                    <button type="button" onclick="window.location.href = '/404';"
+                        class="btn btn-primary">Redirect</button>
+                    <button type="button" class="btn btn-primary">Home</button>
+            </center>
+        </div>
+    </div>
+
+    <!-- futureWork -->
+    <div class="futureWork"
+        style="border: 1px solid black; border-radius: 10px;padding: 100px;background-color: #333;margin-top: 9vh;color: #fff;height: 70vh;">
+        <div class="container" style="margin-top: 1%;">
+            <center style="display: flexbox;">
+                <h3><img src="https://img.icons8.com/fluency/256/under-construction.png" alt=""
+                        style="height: 70px;width: 70px;">This Languages are under construction*</h2><br>
+                    <hr>
+                    <h6>→ This languages are undergoing to Develop by our company.<br>→ If you want to get early
+                        access to this language then subscribe to our new letter, this is under 'Beta 3'.. Soon
+                        releases </h6><br>
+                    <button type="button" class="btn btn-primary">register our new Letter</button>
+            </center>
+        </div>
+    </div>
+
+    <!-- decrpyt to encrypt msg-->
+    <div class="encrypt"
+        style="border: 1px solid black; border-radius: 10px;padding: 100px;background-color: #333;margin-top: 8vh;color: #fff;height: 85vh;">
+        <div class="container" style="color: #fff;display: flexbox;">
+            <center>
+                <h2>Enter the String & convert to base<sup>64</sup> encoded string</h2>
+            </center>
+            <hr>
+            <div class="mainCont" style="display: flex;flex-direction: row;">
+
+                <div id="part1">Enter the Text : <textarea name="" id="sendData"
+                        style="width: 37vw;height: 40vh;"></textarea><br></div>
+                <hr style="color: white;"><br>
+
+                <div id="part2">Your encrypt text :(This is follow SHA256) <textarea readonly
+                        id="receverData"></textarea><br></div>
+            </div>
+            <center><button style="padding: 7px;" id="encrypt">Convert</button>
+                <button style="padding: 7px;" id="clear">clear</button>
+            </center>
+
+            <div class="encryptout"></div>
+        </div>
+    </div>
+    <!-- decrpyt to encrypt msg -->
+
+    <!-- Terminal -->
+    <div class="terminal">
+        <textarea id="terminal" placeholder="Terminal for input and output..."></textarea>
+    </div>
+    <!-- main-ended -->
+    </div>
+
+    <!-- notificationBar -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <img src="images/github.jpg" class="rounded me-2" alt="...">
+                <strong class="me-auto">Warning</strong>
+                <small>1 mins ago</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                Hello! yash, it is time to break and get some rest
+            </div>
+        </div>
+    </div>
+    <!-- notificationBar-ended -->
+
+    <!-- sidemenu 3 -->
+    <div id="myNav" class="overlay">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav2()">&times;</a>
+        <div class="overlay-content">
+            <div id="displayitems">
+                <center>
+                    <h2 style="color: #fff;">Select Your Layout View :</h2>
+                </center><br><br>
+                <div class="lay">
+                    <select name="layout" id="layout">
+                        <option value="none" selected>none</option> <!--side panel 3 no 4-->
+                        <option value="sbs">side by side</option>
+                        <option value="fm">fullscreen mode</option>
+                        <option value="bm">beginner mode</option>
+                        <option value="default">default</option>
+                    </select>
+                    <center><button id="layoutID">Apply Mode</button></center>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- sidemenu 3-ended -->
+
+    <!-- maintance-break -->
+    <div class="Maintenance" id="Maintenance"> </div>
+    <!--to show maintaince break-->
+
+
+
+    <!-- Script Here -->
+    <script type="module" src="js/script.js" async></script>
+    <script type="module" src="js/Engine.js" async></script>
+    <script type="module" src="js/main.js" async></script>
+
+    <script type="text/javascript" async>
+        $(document).ready(function () {
+            console.log('=== Dashboard Check Script Started ===');
+            
+            // don't change : .user,#logout
+            $('#htmlEditor,#htmlTextarea,#htmlTextarea1,#lineCounter1,.kali,#selectedFile,.futureWork,.encrypt').hide();
+
+            // ----------------Fetch username-----------------
+
+            // Function to get a specific cookie by name
+            function getCookie(name) {
+                let cookies = document.cookie.split('; ');
+                for (let cookie of cookies) {
+                    let [key, value] = cookie.split('=');
+                    if (key === name) return decodeURIComponent(value);
+                }
+                return null;
+            }
+
+            // Function to set a cookie
+            function setCookie(name, value, days) {
+                let expires = "";
+                if (days) {
+                    let date = new Date();
+                    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                    expires = "; expires=" + date.toUTCString();
+                }
+                document.cookie = name + "=" + (value || "") + expires + "; path=/";
+            }
+
+            // Function to delete a cookie
+            function deleteCookie(name) {
+                document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/';
+            }
+
+            // Logout function
+            window.logout = function() {
+                deleteCookie('username');
+                deleteCookie('token');
+                deleteCookie('role');
+                // Send to backend to destroy session
+                fetch('/api/auth/logout', {
+                    method: 'POST',
+                    headers: {'Authorization': 'Bearer ' + getCookie('token')}
+                })
+                .then(() => {
+                    location.reload(); // Reload to update UI
+                })
+                .catch(error => console.error('Error:', error));
+            };
+
+            // let username = document.getElementById('username');
+            let username = getCookie('username');
+            let userData = sessionStorage.getItem('nameToken');
+
+            console.log('Retrieved username:', username);
+            console.log('All cookies:', document.cookie);
+            console.log('LocalStorage user:', localStorage.getItem('user'));
+            console.log('LocalStorage role:', localStorage.getItem('role'));
+
+            // userData += username.innerHTML;
+
+            // login logic
+            if (!username) {
+                $('.user').show();
+                $('#logout').hide();
+                document.getElementById('username').innerText = 'Login';
+                document.getElementById('user').onclick = function() {
+                    // Redirect to login page
+                    window.location.href = '/Account/login';
+                };
+                // Hide dashboard button if not logged in
+                if (document.getElementById('dashboard-link')) {
+                    document.getElementById('dashboard-link').style.display = 'none';
+                }
+                console.log('User not logged in - showing login button');
+            } else {
+                $('.user').show();
+                $('#logout').show();
+                document.getElementById('username').innerText = username;
+                document.getElementById('user').onclick = openNav1;
+
+                // Check user role and show/hide admin features
+                // Try to get role from cookie first, then from localStorage
+                let userRole = getCookie('role') || localStorage.getItem('role');
+                console.log('=== DASHBOARD LOGIC ===');
+                console.log('User:', username);
+                console.log('Role from cookie:', getCookie('role'));
+                console.log('Role from localStorage:', localStorage.getItem('role'));
+                console.log('Final role:', userRole);
+                console.log('Raw cookies:', document.cookie);
+                
+                // Show dashboard button for all authenticated users
+                if (document.getElementById('dashboard-link')) {
+                    document.getElementById('dashboard-link').style.display = 'block';
+                    console.log('Dashboard button shown for user');
+                }
+                
+                if (userRole === 'admin') {
+                    console.log('User is ADMIN');
+                    // Show admin-only links
+                    document.querySelectorAll('[title="admin only"]').forEach(el => el.style.display = 'block');
+                    // Show admin link in navbar
+                    if (document.getElementById('admin-link')) {
+                        document.getElementById('admin-link').style.display = 'block';
+                    }
+                } else {
+                    console.log('User is REGULAR USER');
+                    // Hide admin-only links
+                    document.querySelectorAll('[title="admin only"]').forEach(el => el.style.display = 'none');
+                    // Hide admin link in navbar
+                    if (document.getElementById('admin-link')) {
+                        document.getElementById('admin-link').style.display = 'none';
+                    }
+                }
+            }
+
+            // let textarea = document.getElementById('source');
+            let textareacolor = sessionStorage.getItem('textareacolor');
+            let textarea = document.getElementById('source')
+
+            if (textareacolor != null) {
+                textarea.style.backgroundColor = sessionStorage.getItem('textareacolor')
+            }
+            else {
+                textarea.style.backgroundColor = '#272822';
+            }
+
+            // --------------Parameter Check--------------
+            var queryString = window.location.search.slice(1);
+            let que = queryString.split('?')[0];
+        });
+    </script>
+
+</body>
+
+<!-- after script -->
+<script>
+    // ===================Screen size change -------------
+    // jQuery(function ($) {
+    //     var windowWidth = $(window).width();
+    //     var windowHeight = $(window).height();
+
+    //     $(window).resize(function () {
+    //         if (windowWidth != $(window).width() || windowHeight != $(window).height()) {
+    //             location.reload();
+    //             return;
+    //         }
+    //     });
+    // });
+
+    // Navigation functions (improved: toggle classes + click-outside to close)
+    function openNav() {
+        const s = document.getElementById("mySidenav");
+        s.style.width = "250px";
+        document.body.classList.add('sidenav-open');
+    }
+
+    function closeNav() {
+        const s = document.getElementById("mySidenav");
+        if (s) s.style.width = "0";
+        document.body.classList.remove('sidenav-open');
+    }
+
+    function openNav1() {
+        const s = document.getElementById("mySidenav2");
+        s.style.width = "250px";
+        document.body.classList.add('sidenav-open');
+    }
+
+    function closeNav1() {
+        const s = document.getElementById("mySidenav2");
+        if (s) s.style.width = "0";
+        document.body.classList.remove('sidenav-open');
+    }
+
+    function openNav3() {
+        const s = document.getElementById("mySidenav4");
+        s.style.width = "250px";
+        document.body.classList.add('sidenav-open');
+    }
+
+    function closeNav3() {
+        const s = document.getElementById("mySidenav4");
+        if (s) s.style.width = "0";
+        document.body.classList.remove('sidenav-open');
+    }
+
+    function closeNav2() {
+        const s = document.getElementById("myNav");
+        if (s) s.style.height = "0%";
+    }
+
+    // Close sidenav when clicking outside of it
+    document.addEventListener('click', function (ev) {
+        const open = document.body.classList.contains('sidenav-open');
+        if (!open) return;
+        const sidebarEls = ['mySidenav','mySidenav2','mySidenav4'];
+        const inSidebar = sidebarEls.some(id => {
+            const el = document.getElementById(id);
+            return el && el.contains(ev.target);
+        });
+        const isToggle = ev.target.closest('.searchToggle') || ev.target.closest('.navbar-toggler');
+        if (!inSidebar && !isToggle) {
+            closeNav(); closeNav1(); closeNav3();
+        }
+    });
+
+    // Close on escape
+    document.addEventListener('keydown', function (ev) {
+        if (ev.key === 'Escape') { closeNav(); closeNav1(); closeNav3(); }
+    });
+
+    // Persistent sidebar toggle (navbar cross button)
+    function togglePersistentSidebar() {
+        const ps = document.getElementById('persistentSidebar');
+        if (!ps) return;
+        const hidden = ps.classList.toggle('hidden');
+        document.body.classList.toggle('sidebar-hidden', hidden);
+        // adjust body class for layout
+        if (!document.body.classList.contains('with-persistent-sidebar')) {
+            document.body.classList.add('with-persistent-sidebar');
+        }
+        if (hidden) {
+            document.body.classList.add('sidebar-hidden');
+        } else {
+            document.body.classList.remove('sidebar-hidden');
+        }
+    }
+
+    // Ensure layout reflects sidebar state on load
+    document.addEventListener('DOMContentLoaded', function () {
+        const ps = document.getElementById('persistentSidebar');
+        if (!ps) return;
+        document.body.classList.add('with-persistent-sidebar');
+        if (ps.classList.contains('hidden')) {
+            document.body.classList.add('sidebar-hidden');
+        }
+    });
+
+    function downloadFile() {
+        const link = document.createElement("a");
+        const content = document.querySelector("#source").value;
+        const file = new Blob([content], { type: 'text/plain' });
+        link.href = URL.createObjectURL(file);
+        const lang = document.getElementById('lang').value;
+        let ext = 'txt';
+        if (lang === 'C') ext = 'c';
+        else if (lang === 'C++') ext = 'cpp';
+        else if (lang === 'Python') ext = 'py';
+        else if (lang === 'Java') ext = 'java';
+        else if (lang === 'Html') ext = 'html';
+        link.download = "code." + ext;
+        link.click();
+        URL.revokeObjectURL(link.href);
+    }
+
+    function LangSelector() {
+        const lang = document.getElementById('lang').value;
+        const source = document.getElementById('source');
+        const htmlEditor = document.getElementById('htmlEditor');
+        const kali = document.getElementById('kali');
+        const futureWork = document.getElementById('futureWork');
+        const encrypt = document.getElementById('encrypt');
+
+        // Hide all sections
+        $('#htmlEditor,#htmlTextarea,#htmlTextarea1,#lineCounter1,.kali,.futureWork,.encrypt').hide();
+
+        if (lang === 'C') {
+            $('#lineCounter,#terminal,#source').show();
+            source.value = '#include<stdio.h>\nvoid main()\n{\n    printf("Hello world...");\n}';
+        } else if (lang === 'C++') {
+            $('#lineCounter,#terminal,#source').show();
+            source.value = '#include <iostream>\nusing namespace std;\n\nint main()\n{\n    cout << "Hello World";\n    return 0;\n}';
+        } else if (lang === 'Python') {
+            $('#lineCounter,#terminal,#source').show();
+            source.value = 'print("hello world")';
+        } else if (lang === 'Java') {
+            $('#lineCounter,#terminal,#source').show();
+            source.value = 'public class Main\n{\n    public static void main(String[] args)\n    {\n        System.out.println("Hello World");\n    }\n}';
+        } else if (lang === 'Html') {
+            $('#htmlEditor,#htmlTextarea,#htmlTextarea1,#lineCounter1').show();
+        } else if (lang === 'Hacking') {
+            $('.kali').show();
+            setTimeout(() => window.location.href = '/404', 2000);
+        } else if (lang === 'Encrypt') {
+            $('.encrypt').show();
+        } else if (lang === 'VB' || lang === 'Node' || lang === 'Applet') {
+            $('.futureWork').show();
+        }
+    }
+
+    function clearCode() {
+        document.getElementById('source').value = '';
+    }
+
+    function printPageArea(areaID) {
+        const printContent = document.getElementById(areaID);
+        const WinPrint = window.open('', '', 'width=900,height=650');
+        WinPrint.document.write(printContent.innerHTML);
+        WinPrint.document.close();
+        WinPrint.focus();
+        WinPrint.print();
+        WinPrint.close();
+    }
+
+    function refresh() {
+        const htmlContent = document.getElementById('htmlTextarea').value;
+        const iframe = document.getElementById('htmlTextarea1');
+        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+        iframeDoc.open();
+        iframeDoc.write(htmlContent);
+        iframeDoc.close();
+    }
+
+    // =================== Autocomplete setup ===================
+    (function () {
+        let prefixMap = null;
+
+        async function loadAutocomplete() {
+            try {
+                const res = await fetch('/assets/autocomplete.json');
+                if (!res.ok) throw new Error('no-json');
+                prefixMap = await res.json();
+            } catch (e) {
+                prefixMap = {};
+            }
+        }
+
+        function getCurrentWord(textarea) {
+            const pos = textarea.selectionStart;
+            const val = textarea.value.slice(0, pos);
+            const m = val.match(/[A-Za-z0-9_]+$/);
+            return m ? m[0].toLowerCase() : '';
+        }
+
+        function showSuggestions(list, textarea) {
+            let box = document.getElementById('autocompleteBox');
+            if (!box) {
+                box = document.createElement('div');
+                box.id = 'autocompleteBox';
+                box.style.position = 'absolute';
+                box.style.background = '#222';
+                box.style.color = '#fff';
+                box.style.border = '1px solid #444';
+                box.style.zIndex = 9999;
+                box.style.padding = '6px';
+                box.style.maxWidth = '400px';
+                document.body.appendChild(box);
+            }
+            if (!list || list.length === 0) { box.style.display = 'none'; return; }
+
+            box.innerHTML = list.map(s => `<div class="ac-item" style="padding:4px;cursor:pointer;">${s}</div>`).join('');
+            const rect = textarea.getBoundingClientRect();
+            box.style.left = (rect.left + 10) + 'px';
+            box.style.top = (rect.top + textarea.offsetHeight + 6) + 'px';
+            box.style.display = 'block';
+
+            box.querySelectorAll('.ac-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    insertSuggestion(textarea, item.textContent);
+                    box.style.display = 'none';
+                });
+            });
+        }
+
+        function insertSuggestion(textarea, suggestion) {
+            const pos = textarea.selectionStart;
+            const before = textarea.value.slice(0, pos);
+            const after = textarea.value.slice(pos);
+            const m = before.match(/[A-Za-z0-9_]+$/);
+            const start = m ? pos - m[0].length : pos;
+            textarea.value = textarea.value.slice(0, start) + suggestion + after;
+            textarea.selectionStart = textarea.selectionEnd = start + suggestion.length;
+            textarea.focus();
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadAutocomplete();
+            const ta = document.getElementById('source');
+            if (!ta) return;
+            ta.addEventListener('keyup', (e) => {
+                const w = getCurrentWord(ta);
+                if (!w || w.length < 1) { showSuggestions([], ta); return; }
+                const list = prefixMap[w] || prefixMap[w.slice(0, Math.min(5,w.length))] || [];
+                showSuggestions(list.slice(0, 8), ta);
+            });
+            // click outside hides suggestions
+            document.addEventListener('click', (ev) => {
+                const box = document.getElementById('autocompleteBox');
+                if (box && !box.contains(ev.target)) box.style.display = 'none';
+            });
+        });
+    })();
+</script>
+
+</html>
+.Groups[1].Value
+        if ($oldClass -notmatch 'dark') {
+            '<body class="' + $oldClass + ' dark"'
+        } else {
+            <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="../Public/images/Human Error.png" style="height: 2000px;width: 2000px;">
+    <title>Home | Yash's Machine</title>
+
+    <!-- ================= Css =============== -->
+    <!-- <link rel='stylesheet' href='\CSS\boxicons\boxicons.min.css'> -->
+    <link rel='stylesheet' href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css'>
+    <link href="/CSS/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
+     <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"> -->
+    <link rel="stylesheet" href="/CSS/style.css">
+    <link rel="stylesheet" href="/CSS/navbar-glassy.css">
+    <link rel="stylesheet" href="/CSS/sidenav-glassy.css">
+
+    <!-- ================= Js =============== -->
+    <script src="js/Jquery/jquery.js"></script>
+    <script src="js/Boxicons/boxicons.js"></script>
+    <script src="/JS/Bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script> -->
+
+    <!-- ================= Database Connection =============== -->
+</head>
+
+<body class="animated-gradient-bg dark">
+    <div id="main">
+        <!-- Glassy Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-glassy fixed-top">
+            <div class="container-fluid">
+                <!-- Brand -->
+                <a class="navbar-brand" href="/">🖥️ Human Error</a>
+
+                <!-- Toggler Button for Mobile -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Navbar Menu -->
+                <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item"><a href="#" class="nav-link text-danger" onclick="run()" id="run" title="Execute Code"><i class='bx bxs-play-circle'></i> Run</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link text-info" title="Debug Code"><i class='bx bxs-bug'></i> Debug</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link text-success" onclick="stop()" title="Stop Execution"><i class='bx bxs-stop-circle'></i> Stop</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link text-warning" onclick="downloadFile()" id="download" title="Save Code"><i class='bx bxs-download'></i> Save</a></li>
+                        <li class="nav-item"><a class="nav-link text-warning" href="javascript:void(0);" onclick="printPageArea('source')" title="Print"><i class='bx bxs-printer'></i> Print</a></li>
+                        <li class="nav-item"><a href="/upload/fileName=" class="nav-link text-white" id="inputfile" title="Upload File"><i class='bx bxs-upload'></i> Upload</a></li>
+                        <li class="nav-item"><a href="#" onclick="openNav3()" class="nav-link text-white" title="Share Code"><i class='bx bxs-share-alt'></i> Share</a></li>
+                        
+                        <!-- Dashboard Button - SINGLE BUTTON FOR BOTH ROLES -->
+                        <li class="nav-item" id="dashboard-link" style="display: none;"><a href="/Account/Dashboard" class="nav-link" title="Go to Dashboard"><i class='bx bxs-dashboard'></i> Dashboard</a></li>
+                        
+                        <!-- Admin Panel Link - Only for Admin -->
+                        <!-- <li class="nav-item" id="admin-link" style="display: none;"><a href="/dashboard" class="nav-link text-danger" title="Admin Panel"><i class='bx bxs-shield-alt-2'></i> Admin</a></li> -->
+                    </ul>
+                </div>
+
+                <!-- Right Section: Language, Theme, Auth Buttons, User -->
                 <div class="d-flex align-items-center ms-auto gap-3">
                     <!-- Language Selector -->
                     <div id="Languages">
@@ -90,6 +941,16 @@
                             <i class='bx bx-search search' onclick="openNav()"></i>
                         </div>
                     </div>
+
+                    <!-- Auth Buttons
+                    <div class="auth-buttons d-flex align-items-center gap-2" id="auth-buttons">
+                        <a href="/Account/signup" class="btn btn-outline-primary btn-sm px-3 py-2 rounded-pill fw-semibold" title="Create Account">
+                            <i class='bx bx-user-plus me-1'></i>Sign Up
+                        </a>
+                        <a href="/Account/login" class="btn btn-primary btn-sm px-3 py-2 rounded-pill fw-semibold" title="Login to Account">
+                            <i class='bx bx-log-in me-1'></i>Login
+                        </a>
+                    </div> -->
 
                     <!-- User Profile -->
                     <div class="user d-flex align-items-center sexy-login" id="user" style="cursor: pointer;" title="User Menu" >
@@ -579,3 +1440,569 @@ void main()
 </script>
 
 </html>
+.Groups[0].Value
+        }
+    >
+    <div id="main">
+        <!-- Glassy Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-glassy fixed-top">
+            <div class="container-fluid">
+                <!-- Brand -->
+                <a class="navbar-brand" href="/">🖥️ Human Error</a>
+
+                <!-- Toggler Button for Mobile -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Navbar Menu -->
+                <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item"><a href="#" class="nav-link text-danger" onclick="run()" id="run" title="Execute Code"><i class='bx bxs-play-circle'></i> Run</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link text-info" title="Debug Code"><i class='bx bxs-bug'></i> Debug</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link text-success" onclick="stop()" title="Stop Execution"><i class='bx bxs-stop-circle'></i> Stop</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link text-warning" onclick="downloadFile()" id="download" title="Save Code"><i class='bx bxs-download'></i> Save</a></li>
+                        <li class="nav-item"><a class="nav-link text-warning" href="javascript:void(0);" onclick="printPageArea('source')" title="Print"><i class='bx bxs-printer'></i> Print</a></li>
+                        <li class="nav-item"><a href="/upload/fileName=" class="nav-link text-white" id="inputfile" title="Upload File"><i class='bx bxs-upload'></i> Upload</a></li>
+                        <li class="nav-item"><a href="#" onclick="openNav3()" class="nav-link text-white" title="Share Code"><i class='bx bxs-share-alt'></i> Share</a></li>
+                        
+                        <!-- Dashboard Button - SINGLE BUTTON FOR BOTH ROLES -->
+                        <li class="nav-item" id="dashboard-link" style="display: none;"><a href="/Account/Dashboard" class="nav-link" title="Go to Dashboard"><i class='bx bxs-dashboard'></i> Dashboard</a></li>
+                        
+                        <!-- Admin Panel Link - Only for Admin -->
+                        <!-- <li class="nav-item" id="admin-link" style="display: none;"><a href="/dashboard" class="nav-link text-danger" title="Admin Panel"><i class='bx bxs-shield-alt-2'></i> Admin</a></li> -->
+                    </ul>
+                </div>
+
+                <!-- Right Section: Language, Theme, Auth Buttons, User -->
+                <div class="d-flex align-items-center ms-auto gap-3">
+                    <!-- Language Selector -->
+                    <div id="Languages">
+                        <select id="lang" class="form-select" onclick="LangSelector()" title="Select Programming Language">
+                            <option value="select" selected>🌐 Language</option>
+                            <option value="C">C</option>
+                            <option value="C++">C++</option>
+                            <option value="Python">Python</option>
+                            <option value="Java">Java</option>
+                            <option value="Html">HTML, CSS, JS</option>
+                            <option value="Text">Text File</option>
+                            <option value="VB">VB.Net*</option>
+                            <option value="Node">NodeJS*</option>
+                            <option value="Applet">Applet*</option>
+                            <option value="Hacking">Kali Linux</option>
+                            <option value="Encrypt">Encrypt Msg</option>
+                        </select>
+                    </div>
+
+                    <!-- Dark/Light Mode & Search -->
+                    <div class="darkLight-searchBox d-flex align-items-center gap-2">
+                        <div class="dark-light" title="Toggle Dark/Light Mode">
+                            <i class='bx bx-moon moon'></i>
+                            <i class='bx bx-sun sun'></i>
+                        </div>
+                        <div class="searchToggle" title="Search Code">
+                            <i class='bx bx-x cancel' onclick="closeNav()" style="display: none;"></i>
+                            <i class='bx bx-search search' onclick="openNav()"></i>
+                        </div>
+                    </div>
+
+                    <!-- Auth Buttons
+                    <div class="auth-buttons d-flex align-items-center gap-2" id="auth-buttons">
+                        <a href="/Account/signup" class="btn btn-outline-primary btn-sm px-3 py-2 rounded-pill fw-semibold" title="Create Account">
+                            <i class='bx bx-user-plus me-1'></i>Sign Up
+                        </a>
+                        <a href="/Account/login" class="btn btn-primary btn-sm px-3 py-2 rounded-pill fw-semibold" title="Login to Account">
+                            <i class='bx bx-log-in me-1'></i>Login
+                        </a>
+                    </div> -->
+
+                    <!-- User Profile -->
+                    <div class="user d-flex align-items-center sexy-login" id="user" style="cursor: pointer;" title="User Menu" >
+                        <img src="images/User_icon.png" alt="User" class="me-2" style="height: 20px;width: 20px;">
+                        <span id="username">Login</span>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <!-- Navbar ended -->
+
+        <!-- Main Content -->
+        <main class="container-fluid" style="margin-top: 3vh;">
+
+    <!-------------- sidenav1--------- -->
+    <div id="mySidenav" class="sidenav sidenav-glassy" style="font-size: 17px;">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <a href="/SearchCode" onclick="window.prompt('enter the word you want to search')"><input type="search"
+                name="searchcode" class="search1-glassy" placeholder="search code"></a>
+        <!-- <hr style="color: white;">
+            <a href="#">AI search</a>
+            <hr style="color: white;"> -->
+
+        <!-- <a href="/other-pages/contactUs.html">Contact us</a> -->
+        <!-- <a href="#" title="admin only">Maintenance</a> -->
+        <p id="fontcont-glassy">Font Size: <select name="" id="fontsize">
+                <option value="12">12</option>
+                <option value="14">14</option>
+                <option value="16">16</option>
+                <option value="18">18</option>
+                <option value="20">20</option>
+                <option value="22">22</option>
+            </select></p>
+        <p class="colorPicker-glassy">Background : <input type="color" name="" class="colors" id="color1"></p>
+        <p class="colorPicker-glassy">FontColor : <input type="color" name="" class="colors" id="color2"></p>
+        <input type="submit" class="defaultcolors-glassy" id="defaultcolors" value="default Theme">
+        <hr style="color: #fff;">
+        <a href="../extension">→ Extension</a>
+        <a href="../games/games.html">→ Games</a>
+        <a href="../theme.html">→ Themes</a>
+        <a href="#" style="font-size: 12px;float: center;margin-top: 3vh;">Copyright to Yash Production</a>
+
+    </div>
+
+    <!-------- Sidebar2-------- -->
+    <div id="mySidenav2" class="sidenav sidenav-glassy sidebarOpen" style="font-size: 17px;">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav1()">&times;</a>
+        <!-- <a href="#"><input type="search" name="searchcode" class="search1" placeholder="search code"></a> -->
+        <!-- <hr style="color: white;">
+            <a href="#">AI search</a>
+            <hr style="color: white;"> -->
+        <a href="../extension">Extension</a>
+        <a href="../games/games.html">Games</a>
+        <a href="../other/contactUs.html">Contact us</a>
+        <a href="/Maintenance" title="admin only" id="Maintenance">Maintenance</a>
+        <a href="/feedback" title="admin only">Feedback</a>
+        <a href="/404" title="admin only">Source Code</a>
+        <a href="/classroom" title="admin only">Classroom</a>
+        <a href="/questions" title="admin only">Ask your question</a>
+        <a href="/404" title="admin only">Hire a Developer</a>
+        <hr style="color: #fff;">
+        <a href="javascript:void(0);" onclick="logout()" id="logout" class="logout-btn-glassy">Logout</a>
+
+        <a style="font-size: 13px;float: center;margin-top: 1vh;">Copyright to Yash Production</a>
+
+    </div>
+    <!-- sidenav2 ended -->
+    <!-- sidenav4 -->
+    <div id="mySidenav4" class="sidenav sidenav-glassy" style="font-size: 17px;">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav3()">&times;</a><br>
+        <input type="text" id="" style="margin-left: 2%; width: 95%;" placeholder="Paste Link" class="search1-glassy">
+        <a href="/join"><button
+                style="background-image: linear-gradient(120deg, #f093fb 0%, #f5576c 100%); color: white;padding: 5px;">Join
+                Session</button></a>
+        <hr style="color: white;">
+        <a href="/share"><button
+                style="background-image: linear-gradient(120deg, #f093fb 0%, #f5576c 100%); color: white;padding: 5px;">Share
+                Code</button></a>
+    </div>
+    <!-- sidenav4 ended-->
+
+    <!-- MAIN TEXTAREA STARTTED CONTENT -->
+    <!-- input source -->
+    <div class="row">
+        <div class="col-12">
+            <div class="source_code" id="mainContainer">
+        <!-- <textarea id="source" class="textarea_code" style="height: 350px;"></textarea> -->
+
+        <!-- line no. -->
+        <Div><textarea id='lineCounter' wrap='off' readonly>1.</textarea>
+            <!-- text area  id='codeEditor'-->
+            <textarea id="source" wrap='off'>
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    Welcome to the complier of Coder's .This is complier give all templete to code, that is usefull for you. Also you can 
+    Download the file from the download button.. and more new feauture! Try once's come again..   
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
+
+#include<stdio.h>
+void main()
+{
+    printf("Hello world...");
+}
+        </textarea>
+
+        </Div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Html-css editor -->
+    <div id="htmlEditor" class="htmlEditor">
+        <textarea id='lineCounter1' wrap='off' readonly>1.</textarea>
+
+        <textarea class="box1" id="htmlTextarea" onkeyup="refresh()" placeholder="Your Html code goes here!"></textarea>
+        <!-- <textarea class="box1" id="htmlTextarea1" placeholder="Output here"></textarea> -->
+        <iframe src="" class="box1" frameborder="4" id="htmlTextarea1"></iframe>
+    </div>
+
+    <!-- kali editor -->
+    <div class="kali" style="border: 1px solid black; border-radius: 10px;padding: 100px;background-color: white;">
+        <!-- <iframe src="http://192.168.1.8:8888" sandbox="allow-forms allow-modals allow-scripts allow-same-origin allow-top-navigation" name="kali" id="kali"></iframe> -->
+        <div class="container" style="margin-top: 1%;">
+            <center>
+                <h3>Redirect Notice</h2><br>
+                    <h6>In case you can't redirect to another page then click on below button to start connect to
+                        virtual machine and use it for sometime </h6><br>
+                    <button type="button" onclick="window.location.href = '/404';"
+                        class="btn btn-primary">Redirect</button>
+                    <button type="button" class="btn btn-primary">Home</button>
+            </center>
+        </div>
+    </div>
+
+    <!-- futureWork -->
+    <div class="futureWork"
+        style="border: 1px solid black; border-radius: 10px;padding: 100px;background-color: #333;margin-top: 9vh;color: #fff;height: 70vh;">
+        <div class="container" style="margin-top: 1%;">
+            <center style="display: flexbox;">
+                <h3><img src="https://img.icons8.com/fluency/256/under-construction.png" alt=""
+                        style="height: 70px;width: 70px;">This Languages are under construction*</h2><br>
+                    <hr>
+                    <h6>→ This languages are undergoing to Develop by our company.<br>→ If you want to get early
+                        access to this language then subscribe to our new letter, this is under 'Beta 3'.. Soon
+                        releases </h6><br>
+                    <button type="button" class="btn btn-primary">register our new Letter</button>
+            </center>
+        </div>
+    </div>
+
+    <!-- decrpyt to encrypt msg-->
+    <div class="encrypt"
+        style="border: 1px solid black; border-radius: 10px;padding: 100px;background-color: #333;margin-top: 8vh;color: #fff;height: 85vh;">
+        <div class="container" style="color: #fff;display: flexbox;">
+            <center>
+                <h2>Enter the String & convert to base<sup>64</sup> encoded string</h2>
+            </center>
+            <hr>
+            <div class="mainCont" style="display: flex;flex-direction: row;">
+
+                <div id="part1">Enter the Text : <textarea name="" id="sendData"
+                        style="width: 37vw;height: 40vh;"></textarea><br></div>
+                <hr style="color: white;"><br>
+
+                <div id="part2">Your encrypt text :(This is follow SHA256) <textarea readonly
+                        id="receverData"></textarea><br></div>
+            </div>
+            <center><button style="padding: 7px;" id="encrypt">Convert</button>
+                <button style="padding: 7px;" id="clear">clear</button>
+            </center>
+
+            <div class="encryptout"></div>
+        </div>
+    </div>
+    <!-- decrpyt to encrypt msg -->
+
+    <!-- Terminal -->
+    <div class="terminal">
+        <textarea id="terminal" placeholder="Terminal for input and output..."></textarea>
+    </div>
+    <!-- main-ended -->
+    </div>
+
+    <!-- notificationBar -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <img src="images/github.jpg" class="rounded me-2" alt="...">
+                <strong class="me-auto">Warning</strong>
+                <small>1 mins ago</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                Hello! yash, it is time to break and get some rest
+            </div>
+        </div>
+    </div>
+    <!-- notificationBar-ended -->
+
+    <!-- sidemenu 3 -->
+    <div id="myNav" class="overlay">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav2()">&times;</a>
+        <div class="overlay-content">
+            <div id="displayitems">
+                <center>
+                    <h2 style="color: #fff;">Select Your Layout View :</h2>
+                </center><br><br>
+                <div class="lay">
+                    <select name="layout" id="layout">
+                        <option value="none" selected>none</option> <!--side panel 3 no 4-->
+                        <option value="sbs">side by side</option>
+                        <option value="fm">fullscreen mode</option>
+                        <option value="bm">beginner mode</option>
+                        <option value="default">default</option>
+                    </select>
+                    <center><button id="layoutID">Apply Mode</button></center>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- sidemenu 3-ended -->
+
+    <!-- maintance-break -->
+    <div class="Maintenance" id="Maintenance"> </div>
+    <!--to show maintaince break-->
+
+
+
+    <!-- Script Here -->
+    <script type="module" src="js/script.js" async></script>
+    <script type="module" src="js/Engine.js" async></script>
+    <script type="module" src="js/main.js" async></script>
+
+    <script type="text/javascript" async>
+        $(document).ready(function () {
+            console.log('=== Dashboard Check Script Started ===');
+            
+            // don't change : .user,#logout
+            $('#htmlEditor,#htmlTextarea,#htmlTextarea1,#lineCounter1,.kali,#selectedFile,.futureWork,.encrypt').hide();
+
+            // ----------------Fetch username-----------------
+
+            // Function to get a specific cookie by name
+            function getCookie(name) {
+                let cookies = document.cookie.split('; ');
+                for (let cookie of cookies) {
+                    let [key, value] = cookie.split('=');
+                    if (key === name) return decodeURIComponent(value);
+                }
+                return null;
+            }
+
+            // Function to set a cookie
+            function setCookie(name, value, days) {
+                let expires = "";
+                if (days) {
+                    let date = new Date();
+                    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                    expires = "; expires=" + date.toUTCString();
+                }
+                document.cookie = name + "=" + (value || "") + expires + "; path=/";
+            }
+
+            // Function to delete a cookie
+            function deleteCookie(name) {
+                document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/';
+            }
+
+            // Logout function
+            window.logout = function() {
+                deleteCookie('username');
+                deleteCookie('token');
+                deleteCookie('role');
+                // Send to backend to destroy session
+                fetch('/api/auth/logout', {
+                    method: 'POST',
+                    headers: {'Authorization': 'Bearer ' + getCookie('token')}
+                })
+                .then(() => {
+                    location.reload(); // Reload to update UI
+                })
+                .catch(error => console.error('Error:', error));
+            };
+
+            // let username = document.getElementById('username');
+            let username = getCookie('username');
+            let userData = sessionStorage.getItem('nameToken');
+
+            console.log('Retrieved username:', username);
+            console.log('All cookies:', document.cookie);
+            console.log('LocalStorage user:', localStorage.getItem('user'));
+            console.log('LocalStorage role:', localStorage.getItem('role'));
+
+            // userData += username.innerHTML;
+
+            // login logic
+            if (!username) {
+                $('.user').show();
+                $('#logout').hide();
+                document.getElementById('username').innerText = 'Login';
+                document.getElementById('user').onclick = function() {
+                    // Redirect to login page
+                    window.location.href = '/Account/login';
+                };
+                // Hide dashboard button if not logged in
+                if (document.getElementById('dashboard-link')) {
+                    document.getElementById('dashboard-link').style.display = 'none';
+                }
+                console.log('User not logged in - showing login button');
+            } else {
+                $('.user').show();
+                $('#logout').show();
+                document.getElementById('username').innerText = username;
+                document.getElementById('user').onclick = openNav1;
+
+                // Check user role and show/hide admin features
+                // Try to get role from cookie first, then from localStorage
+                let userRole = getCookie('role') || localStorage.getItem('role');
+                console.log('=== DASHBOARD LOGIC ===');
+                console.log('User:', username);
+                console.log('Role from cookie:', getCookie('role'));
+                console.log('Role from localStorage:', localStorage.getItem('role'));
+                console.log('Final role:', userRole);
+                console.log('Raw cookies:', document.cookie);
+                
+                // Show dashboard button for all authenticated users
+                if (document.getElementById('dashboard-link')) {
+                    document.getElementById('dashboard-link').style.display = 'block';
+                    console.log('Dashboard button shown for user');
+                }
+                
+                if (userRole === 'admin') {
+                    console.log('User is ADMIN');
+                    // Show admin-only links
+                    document.querySelectorAll('[title="admin only"]').forEach(el => el.style.display = 'block');
+                    // Show admin link in navbar
+                    if (document.getElementById('admin-link')) {
+                        document.getElementById('admin-link').style.display = 'block';
+                    }
+                } else {
+                    console.log('User is REGULAR USER');
+                    // Hide admin-only links
+                    document.querySelectorAll('[title="admin only"]').forEach(el => el.style.display = 'none');
+                    // Hide admin link in navbar
+                    if (document.getElementById('admin-link')) {
+                        document.getElementById('admin-link').style.display = 'none';
+                    }
+                }
+            }
+
+            // let textarea = document.getElementById('source');
+            let textareacolor = sessionStorage.getItem('textareacolor');
+            let textarea = document.getElementById('source')
+
+            if (textareacolor != null) {
+                textarea.style.backgroundColor = sessionStorage.getItem('textareacolor')
+            }
+            else {
+                textarea.style.backgroundColor = '#272822';
+            }
+
+            // --------------Parameter Check--------------
+            var queryString = window.location.search.slice(1);
+            let que = queryString.split('?')[0];
+        });
+    </script>
+
+</body>
+
+<!-- after script -->
+<script>
+    // ===================Screen size change -------------
+    // jQuery(function ($) {
+    //     var windowWidth = $(window).width();
+    //     var windowHeight = $(window).height();
+
+    //     $(window).resize(function () {
+    //         if (windowWidth != $(window).width() || windowHeight != $(window).height()) {
+    //             location.reload();
+    //             return;
+    //         }
+    //     });
+    // });
+
+    // Navigation functions
+    function openNav() {
+        document.getElementById("mySidenav").style.width = "250px";
+    }
+
+    function closeNav() {
+        document.getElementById("mySidenav").style.width = "0";
+    }
+
+    function openNav1() {
+        document.getElementById("mySidenav2").style.width = "250px";
+    }
+
+    function closeNav1() {
+        document.getElementById("mySidenav2").style.width = "0";
+    }
+
+    function openNav3() {
+        document.getElementById("mySidenav4").style.width = "250px";
+    }
+
+    function closeNav3() {
+        document.getElementById("mySidenav4").style.width = "0";
+    }
+
+    function closeNav2() {
+        document.getElementById("myNav").style.height = "0%";
+    }
+
+    function downloadFile() {
+        const link = document.createElement("a");
+        const content = document.querySelector("#source").value;
+        const file = new Blob([content], { type: 'text/plain' });
+        link.href = URL.createObjectURL(file);
+        const lang = document.getElementById('lang').value;
+        let ext = 'txt';
+        if (lang === 'C') ext = 'c';
+        else if (lang === 'C++') ext = 'cpp';
+        else if (lang === 'Python') ext = 'py';
+        else if (lang === 'Java') ext = 'java';
+        else if (lang === 'Html') ext = 'html';
+        link.download = "code." + ext;
+        link.click();
+        URL.revokeObjectURL(link.href);
+    }
+
+    function LangSelector() {
+        const lang = document.getElementById('lang').value;
+        const source = document.getElementById('source');
+        const htmlEditor = document.getElementById('htmlEditor');
+        const kali = document.getElementById('kali');
+        const futureWork = document.getElementById('futureWork');
+        const encrypt = document.getElementById('encrypt');
+
+        // Hide all sections
+        $('#htmlEditor,#htmlTextarea,#htmlTextarea1,#lineCounter1,.kali,.futureWork,.encrypt').hide();
+
+        if (lang === 'C') {
+            $('#lineCounter,#terminal,#source').show();
+            source.value = '#include<stdio.h>\nvoid main()\n{\n    printf("Hello world...");\n}';
+        } else if (lang === 'C++') {
+            $('#lineCounter,#terminal,#source').show();
+            source.value = '#include <iostream>\nusing namespace std;\n\nint main()\n{\n    cout << "Hello World";\n    return 0;\n}';
+        } else if (lang === 'Python') {
+            $('#lineCounter,#terminal,#source').show();
+            source.value = 'print("hello world")';
+        } else if (lang === 'Java') {
+            $('#lineCounter,#terminal,#source').show();
+            source.value = 'public class Main\n{\n    public static void main(String[] args)\n    {\n        System.out.println("Hello World");\n    }\n}';
+        } else if (lang === 'Html') {
+            $('#htmlEditor,#htmlTextarea,#htmlTextarea1,#lineCounter1').show();
+        } else if (lang === 'Hacking') {
+            $('.kali').show();
+            setTimeout(() => window.location.href = '/404', 2000);
+        } else if (lang === 'Encrypt') {
+            $('.encrypt').show();
+        } else if (lang === 'VB' || lang === 'Node' || lang === 'Applet') {
+            $('.futureWork').show();
+        }
+    }
+
+    function clearCode() {
+        document.getElementById('source').value = '';
+    }
+
+    function printPageArea(areaID) {
+        const printContent = document.getElementById(areaID);
+        const WinPrint = window.open('', '', 'width=900,height=650');
+        WinPrint.document.write(printContent.innerHTML);
+        WinPrint.document.close();
+        WinPrint.focus();
+        WinPrint.print();
+        WinPrint.close();
+    }
+
+    function refresh() {
+        const htmlContent = document.getElementById('htmlTextarea').value;
+        const iframe = document.getElementById('htmlTextarea1');
+        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+        iframeDoc.open();
+        iframeDoc.write(htmlContent);
+        iframeDoc.close();
+    }
+</script>
+
+</html>
+

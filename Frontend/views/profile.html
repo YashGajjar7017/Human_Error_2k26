@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel='stylesheet' href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css'>
+    <link rel="stylesheet" href="/CSS/style.css">
+    <link rel="stylesheet" href="/CSS/navbar-glassy.css">
+</head>
+<body class="neon-glass">
+    <nav class="navbar navbar-glassy fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">Human Error</a>
+            <div class="ms-auto"><a href="/" class="btn btn-sm btn-outline-light">Back</a></div>
+        </div>
+    </nav>
+
+    <main style="padding: 6rem 2rem 2rem 2rem;">
+        <h2>User Profile</h2>
+        <div id="profileContainer">
+            <p>Loading profile...</p>
+        </div>
+    </main>
+
+    <script>
+        async function loadProfile() {
+            let res;
+            try {
+                res = await fetch('/api/users/profile');
+                if (!res.ok) throw new Error('auth');
+            } catch (e) {
+                // fallback to public profile
+                res = await fetch('/api/users/profile/public');
+            }
+            const data = await res.json();
+            const p = data.profile || data;
+            const html = `
+                <div class="card" style="padding:1rem;max-width:720px;">
+                    <h3>${p.name}</h3>
+                    <p><strong>Email:</strong> ${p.email}</p>
+                    <p><strong>Bio:</strong> ${p.bio || ''}</p>
+                    <h4>Address</h4>
+                    <p>${p.address.line1}, ${p.address.city}, ${p.address.state} ${p.address.postalCode}, ${p.address.country}</p>
+                    <h4>Uploads</h4>
+                    <ul>${(p.uploads || []).map(u=>`<li>${u}</li>`).join('') || '<li>No uploads</li>'}</ul>
+                </div>
+            `;
+            document.getElementById('profileContainer').innerHTML = html;
+        }
+        loadProfile();
+    </script>
+</body>
+</html>

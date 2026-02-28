@@ -178,12 +178,21 @@ exports.removeAllowedIP = (req, res) => {
 // Middleware for checking maintenance mode
 exports.maintenanceMiddleware = (req, res, next) => {
     if (maintenanceManager.isUnderMaintenance(req)) {
-        return res.status(503).json({
-            error: 'Service Unavailable',
-            message: maintenanceManager.config.message,
-            maintenance: true,
-            timestamp: new Date().toISOString()
-        });
+        // Check if this is an API request or HTML page request
+        const isAPI = req.path.startsWith('/api/') || req.accepts('json');
+        
+        if (isAPI) {
+            // For API requests, return JSON error
+            return res.status(503).json({
+                error: 'Service Unavailable',
+                message: maintenanceManager.config.message,
+                maintenance: true,
+                timestamp: new Date().toISOString()
+            });
+        } else {
+            // For page requests, redirect to maintenance page
+            return res.redirect('/Maintenance.html');
+        }
     }
     next();
 };

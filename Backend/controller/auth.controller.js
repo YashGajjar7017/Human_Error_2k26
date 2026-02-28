@@ -1,5 +1,7 @@
 const User = require('../models/User.model.js');
 const Login = require('../models/Login.model.js');
+const OTP = require('../models/otpHandler.models');
+const EmailService = require('../util/EmailService');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
@@ -8,15 +10,6 @@ const speakeasy = require('speakeasy');
 const qrcode = require('qrcode');
 const axios = require('axios');
 const { mongoose, Schema } = require('mongoose');
-
-// Configure nodemailer
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.EMAIL_USER || process.env.EMAILID,
-        pass: process.env.EMAIL_PASS || process.env.PASSWORD
-    }
-});
 
 // In-memory store for users and their OTP secret keys (for demonstration purposes)
 let emailVerificationCodes = {};
@@ -29,22 +22,6 @@ module.exports.activeTokens = activeTokens;
 // Helper function to generate OTP
 const generateOTP = () => {
     return Math.floor(100000 + Math.random() * 900000).toString();
-};
-
-// Helper function to send email
-const sendEmail = async (email, subject, text) => {
-    try {
-        await transporter.sendMail({
-            from: process.env.EMAIL_USER,
-            to: email,
-            subject,
-            text
-        });
-        return true;
-    } catch (error) {
-        console.error('Email sending error:', error);
-        return false;
-    }
 };
 
 // Register new user
@@ -259,7 +236,7 @@ exports.login = async (req, res) => {
     }
 };
 
-// Send OTP for verification
+// Send OTP for verification - Using centralized OTP model
 exports.sendOTP = async (req, res) => {
     try {
         const { email } = req.body;
@@ -279,20 +256,51 @@ exports.sendOTP = async (req, res) => {
             });
         }
 
+        // Check for existing valid OTP
+        const existingOTP = await OTP.findOne({
+            email,
+            purpose: 'email_verification',
+            isVerified: false,
+            expiresAt: { $gt: new Date() }
+        });
+
+        if (existingOTP) {
+            const timeRemaining = Math.ceil((existingOTP.expiresAt - new Date()) / 1000);
+            return res.status(429).json({
+                success: false,
+                message: "OTP already sent. Please wait before requesting a new one.",
+                data: {
+                    expiresIn: timeRemaining
+                }
+            });
+        }
+
         // Generate new OTP
         const otp = generateOTP();
-        const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
-        user.otp = otp;
-        user.otpExpiresAt = otpExpiresAt;
-        await user.save();
-
-        // Send OTP email
-        await sendEmail(
+        // Save OTP to centralized database
+        const otpRecord = new OTP({
             email,
-            'Email Verification OTP',
-            `Your OTP is: ${otp}. This OTP is valid for 10 minutes.`
-        );
+            otp,
+            purpose: 'email_verification',
+            isVerified: false,
+            attempts: 0,
+            expiresAt: new Date(Date.now() + 10 * 60 * 1000)
+        });
+
+        await otpRecord.save();
+
+        // Send OTP email using EmailService
+        try {
+            await EmailService.sendOTPEmail(email, otp, 'email_verification');
+        } catch (emailError) {
+            console.error('Email sending failed:', emailError);
+            await OTP.deleteOne({ _id: otpRecord._id });
+            return res.status(500).json({
+                success: false,
+                message: 'Failed to send OTP email'
+            });
+        }
 
         res.status(200).json({
             success: true,
@@ -308,7 +316,7 @@ exports.sendOTP = async (req, res) => {
     }
 };
 
-// Verify OTP
+// Verify OTP - Using centralized OTP model
 exports.verifyOTP = async (req, res) => {
     try {
         const { email, otp } = req.body;
@@ -328,18 +336,56 @@ exports.verifyOTP = async (req, res) => {
             });
         }
 
-        // Check if OTP is valid
-        if (user.otp !== otp || user.otpExpiresAt < new Date()) {
+        // Find OTP record from centralized database
+        const otpRecord = await OTP.findOne({
+            email,
+            purpose: 'email_verification',
+            isVerified: false
+        });
+
+        if (!otpRecord) {
             return res.status(400).json({
                 success: false,
-                message: 'Invalid or expired OTP'
+                message: 'OTP not found. Please request a new OTP.'
             });
         }
 
-        // Mark email as verified
+        // Check if OTP is expired
+        if (new Date() > otpRecord.expiresAt) {
+            await OTP.deleteOne({ _id: otpRecord._id });
+            return res.status(400).json({
+                success: false,
+                message: 'OTP has expired. Please request a new OTP.'
+            });
+        }
+
+        // Check attempts
+        if (otpRecord.attempts >= 5) {
+            await OTP.deleteOne({ _id: otpRecord._id });
+            return res.status(429).json({
+                success: false,
+                message: 'Too many failed attempts. Please request a new OTP.'
+            });
+        }
+
+        // Verify OTP
+        if (otpRecord.otp !== otp.trim()) {
+            otpRecord.attempts += 1;
+            await otpRecord.save();
+            const attemptsLeft = 5 - otpRecord.attempts;
+            return res.status(400).json({
+                success: false,
+                message: `Invalid OTP. ${attemptsLeft} attempts remaining.`
+            });
+        }
+
+        // Mark OTP as verified
+        otpRecord.isVerified = true;
+        otpRecord.verifiedAt = new Date();
+        await otpRecord.save();
+
+        // Mark email as verified in user model
         user.emailVerified = true;
-        user.otp = null;
-        user.otpExpiresAt = null;
         await user.save();
 
         res.status(200).json({

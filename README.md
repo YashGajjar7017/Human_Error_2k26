@@ -8,14 +8,15 @@
 
 This repository ("`Code - OSS`") is where we (YashTechnologyPvtLtd) develop the [Human Error](https://www.youtube.com/@codinghacker007) product together with the community. Not only do we work on code and issues here, we also publish our [roadmap](https://github.com/YashTechnologyPvtLtd/vscode/wiki/Roadmap), [monthly iteration plans](https://github.com/YashTechnologyPvtLtd/vscode/wiki/Iteration-Plans), and our [endgame plans](https://github.com/YashTechnologyPvtLtd/vscode/wiki/Running-the-Endgame). This source code is available to everyone under the standard [MIT license](https://github.com/YashTechnologyPvtLtd/vscode/blob/main/LICENSE.txt).
 
-<B>The Human Complier 2026 (Beta preview) 0.1.1<B><hr>
+<B>Xenithra Technology Pvt Ltd | 2026 (Beta preview) 0.1.1<B><hr>
 This is latest version of complier 2026 & it was only beta 1.1.0 testing priview only deveoplers<hr>
 
-## Human Erorr
+## Xenithra Technology Pvt Ltd
 
-<img width="1366" height="612" alt="image" src="https://github.com/user-attachments/assets/726f3978-9cad-4d1e-ac4f-26b85a32327e" /><hr>
+<img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/e629cb93-eee9-413a-938c-b95253443da6" />
+<hr>
 
->_ Complier is web-page that hold's user data into machine language without required lot of tools on your local device. just need a intenet & a computer that you can right the code for you ..!_/
+> _ Complier is web-page that hold's user data into machine language without required lot of tools on your local device. just need a intenet & a computer that you can right the code for you ..!_/
 
 <table border="1" cellspacing="0" cellpadding="8">
   <thead>
@@ -48,9 +49,10 @@ This is latest version of complier 2026 & it was only beta 1.1.0 testing priview
     <tr><td>Update 18</td><td>2 June 2025</td><td>(Beta Preview)</td><td>Security</td></tr>
     <tr><td>Update 19</td><td>7 July 2025</td><td>(Gamma Release)</td><td>Critical</td></tr>
     <tr><td>Update 20</td><td>16 November</td><td>(Alpha Preview Part 3)</td><td>Bug Fixes</td></tr>
-    <tr><td>Update 21</td><td>1 December</td><td>Release Ver_0.1</td><td>Bug Issue</td></tr>
-    <tr><td>Update 22</td><td>1 January 2026</td><td>(Release 1.1)</td><td>Security</td></tr>
-    <tr><td>Update 23</td><td>13 February 2026</td><td>(Testing)</td><td>Critical</td></tr>
+    <tr><td>Update 21</td><td>12 December</td><td>Beta Release Ver_0.1</td><td>Api Issue</td></tr>
+    <tr><td>Update 22</td><td>31 December</td><td>Release Ver_0.1</td><td>OS Treading Issue</td></tr>
+    <tr><td>Update 23</td><td>1 January 2026</td><td>(Release 1.1)</td><td>Security</td></tr>
+    <tr><td>Update 24</td><td>13 February 2026</td><td>(Testing)</td><td>Critical</td></tr>
   </tbody>
 </table>
 
@@ -93,6 +95,33 @@ please see the document [How to Contribute](https://github.com/YashTechnologyPvt
 
 See our [wiki](https://github.com/YashTechnologyPvtLtd/vscode/wiki/Feedback-Channels) for a description of each of these channels and information on some other available community-driven channels.
 
+## Update Phase Correction:
+
+`B : Beta Update/ preview` <br> 
+- 0 to 10 : Crictical <br> 
+- 10 to 50 : important <br> 
+- 50 to 100 : Skippable<br> 
+`T : Testing `  <br> 
+- 0 to 10 : Crictical <br> 
+- 10 to 50 : important <br> 
+- 50 to 100 : Skippable<br> 
+`BF : Bug Fixes`  <br> 
+- 0 to 10 : Crictical <br> 
+- 10 to 50 : important <br> 
+- 50 to 100 : Skippable<br> 
+`C : Critical` <br> 
+- 0 to 10 : Crictical <br> 
+- 10 to 50 : important <br> 
+- 50 to 100 : Skippable<br> 
+`I/e : Immediatly / ememery update ` <br> 
+- 0 to 10 : Crictical <br> 
+- 10 to 50 : important <br> 
+- 50 to 100 : Skippable<br> 
+`SP : Security Patch ` <br> 
+- 0 to 10 : Crictical <br> 
+- 10 to 50 : important <br> 
+- 50 to 100 : Skippable<br> 
+
 ## Related Projects
 
 Many of the core components and extensions to VS Code live in their own repositories on GitHub. For example, the [node debug adapter](https://github.com/YashTechnologyPvtLtd/vscode-node-debug) and the [mono debug adapter](https://github.com/YashTechnologyPvtLtd/vscode-mono-debug) repositories are separate from each other. For a complete list, please visit the [Related Projects](https://github.com/YashTechnologyPvtLtd/vscode/wiki/Related-Projects) page on our [wiki](https://github.com/YashTechnologyPvtLtd/vscode/wiki).
@@ -130,6 +159,21 @@ This project has adopted the [YashTechnologyPvtLtd Open Source Code of Conduct](
 Copyright (c) YashTechnologyPvtLtd Corporation. All rights reserved.
 
 Licensed under the [MIT](LICENSE.txt) license.
-```
-Lience aggrement to Yash Production Pvt. LTD. | 2025-2026
-```
+
+## Security Patches
+
+- Addressed multiple security vulnerabilities identified in previous updates.
+- Updated dependencies to their latest versions to mitigate security risks.
+- Implemented additional security features as outlined in the documentation.
+
+## New Features
+
+- Enhanced the index page with a modern UI and improved user experience.
+- Fixed the signup process to ensure OTP redirection works seamlessly.
+- Added a timer feature that displays a countdown on the user screen. When the timer reaches zero, a visually appealing page is shown, and after a brief period, it fades back to the compiler page.
+
+## Updates
+
+- Updated the signup and OTP pages to improve functionality and user feedback.
+- Implemented a new timer feature that enhances user engagement.
+- Ensured all security patches are applied and documented in the README.

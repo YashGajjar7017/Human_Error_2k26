@@ -8,6 +8,222 @@
 
 	<link rel="icon" type="image/png" href="images/icons/favicon.ico" />
 	<!-- <link href="/CSS/Bootstrap/css/bootstrap.min.css" rel="stylesheet"> -->
+	<link rel="stylesheet" href="/Public/CSS/neon.css">
+	<link rel="stylesheet" type="text/css" href="/css/login/util.css">
+	<link rel="stylesheet" type="text/css" href="/css/login/main.css">
+	<link rel="stylesheet" type="text/css" href="/CSS/glassy-login.css">
+
+</head>
+
+<body class="neon-glass">
+	<div class="container py-5">
+		<!-- Side Navigation Overlay -->
+		<nav class="side-nav-overlay" id="sideNav">
+			<button class="nav-close-btn" id="navCloseBtn">
+				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+					<path d="M6 18L18 6M6 6l12 12" />
+				</svg>
+			</button>
+			<ul class="nav-menu">
+				<li><a href="/" class="nav-link">🏠 Home</a></li>
+				<li><a href="/Account/Dashboard/user" class="nav-link">📊 Dashboard</a></li>
+				<li><a href="/membership" class="nav-link">💎 Membership Plans</a></li>
+				<li><a href="/Account/Signup" class="nav-link">📝 Sign Up</a></li>
+				<li><a href="/classroom" class="nav-link">🎓 Classroom</a></li>
+				<li><a href="#" class="nav-link">ℹ️ About Us</a></li>
+				<li><a href="/Account/logout" class="nav-link logout-link">🚪 Logout</a></li>
+			</ul>
+		</nav>
+
+		<!-- Overlay Backdrop -->
+		<div class="nav-backdrop" id="navBackdrop"></div>
+
+		<!-- Toggle Button -->
+		<button class="nav-toggle-btn" id="navToggleBtn">
+			<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+				<path d="M3 6h18M3 12h18M3 18h18" />
+			</svg>
+		</button>
+
+		<div class="limiter">
+			<div class="container-login100">
+				<div class="wrap-login100">
+					<div class="login-card">
+						<div class="login-icon">&#128272;</div>
+						<h2 class="glass-title">Login</h2>
+						<form id="loginForm">
+							<input class="glass-input" type="text" name="username" placeholder="Username" id="username"
+								required minlength="3" />
+							<input class="glass-input" type="password" name="password" placeholder="Password"
+								id="password" required minlength="4" />
+							<div style="margin-bottom:15px;">
+								<input class="glass-checkbox" type="checkbox" id="ckb1" name="remember-me" />
+								<label for="ckb1" class="glass-checkbox-label">Remember me</label>
+							</div>
+							<button class="glass-button" type="submit" id="loginBtn">Login</button>
+						</form>
+						<a href="/Account/forgotPassword" class="glass-link">Forgot Password?</a><br>
+						<a href="/Account/Signup" class="glass-link">Don't have an account? Signup</a>
+					</div>
+				</div>
+
+			</div>
+			<div id="dropDownSelect1"></div>
+
+			<!------------------------Script File--------------------  -->
+			<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+			<script src="/js/login/main.js"></script>
+			<script src="/Public/JS/neon.js"></script>
+
+			<script>
+				// Side Navigation Toggle
+				const navToggleBtn = document.getElementById('navToggleBtn');
+				const navCloseBtn = document.getElementById('navCloseBtn');
+				const sideNav = document.getElementById('sideNav');
+				const navBackdrop = document.getElementById('navBackdrop');
+
+				// Open navigation
+				navToggleBtn.addEventListener('click', () => {
+					sideNav.classList.add('active');
+					navBackdrop.classList.add('active');
+					document.body.classList.add('nav-open');
+					// focus first link for accessibility
+					const firstLink = sideNav.querySelector('.nav-link');
+					if (firstLink) firstLink.focus();
+				});
+
+				// Close navigation
+				const closeNav = () => {
+					sideNav.classList.remove('active');
+					navBackdrop.classList.remove('active');
+					document.body.classList.remove('nav-open');
+					// return focus to toggle button
+					navToggleBtn.focus();
+				};
+
+				navCloseBtn.addEventListener('click', closeNav);
+				navBackdrop.addEventListener('click', closeNav);
+
+				// Close nav when a link is clicked
+				document.querySelectorAll('.nav-link').forEach(link => {
+					link.addEventListener('click', closeNav);
+				});
+
+				// Close on Escape key for accessibility
+				document.addEventListener('keydown', (e) => {
+					if (e.key === 'Escape' || e.key === 'Esc') {
+						if (document.body.classList.contains('nav-open')) {
+							closeNav();
+						}
+					}
+				});
+
+				// Login Form Handler
+				document.getElementById('loginForm').addEventListener('submit', async function (e) {
+					e.preventDefault();
+
+					const username = document.getElementById('username').value.trim();
+					const password = document.getElementById('password').value.trim();
+
+					// Client-side validation
+					if (username.length < 3) {
+						showError('Username must be at least 3 characters long.');
+						return;
+					}
+					if (password.length < 3) {
+						showError('Password must be at least 3 characters long.');
+						return;
+					}
+
+					// Show loading state
+					const loginBtn = document.getElementById('loginBtn');
+					const originalText = loginBtn.textContent;
+					loginBtn.textContent = 'Logging in...';
+					loginBtn.disabled = true;
+
+					try {
+						const response = await fetch('/Account/login', {
+							method: 'POST',
+							headers: {
+								'Content-Type': 'application/json',
+							},
+							body: JSON.stringify({ username, password })
+						});
+
+						const data = await response.json();
+
+						if (data.success) {
+							// Set cookies for token and user data
+							document.cookie = `token=${data.token}; path=/; max-age=${24 * 60 * 60}`;
+							document.cookie = `username=${data.user.username}; path=/; max-age=${24 * 60 * 60}`;
+							document.cookie = `role=${data.user.role}; path=/; max-age=${24 * 60 * 60}`;
+
+							// Also set localStorage for session persistence
+							localStorage.setItem('user', JSON.stringify({ username: data.user.username, token: data.token }));
+							localStorage.setItem('role', data.user.role);
+
+							// Redirect to home page
+							window.location.href = '/';
+						} else {
+							// Redirect to signup page if user not found or invalid credentials (401)
+							if (data.message && (data.message.toLowerCase().includes('user not found') || data.message.toLowerCase().includes('invalid credentials'))) {
+								window.location.href = '/Account/Signup';
+							} else {
+								showError(data.message || 'Login failed');
+							}
+						}
+					} catch (error) {
+						console.error('Login error:', error);
+						showError('An error occurred during login. Please try again.');
+					} finally {
+						// Reset button state
+						loginBtn.textContent = originalText;
+						loginBtn.disabled = false;
+					}
+				});
+
+				function showError(message) {
+					// Create or update error message element
+					let errorDiv = document.getElementById('error-message');
+					if (!errorDiv) {
+						errorDiv = document.createElement('div');
+						errorDiv.id = 'error-message';
+						errorDiv.style.cssText = `
+					color: #ff6b6b;
+					font-size: 14px;
+					text-align: center;
+					margin-top: 10px;
+					font-family: Poppins-Regular, sans-serif;
+				`;
+						document.getElementById('loginForm').appendChild(errorDiv);
+					}
+					errorDiv.textContent = message;
+
+					// Auto-hide after 5 seconds
+					setTimeout(() => {
+						if (errorDiv.parentNode) {
+							errorDiv.parentNode.removeChild(errorDiv);
+						}
+					}, 5000);
+				}
+			</script>
+
+</body>
+
+</html>.Groups[1].Value
+        if ($oldClass -notmatch 'dark') {
+            '<body class="' + $oldClass + ' dark"'
+        } else {
+            <!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>Login | Human Error</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link rel="icon" type="image/png" href="images/icons/favicon.ico" />
+	<!-- <link href="/CSS/Bootstrap/css/bootstrap.min.css" rel="stylesheet"> -->
 
 	<link rel="stylesheet" type="text/css" href="/css/login/util.css">
 	<link rel="stylesheet" type="text/css" href="/css/login/main.css">
@@ -16,6 +232,202 @@
 </head>
 
 <body class="animated-gradient-bg">
+	<div class="container py-5">
+		<!-- Side Navigation Overlay -->
+		<nav class="side-nav-overlay" id="sideNav">
+			<button class="nav-close-btn" id="navCloseBtn">
+				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+					<path d="M6 18L18 6M6 6l12 12" />
+				</svg>
+			</button>
+			<ul class="nav-menu">
+				<li><a href="/" class="nav-link">🏠 Home</a></li>
+				<li><a href="/Account/Dashboard/user" class="nav-link">📊 Dashboard</a></li>
+				<li><a href="/membership" class="nav-link">💎 Membership Plans</a></li>
+				<li><a href="/Account/Signup" class="nav-link">📝 Sign Up</a></li>
+				<li><a href="/classroom" class="nav-link">🎓 Classroom</a></li>
+				<li><a href="#" class="nav-link">ℹ️ About Us</a></li>
+				<li><a href="/Account/logout" class="nav-link logout-link">🚪 Logout</a></li>
+			</ul>
+		</nav>
+
+		<!-- Overlay Backdrop -->
+		<div class="nav-backdrop" id="navBackdrop"></div>
+
+		<!-- Toggle Button -->
+		<button class="nav-toggle-btn" id="navToggleBtn">
+			<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+				<path d="M3 6h18M3 12h18M3 18h18" />
+			</svg>
+		</button>
+
+		<div class="limiter">
+			<div class="container-login100">
+				<div class="wrap-login100">
+					<div class="login-card">
+						<div class="login-icon">&#128272;</div>
+						<h2 class="glass-title">Login</h2>
+						<form id="loginForm">
+							<input class="glass-input" type="text" name="username" placeholder="Username" id="username"
+								required minlength="3" />
+							<input class="glass-input" type="password" name="password" placeholder="Password"
+								id="password" required minlength="4" />
+							<div style="margin-bottom:15px;">
+								<input class="glass-checkbox" type="checkbox" id="ckb1" name="remember-me" />
+								<label for="ckb1" class="glass-checkbox-label">Remember me</label>
+							</div>
+							<button class="glass-button" type="submit" id="loginBtn">Login</button>
+						</form>
+						<a href="/Account/forgotPassword" class="glass-link">Forgot Password?</a><br>
+						<a href="/Account/Signup" class="glass-link">Don't have an account? Signup</a>
+					</div>
+				</div>
+
+			</div>
+			<div id="dropDownSelect1"></div>
+
+			<!------------------------Script File--------------------  -->
+			<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+			<script src="/js/login/main.js"></script>
+
+			<script>
+				// Side Navigation Toggle
+				const navToggleBtn = document.getElementById('navToggleBtn');
+				const navCloseBtn = document.getElementById('navCloseBtn');
+				const sideNav = document.getElementById('sideNav');
+				const navBackdrop = document.getElementById('navBackdrop');
+
+				// Open navigation
+				navToggleBtn.addEventListener('click', () => {
+					sideNav.classList.add('active');
+					navBackdrop.classList.add('active');
+					document.body.classList.add('nav-open');
+					// focus first link for accessibility
+					const firstLink = sideNav.querySelector('.nav-link');
+					if (firstLink) firstLink.focus();
+				});
+
+				// Close navigation
+				const closeNav = () => {
+					sideNav.classList.remove('active');
+					navBackdrop.classList.remove('active');
+					document.body.classList.remove('nav-open');
+					// return focus to toggle button
+					navToggleBtn.focus();
+				};
+
+				navCloseBtn.addEventListener('click', closeNav);
+				navBackdrop.addEventListener('click', closeNav);
+
+				// Close nav when a link is clicked
+				document.querySelectorAll('.nav-link').forEach(link => {
+					link.addEventListener('click', closeNav);
+				});
+
+				// Close on Escape key for accessibility
+				document.addEventListener('keydown', (e) => {
+					if (e.key === 'Escape' || e.key === 'Esc') {
+						if (document.body.classList.contains('nav-open')) {
+							closeNav();
+						}
+					}
+				});
+
+				// Login Form Handler
+				document.getElementById('loginForm').addEventListener('submit', async function (e) {
+					e.preventDefault();
+
+					const username = document.getElementById('username').value.trim();
+					const password = document.getElementById('password').value.trim();
+
+					// Client-side validation
+					if (username.length < 3) {
+						showError('Username must be at least 3 characters long.');
+						return;
+					}
+					if (password.length < 3) {
+						showError('Password must be at least 3 characters long.');
+						return;
+					}
+
+					// Show loading state
+					const loginBtn = document.getElementById('loginBtn');
+					const originalText = loginBtn.textContent;
+					loginBtn.textContent = 'Logging in...';
+					loginBtn.disabled = true;
+
+					try {
+						const response = await fetch('/Account/login', {
+							method: 'POST',
+							headers: {
+								'Content-Type': 'application/json',
+							},
+							body: JSON.stringify({ username, password })
+						});
+
+						const data = await response.json();
+
+						if (data.success) {
+							// Set cookies for token and user data
+							document.cookie = `token=${data.token}; path=/; max-age=${24 * 60 * 60}`;
+							document.cookie = `username=${data.user.username}; path=/; max-age=${24 * 60 * 60}`;
+							document.cookie = `role=${data.user.role}; path=/; max-age=${24 * 60 * 60}`;
+
+							// Also set localStorage for session persistence
+							localStorage.setItem('user', JSON.stringify({ username: data.user.username, token: data.token }));
+							localStorage.setItem('role', data.user.role);
+
+							// Redirect to home page
+							window.location.href = '/';
+						} else {
+							// Redirect to signup page if user not found or invalid credentials (401)
+							if (data.message && (data.message.toLowerCase().includes('user not found') || data.message.toLowerCase().includes('invalid credentials'))) {
+								window.location.href = '/Account/Signup';
+							} else {
+								showError(data.message || 'Login failed');
+							}
+						}
+					} catch (error) {
+						console.error('Login error:', error);
+						showError('An error occurred during login. Please try again.');
+					} finally {
+						// Reset button state
+						loginBtn.textContent = originalText;
+						loginBtn.disabled = false;
+					}
+				});
+
+				function showError(message) {
+					// Create or update error message element
+					let errorDiv = document.getElementById('error-message');
+					if (!errorDiv) {
+						errorDiv = document.createElement('div');
+						errorDiv.id = 'error-message';
+						errorDiv.style.cssText = `
+					color: #ff6b6b;
+					font-size: 14px;
+					text-align: center;
+					margin-top: 10px;
+					font-family: Poppins-Regular, sans-serif;
+				`;
+						document.getElementById('loginForm').appendChild(errorDiv);
+					}
+					errorDiv.textContent = message;
+
+					// Auto-hide after 5 seconds
+					setTimeout(() => {
+						if (errorDiv.parentNode) {
+							errorDiv.parentNode.removeChild(errorDiv);
+						}
+					}, 5000);
+				}
+			</script>
+
+</body>
+
+</html>.Groups[0].Value
+        }
+    >
 	<div class="container py-5">
 		<!-- Side Navigation Overlay -->
 		<nav class="side-nav-overlay" id="sideNav">

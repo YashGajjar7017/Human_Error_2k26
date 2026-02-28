@@ -1,4 +1,4 @@
-const User = require('./Backend/models/User.model.js');
+const User = require('./models/User.model.js');
 const mongoose = require('mongoose');
 
 async function checkUsers() {

@@ -43,7 +43,25 @@ const securityRoutes = require('./Routes/security.routes');
 const mlRoutes = require('./Routes/ml.routes');
 const modeRoutes = require('./Routes/mode.routes');
 const paymentRoutes = require('./Routes/payment.routes');
+const userProfileRoutes = require('./Routes/user-profile.routes');
+const validationRoutes = require('./Routes/validation.routes');
+const debuggerRoutes = require('./Routes/debugger.routes');
+const codeEngineRoutes = require('./Routes/codeEngine.routes');
+const { router: routesFlowRouter, initializeRouteFlow } = require('./Routes/routes-flow.routes');
+const sessionTrackingRoutes = require('./Routes/session-tracking.routes');
+const userPreferencesRoutes = require('./Routes/user-preferences.routes');
+const challengesRoutes = require('./Routes/challenges.routes');
+const gamificationRoutes = require('./Routes/gamification.routes');
 const { auth, authorize } = require('./middleware/auth.middleware');
+
+// Import clock and github routes
+const clockRoutes = require('../Frontend/Routes/clock.routes');
+const githubRoutes = require('./Routes/github.routes');
+
+// Import background services
+const codeEngine = require('./service/codeEngine.service');
+const backgroundWorker = require('./service/backgroundWorker.service');
+const debuggerService = require('./service/debugger.service');
 
 // DB Connect
 const DBConnect = require('./DB/DBHandler');
@@ -66,7 +84,8 @@ app.set('trust proxy', true);
 app.use(cors())
 
 // Serve static files from Frontend directory
-app.use(express.static(path.join(__dirname, '../Frontend')));
+const config = require('../config/paths');
+app.use(express.static(config.FRONTEND_PATH));
 
 // Serve uploaded files for preview/download
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -219,7 +238,7 @@ app.post('/api/maintenance/login', rawBody, async (req, res, next) => {
 app.use(maintenanceController.maintenanceMiddleware);
 
 // DB Connect
-DBConnect();
+// DBConnect(); // Commented out for testing
 
 // Mount all routes with proper prefixes
 app.use('/api/auth', authRoutes);
@@ -248,10 +267,21 @@ app.use('/api/otp', otpRoutes);
 app.use('/api/security', securityRoutes);
 app.use('/api/ml', mlRoutes);
 app.use('/api/mode', modeRoutes);
+app.use('/api/users', userProfileRoutes);
+app.use('/api/validate', validationRoutes);
+app.use('/api/debugger', debuggerRoutes);
+app.use('/api/code-engine', codeEngineRoutes);
+app.use('/api/routes', routesFlowRouter);
+app.use('/api/session-tracking', sessionTrackingRoutes);
 app.use('/api', memberRoutes);
 app.use('/', frontendMemberRoutes);
 app.use(publicUploadRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/preferences', userPreferencesRoutes);
+app.use('/api/challenges', challengesRoutes);
+app.use('/api/gamification', gamificationRoutes);
+app.use('/api/clock', clockRoutes);
+app.use('/api/github', githubRoutes);
 // Mode management route (web/electron)
 // app.use('/api/mode', modeRoutes);
 
@@ -302,7 +332,8 @@ app.get('/health', (req, res) => {
 // Serve React production build (if present) and fallback to index.html for client-side routing
 const buildCandidates = [
     path.join(__dirname, '../React-Complier-Frontend/dist'),
-    path.join(__dirname, '../Frontend/react-app/dist')
+    config.REACT_FRONTEND_PATH ? path.join(config.REACT_FRONTEND_PATH, 'dist') : null,
+    path.join(config.FRONTEND_PATH, 'react-app', 'dist')
 ];
 let servedBuild = null;
 for (const p of buildCandidates) {
@@ -327,7 +358,7 @@ if (servedBuild) {
 // Serve frontend SPA index to support client-side routing (one-way SPA navigation)
 app.get('*', (req, res, next) => {
     if (req.method !== 'GET') return next();
-    const indexPath = path.join(__dirname, '../Frontend', 'views', 'index.html');
+    const indexPath = path.join(config.FRONTEND_PATH, 'views', 'index.html');
     try {
         if (fs.existsSync(indexPath)) {
             return res.sendFile(indexPath);
@@ -391,6 +422,11 @@ server.listen(port, () => {
     console.log(`📡 WebSocket server ready`);
     console.log(`🔗 Health check: http://localhost:${port}/health`);
     console.log(`🔧 Maintenance mode integrated`);
+    console.log(`⚙️  Code Engine initialized`);
+    console.log(`👷 Background Worker initialized with ${backgroundWorker.maxWorkers} workers`);
+    console.log(`🕒 Clock API initialized`);
+    console.log(`🐙 GitHub API initialized`);
+    console.log(`🐛 Enhanced Debugger initialized`);
 
     // Start periodic session cleanup (every 1 hour)
     setInterval(async () => {
@@ -404,7 +440,64 @@ server.listen(port, () => {
         }
     }, 60 * 60 * 1000); // 1 hour in milliseconds
 
+    // Clean up expired code execution sessions (every 30 minutes)
+    setInterval(async () => {
+        try {
+            await codeEngine.cleanupExpiredSessions();
+            console.log(`🧹 Code Engine: Cleaned up expired sessions`);
+        } catch (error) {
+            console.error('❌ Error during code engine cleanup:', error);
+        }
+    }, 30 * 60 * 1000); // 30 minutes
+
+    // Clean up old background worker tasks (every 1 hour)
+    setInterval(async () => {
+        try {
+            await backgroundWorker.clearOldTasks();
+            console.log(`🧹 Background Worker: Cleaned up old tasks`);
+        } catch (error) {
+            console.error('❌ Error during worker cleanup:', error);
+        }
+    }, 60 * 60 * 1000); // 1 hour
+
+    // Listen to code engine events
+    codeEngine.on('code:success', ({ sessionId }) => {
+        console.log(`✅ Code Engine: Execution success - ${sessionId}`);
+    });
+
+    codeEngine.on('code:error', ({ sessionId, error }) => {
+        console.log(`❌ Code Engine: Execution failed - ${sessionId}: ${error}`);
+    });
+
+    // Listen to background worker events
+    backgroundWorker.on('task:complete', ({ taskId, duration }) => {
+        console.log(`✅ Worker: Task completed - ${taskId} (${duration}ms)`);
+    });
+
+    backgroundWorker.on('task:error', ({ taskId, error }) => {
+        console.log(`❌ Worker: Task failed - ${taskId}: ${error}`);
+    });
+
+    // Listen to debugger events
+    debuggerService.on('debug:started', ({ sessionId }) => {
+        console.log(`🐛 Debugger: Session started - ${sessionId}`);
+    });
+
+    debuggerService.on('debug:paused', ({ sessionId, reason }) => {
+        console.log(`⏸️  Debugger: Paused - ${sessionId} (${reason})`);
+    });
+
     console.log(`🕒 Session cleanup scheduled (every 1 hour)`);
+    console.log(`🕒 Code Engine cleanup scheduled (every 30 minutes)`);
+    console.log(`🕒 Worker cleanup scheduled (every 1 hour)`);
+
+    // Initialize route flow manager
+    try {
+        initializeRouteFlow(app);
+        console.log(`📋 Route flow manager initialized`);
+    } catch (error) {
+        console.error('❌ Error initializing route flow manager:', error);
+    }
 });
 
 module.exports = server;

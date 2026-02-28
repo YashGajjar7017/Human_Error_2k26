@@ -1,9 +1,18 @@
 {
-    "compilerOptions": {
-      "baseUrl": ".",
-      "paths": {
-        "@/*": ["./*"]
-      }
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "commonjs",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "ignoreDeprecations": "6.0.0",
+    "paths": {
+      "@/*": ["./*"]
     }
-  }
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}
   

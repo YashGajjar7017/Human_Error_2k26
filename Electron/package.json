@@ -1,12 +1,78 @@
 {
-  "name": "human-error-electron",
+  "name": "human-error-electron-app",
   "version": "1.0.0",
-  "description": "Minimal Electron wrapper for HumanError frontend",
+  "description": "Modern Electron Desktop App with React Frontend",
   "main": "main.js",
+  "homepage": "./",
   "scripts": {
-    "start": "electron ."
+    "dev": "concurrently \"npm run build:watch\" \"wait-on http://localhost:5173 && electron .\"",
+    "dev:hot": "concurrently \"npm run build:watch\" \"wait-on http://localhost:5173 && electron . --remote-debugging-port=9222\"",
+    "build": "vite build",
+    "build:watch": "vite build --watch",
+    "build:prod": "vite build",
+    "preview": "vite preview --port 5173",
+    "start": "electron .",
+    "start:debug": "electron . --remote-debugging-port=9222",
+    "electron:dev": "concurrently \"npm:build:watch\" \"wait-on http://localhost:5173 && electron .\"",
+    "electron:build": "npm run build:prod && electron-builder",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "test": "vitest",
+    "lint": "eslint ."
   },
   "dependencies": {
-    "electron": "latest"
+    "axios": "^1.6.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.14.1",
+    "electron-store": "^8.1.0",
+    "electron-debug": "^3.2.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.0.0",
+    "concurrently": "^8.0.0",
+    "electron": "^39.2.7",
+    "electron-builder": "^24.6.0",
+    "vite": "^7.3.0",
+    "wait-on": "^7.0.0",
+    "vitest": "^1.0.0",
+    "@testing-library/react": "^14.0.0"
+  },
+  "build": {
+    "appId": "com.humanerrror.app",
+    "productName": "Human Error",
+    "directories": {
+      "buildResources": "assets",
+      "output": "dist_electron"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "dist/**/*",
+      "node_modules/**/*"
+    ],
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ]
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ]
+    }
   }
 }
+

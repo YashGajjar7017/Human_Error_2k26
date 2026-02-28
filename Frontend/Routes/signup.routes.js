@@ -11,11 +11,11 @@ router.use(express.json());
 // SignUP handler - aligned with backend routes
 router.get('/Signup', signUpController.SignUpToken);
 router.get('/Signup/:SignUpToken', signUpController.signUp);
-// router.post('/Signup', signUpController.postSignUp); // Disabled: frontend should POST directly to backend API
-router.post('/Signup/Verify/:SignUpToken')
-
+// POST route for signup form submission
+router.post('/Signup', signUpController.postSignUp);
 // OTP Handler - aligned with backend routes
 router.get('/sendOTP', signUpController.OTP);
+router.post('/sendOTP', signUpController.sendOTP);
 router.post('/verifyOTP', signUpController.PostOTP);
 
 module.exports = router;

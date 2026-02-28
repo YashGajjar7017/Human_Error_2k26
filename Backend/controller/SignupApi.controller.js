@@ -1,12 +1,13 @@
 const SignUPModel = require('../models/User.model');
 const SignupModel = require('../models/Signup.model');
+const OTP = require('../models/otpHandler.models');
+const EmailService = require('../util/EmailService');
 const bcrypt = require('bcryptjs');
-const nodemailer = require('nodemailer');
 const mongoose = require('mongoose');
 
 require('dotenv').config(); // Load environment variables
 
-// Helper Function: Generate OTP
+// Helper Function: Generate OTP with timestamp
 const generateOTP = (length = 6) => {
     return Array.from({ length }, () => Math.floor(Math.random() * 10)).join('');
 };
@@ -35,38 +36,6 @@ const validatePassword = (password) => {
         return { valid: false, message: "Password must contain at least one special character (!@#$%^&*)." };
     }
     return { valid: true };
-};
-
-// Helper Function: Send Email
-const sendMail = (email, otp) => {
-    return new Promise((resolve, reject) => {
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            secure: true,
-            port: 465,
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS,
-            },
-        });
-
-        const mailOptions = {
-            from: process.env.EMAIL_USER,
-            to: email,
-            subject: 'Your OTP',
-            text: `Your OTP is: ${otp}. This OTP is valid for 10 minutes. Please do not share it with anyone.`,
-        };
-
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                console.error("Email sending failed:", error);
-                reject(error);
-            } else {
-                console.log("Email sent:", info.response);
-                resolve(info.response);
-            }
-        });
-    });
 };
 
 // Sign Up Handler
@@ -234,22 +203,22 @@ exports.signUP = async (req, res) => {
     }
 };
 
-// Send OTP Handler
+// Send OTP Handler - Using centralized OTP model
 exports.sendOtp = async (req, res) => {
     const { email } = req.body;
 
     if (!email) {
-        return res.status(400).json({ 
+        return res.status(400).json({
             success: false,
-            error: "Email is required." 
+            error: "Email is required."
         });
     }
 
     // Validate email format
     if (!validateEmail(email)) {
-        return res.status(400).json({ 
+        return res.status(400).json({
             success: false,
-            error: "Please provide a valid email address." 
+            error: "Please provide a valid email address."
         });
     }
 
@@ -262,39 +231,72 @@ exports.sendOtp = async (req, res) => {
             });
         }
 
-        const otp = generateOTP();
-        const expirationTime = Date.now() + 10 * 60 * 1000; // OTP valid for 10 minutes
+        // Check for existing valid OTP
+        const existingOTP = await OTP.findOne({
+            email,
+            purpose: 'signup_verification',
+            isVerified: false,
+            expiresAt: { $gt: new Date() }
+        });
 
-        // Save OTP to signup database
-        await SignupModel.updateOne(
-            { email },
-            {
-                $set: {
-                    otp,
-                    otpExpiresAt: new Date(expirationTime)
+        if (existingOTP) {
+            const timeRemaining = Math.ceil((existingOTP.expiresAt - new Date()) / 1000);
+            return res.status(429).json({
+                success: false,
+                error: "OTP already sent. Please wait before requesting a new one.",
+                data: {
+                    expiresIn: timeRemaining
                 }
-            }
-        );
+            });
+        }
 
-        await sendMail(email, otp);
+        // Generate OTP
+        const otp = generateOTP();
+
+        // Save OTP to centralized database
+        const otpRecord = new OTP({
+            email,
+            otp,
+            purpose: 'signup_verification',
+            isVerified: false,
+            attempts: 0,
+            expiresAt: new Date(Date.now() + 10 * 60 * 1000) // 10 minutes
+        });
+
+        await otpRecord.save();
+
+        // Send OTP email using EmailService
+        try {
+            await EmailService.sendOTPEmail(email, otp, 'signup_verification');
+        } catch (emailError) {
+            console.error("Email sending failed:", emailError);
+            // Delete OTP record if email failed
+            await OTP.deleteOne({ _id: otpRecord._id });
+            return res.status(500).json({
+                success: false,
+                error: "Failed to send email. Please try again later.",
+                code: "EMAIL_SEND_FAILED"
+            });
+        }
 
         res.status(200).json({
             success: true,
-            message: "OTP sent successfully.",
+            message: "OTP sent successfully to your email.",
             data: {
-                expiresIn: 600 // 10 minutes in seconds
+                expiresIn: 600, // 10 minutes in seconds
+                email: email.replace(/(.{2})(.*)(@.*)/, '$1***$3')
             }
         });
     } catch (error) {
         console.error("Error sending OTP:", error);
-        res.status(500).json({ 
-            success: false, 
-            error: "Failed to send OTP." 
+        res.status(500).json({
+            success: false,
+            error: "Failed to send OTP. Please try again later."
         });
     }
 };
 
-// Verify OTP Handler
+// Verify OTP Handler - Using centralized OTP model
 exports.verifyOtp = async (req, res) => {
     const { email, otp } = req.body;
 
@@ -313,36 +315,72 @@ exports.verifyOtp = async (req, res) => {
         });
     }
 
+    // Validate OTP format (6 digits)
+    if (!/^\d{6}$/.test(otp.trim())) {
+        return res.status(400).json({
+            success: false,
+            error: "OTP must be 6 digits."
+        });
+    }
+
     try {
         const signup = await SignupModel.findOne({ email });
 
         if (!signup) {
             return res.status(404).json({
                 success: false,
-                error: "Signup not found."
+                error: "Signup not found. Please initiate signup first."
             });
         }
 
-        if (!signup.otp || !signup.otpExpiresAt) {
+        // Find OTP record from centralized database
+        const otpRecord = await OTP.findOne({
+            email,
+            purpose: 'signup_verification',
+            isVerified: false
+        });
+
+        if (!otpRecord) {
             return res.status(400).json({
                 success: false,
-                error: "OTP not found."
+                error: "OTP not found. Please request a new OTP."
             });
         }
 
-        if (Date.now() > signup.otpExpiresAt) {
+        // Check if OTP is expired
+        if (new Date() > otpRecord.expiresAt) {
+            await OTP.deleteOne({ _id: otpRecord._id });
             return res.status(400).json({
                 success: false,
-                error: "OTP has expired."
+                error: "OTP has expired. Please request a new OTP.",
+                code: "OTP_EXPIRED"
             });
         }
 
-        if (signup.otp !== otp) {
-            return res.status(400).json({
+        // Check attempts
+        if (otpRecord.attempts >= 5) {
+            await OTP.deleteOne({ _id: otpRecord._id });
+            return res.status(429).json({
                 success: false,
-                error: "Invalid OTP."
+                error: "Too many failed attempts. Please request a new OTP."
             });
         }
+
+        // Verify OTP
+        if (otpRecord.otp !== otp.trim()) {
+            otpRecord.attempts += 1;
+            await otpRecord.save();
+            const attemptsLeft = 5 - otpRecord.attempts;
+            return res.status(400).json({
+                success: false,
+                error: `Invalid OTP. ${attemptsLeft} attempts remaining.`
+            });
+        }
+
+        // Mark OTP as verified
+        otpRecord.isVerified = true;
+        otpRecord.verifiedAt = new Date();
+        await otpRecord.save();
 
         // Create User instance after successful OTP verification
         const newUser = new SignUPModel({

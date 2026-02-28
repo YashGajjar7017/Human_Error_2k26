@@ -4,7 +4,7 @@ const session = require('express-session');
 const path = require('path');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const storeData = new session.MemoryStore();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.FRONTEND_PORT || process.env.PORT || 3000;
 
 // const that express routes
 const adminData = require('./Routes/admin.routes');
@@ -23,6 +23,8 @@ const snippetsRoutes = require('./Routes/snippets.routes');
 const projectsRoutes = require('./Routes/projects.routes');
 const dashboardRoutes = require('./Routes/dashboard.routes');
 const memberRoutes = require('./Routes/Member.routes');
+const clockRoutes = require('./Routes/clock.routes');
+const githubRoutes = require('./Routes/github.routes');
 
 // make an object of express
 const app = express();
@@ -81,6 +83,8 @@ app.use('/snippets', snippetsRoutes);
 app.use('/projects', projectsRoutes);
 app.use('/dashboard', dashboardRoutes);
 app.use('/members', memberRoutes);
+app.use('/clock', clockRoutes);
+app.use('/github', githubRoutes);
 app.use(mailServer);
 
 // Home page route with dashboard access link
