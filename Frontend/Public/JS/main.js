@@ -114,20 +114,20 @@ $("textarea").keydown(function (e) {
     }
 });
 
-// const CONFIG = {
-//     API: {
-//         BASE_URL: window.CONFIG?.API?.BASE_URL || 'http://localhost:8000',
-//         ENDPOINT: '/api/compiler/compile-content'
-//     },
-//     LANGUAGES: {
-//         'C': 'c',
-//         'C++': 'cpp',
-//         'Java': 'java',
-//         'Python': 'python'
-//     },
-//     DEBOUNCE_DELAY: 300,
-//     AUTO_SAVE_INTERVAL: 5000
-// };
+const CONFIG = {
+    API: {
+        BASE_URL: window.CONFIG?.API?.BASE_URL || 'http://localhost:8000',
+        ENDPOINT: '/api/compiler/compile-content'
+    },
+    LANGUAGES: {
+        'C': 'c',
+        'C++': 'cpp',
+        'Java': 'java',
+        'Python': 'python'
+    },
+    DEBOUNCE_DELAY: 300,
+    AUTO_SAVE_INTERVAL: 5000
+};
 
 // ===========================
 // UTILITY FUNCTIONS
@@ -246,6 +246,7 @@ class EditorManager {
     constructor() {
         this.editors = new Map();
         this.lineCounters = new Map();
+        this.breakpoints = new Map();
         this.initializeEditors();
     }
 
@@ -272,19 +273,90 @@ class EditorManager {
         editor.addEventListener('scroll', () => {
             lineCounter.scrollTop = editor.scrollTop;
             lineCounter.scrollLeft = editor.scrollLeft;
+            if (lineCounter._gutter) lineCounter._gutter.scrollTop = editor.scrollTop;
         });
 
-        // Update line numbers
+        // create a gutter element next to the line counter (if not present)
+        let gutter = null;
+        const parent = lineCounter.parentNode;
+        if (!lineCounter._gutter) {
+            gutter = document.createElement('div');
+            gutter.className = 'gutter';
+            gutter.style.position = 'absolute';
+            gutter.style.pointerEvents = 'auto';
+            parent.insertBefore(gutter, lineCounter.nextSibling);
+            // position gutter to the right of the lineCounter
+            const parentRect = parent.getBoundingClientRect();
+            const lineRect = lineCounter.getBoundingClientRect();
+            gutter.style.left = (lineRect.right - parentRect.left) + 'px';
+            gutter.style.top = (lineRect.top - parentRect.top) + 'px';
+            gutter.style.height = lineRect.height + 'px';
+            lineCounter._gutter = gutter;
+        } else {
+            gutter = lineCounter._gutter;
+            // recalc position
+            const parentRect = parent.getBoundingClientRect();
+            const lineRect = lineCounter.getBoundingClientRect();
+            gutter.style.left = (lineRect.right - parentRect.left) + 'px';
+            gutter.style.top = (lineRect.top - parentRect.top) + 'px';
+            gutter.style.height = lineRect.height + 'px';
+        }
+
+        // Update line numbers (with breakpoint markers) and gutter markers
         const updateLines = () => {
             const lines = editor.value.split('\n').length;
-            const lineNumbers = Array.from({ length: lines }, (_, i) => `${i + 1}.`).join('\n');
+            const bpSet = this.breakpoints.get(editor.id) || new Set();
+            const lineNumbers = Array.from({ length: lines }, (_, i) => {
+                const num = i + 1;
+                return (bpSet.has(num) ? '● ' : '   ') + `${num}.`;
+            }).join('\n');
             lineCounter.value = lineNumbers;
+
+            // update gutter html
+            if (gutter) {
+                const spanHtml = Array.from({ length: lines }, (_, i) => {
+                    const num = i + 1;
+                    return `<span class="gutter-line ${bpSet.has(num) ? 'breakpoint' : ''}" data-line="${num}"></span>`;
+                }).join('');
+                gutter.innerHTML = spanHtml;
+            }
         };
 
         editor.addEventListener('input', Utils.debounce(updateLines, 100));
         updateLines(); // Initial call
+
+        // Click on line counter toggles a breakpoint for that line
+        lineCounter.addEventListener('click', (e) => {
+            const rect = lineCounter.getBoundingClientRect();
+            const style = getComputedStyle(lineCounter);
+            const lineHeight = parseFloat(style.lineHeight) || 18;
+            const clickY = e.clientY - rect.top + lineCounter.scrollTop;
+            const clickedLine = Math.floor(clickY / lineHeight) + 1;
+            this.toggleBreakpoint(editor.id, clickedLine);
+            updateLines();
+        });
+
+        // Click on gutter toggles breakpoint
+        gutter.addEventListener('click', (e) => {
+            const t = e.target;
+            if (t && t.classList.contains('gutter-line')) {
+                const line = parseInt(t.getAttribute('data-line'), 10);
+                this.toggleBreakpoint(editor.id, line);
+                updateLines();
+            }
+        });
     }
 
+    toggleBreakpoint(editorId, line) {
+        if (!this.breakpoints.has(editorId)) this.breakpoints.set(editorId, new Set());
+        const set = this.breakpoints.get(editorId);
+        if (set.has(line)) set.delete(line);
+        else set.add(line);
+    }
+
+    getBreakpoints(editorId) {
+        return Array.from(this.breakpoints.get(editorId) || []);
+    }
     getValue(editorId) {
         return this.editors.get(editorId)?.value || '';
     }
@@ -313,13 +385,16 @@ class UIManager {
             terminal: document.getElementById('terminal'),
             source: document.getElementById('source'),
             lang: document.getElementById('lang'),
-            loader: document.getElementById('loader')
+            loader: document.getElementById('loader'),
+            debugBtn: document.querySelector('[title="Debug Code"]')
         };
     }
 
     setupEventListeners() {
         // Run code
         this.elements.runBtn?.addEventListener('click', () => this.handleRun());
+        // Debug toggle from nav (if present)
+        this.elements.debugBtn?.addEventListener('click', (e) => { e.preventDefault(); this.toggleDebug(); });
         
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
@@ -335,6 +410,13 @@ class UIManager {
 
         // Auto-save
         this.setupAutoSave();
+    }
+
+    toggleDebug() {
+        this.debugMode = !this.debugMode;
+        const lineCounter = document.getElementById('lineCounter');
+        if (lineCounter) lineCounter.style.cursor = this.debugMode ? 'pointer' : 'default';
+        this.elements.terminal.value = this.debugMode ? 'Debug mode: click line numbers to toggle breakpoints' : '';
     }
 
     async handleRun() {
@@ -466,6 +548,14 @@ document.addEventListener('DOMContentLoaded', () => {
         themeManager,
         runCode: () => uiManager.handleRun()
     };
+
+    // expose legacy globals for inline handlers
+    try {
+        window.run = run;
+        window.debug = () => window.app.uiManager.toggleDebug();
+    } catch (e) {
+        // ignore in non-browser contexts
+    }
 
     // Setup theme toggle
     const themeToggle = document.querySelector('.dark-light');

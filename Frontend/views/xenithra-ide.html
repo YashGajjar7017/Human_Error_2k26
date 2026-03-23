@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xenithra Technology - Professional IDE</title>
+    <link href="/CSS/Bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="/CSS/xenithra-ide.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        /* Additional inline styles for instant loading */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body class="dark">
+    <div class="ide-container">
+        <!-- ==================== SIDEBAR ==================== -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <i class="fas fa-flash"></i>
+                    <span>XENITHRA</span>
+                </div>
+            </div>
+
+            <!-- Workspace Section -->
+            <div class="sidebar-section">
+                <div class="sidebar-label">Workspace</div>
+                <div class="sidebar-item active" onclick="setActive(this)">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </div>
+                <div class="sidebar-item" onclick="setActive(this)">
+                    <i class="fas fa-folder-open"></i>
+                    <span>Projects</span>
+                </div>
+                <div class="sidebar-item" onclick="setActive(this)">
+                    <i class="fas fa-code"></i>
+                    <span>Snippets</span>
+                </div>
+                <div class="sidebar-item" onclick="setActive(this)">
+                    <i class="fas fa-play"></i>
+                    <span>Playground</span>
+                </div>
+            </div>
+
+            <!-- Account Section -->
+            <div class="sidebar-section sidebar-account">
+                <div class="sidebar-label">Account</div>
+                <div class="sidebar-item" onclick="setActive(this)">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                </div>
+                <div class="sidebar-item" onclick="setActive(this)">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </div>
+                <div class="sidebar-item" onclick="setActive(this)">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== MAIN AREA ==================== -->
+        <div class="main-area">
+            <!-- ==================== TOPBAR ==================== -->
+            <div class="topbar">
+                <div class="topbar-title">
+                    <i class="fas fa-file-code"></i> main.c • autosave • synced to cloud
+                </div>
+                
+                <div class="topbar-buttons">
+                    <button class="action-btn primary" onclick="runCode()">
+                        <i class="fas fa-play"></i> Run
+                    </button>
+                    <button class="action-btn" onclick="debugCode()">
+                        <i class="fas fa-bug"></i> Debug
+                    </button>
+                    <button class="action-btn" onclick="stopCode()">
+                        <i class="fas fa-stop-circle"></i> Stop
+                    </button>
+                    <button class="action-btn" onclick="shareCode()">
+                        <i class="fas fa-share-alt"></i> Share
+                    </button>
+                    <button class="action-btn" onclick="saveCode()">
+                        <i class="fas fa-save"></i> Save
+                    </button>
+                    <button class="action-btn" onclick="formatCode()">
+                        <i class="fas fa-align-left"></i> Format
+                    </button>
+                </div>
+
+                <select class="language-selector" id="languageSelect">
+                    <option value="c">C</option>
+                    <option value="cpp">C++</option>
+                    <option value="python">Python</option>
+                    <option value="javascript">JavaScript</option>
+                    <option value="java">Java</option>
+                </select>
+            </div>
+
+            <!-- ==================== EDITOR AREA ==================== -->
+            <div class="editor-area">
+                <div class="line-numbers" id="lineNumbers"></div>
+                <textarea class="code-content" id="codeEditor" spellcheck="false">#include <stdio.h>
+
+int main() {
+    printf("Hello, Xenithra Technology\n");
+    return 0;
+}</textarea>
+            </div>
+
+            <!-- ==================== BOTTOM PANEL (Terminal) ==================== -->
+            <div class="bottom-panel">
+                <div class="panel-tabs">
+                    <button class="panel-tab active" data-tab="output" onclick="switchTab(this)">
+                        <i class="fas fa-terminal"></i> Output
+                    </button>
+                    <button class="panel-tab" data-tab="error" onclick="switchTab(this)">
+                        <i class="fas fa-exclamation-circle"></i> Errors
+                    </button>
+                    <button class="panel-tab" data-tab="debug" onclick="switchTab(this)">
+                        <i class="fas fa-bug"></i> Debug
+                    </button>
+                </div>
+
+                <!-- Tab Content -->
+                <div id="output" class="panel-content active">
+                    <div class="terminal-line">
+                        <span class="terminal-prefix">$</span>
+                        <span class="output-text">Ready to execute...</span>
+                    </div>
+                </div>
+
+                <div id="error" class="panel-content">
+                    <div class="terminal-line">
+                        <span class="terminal-prefix">❌</span>
+                        <span>No errors detected</span>
+                    </div>
+                </div>
+
+                <div id="debug" class="panel-content">
+                    <div class="terminal-line">
+                        <span class="terminal-prefix">🔍</span>
+                        <span>Debug mode ready. Set breakpoints and run.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/CSS/Bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const codeEditor = document.getElementById('codeEditor');
+        const lineNumbers = document.getElementById('lineNumbers');
+
+        // ==================== LINE NUMBERS ==================== 
+        function updateLineNumbers() {
+            const lines = codeEditor.value.split('\n').length;
+            let html = '';
+            for (let i = 1; i <= Math.max(lines, 20); i++) {
+                html += `<div class="line-number" onclick="setBreakpoint(${i})">${i}</div>`;
+            }
+            lineNumbers.innerHTML = html;
+        }
+
+        codeEditor.addEventListener('input', updateLineNumbers);
+        codeEditor.addEventListener('keydown', (e) => {
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                const start = codeEditor.selectionStart;
+                const end = codeEditor.selectionEnd;
+                codeEditor.value = codeEditor.value.substring(0, start) + '\t' + codeEditor.value.substring(end);
+                codeEditor.selectionStart = codeEditor.selectionEnd = start + 1;
+                updateLineNumbers();
+            }
+        });
+
+        codeEditor.addEventListener('scroll', () => {
+            lineNumbers.scrollTop = codeEditor.scrollTop;
+        });
+
+        // ==================== ACTIONS ==================== 
+        function runCode() {
+            const code = codeEditor.value;
+            const language = document.getElementById('languageSelect').value;
+            const outputEl = document.getElementById('output');
+
+            outputEl.innerHTML = '<div class="terminal-line"><span class="terminal-prefix">$</span><span class="output-text">Running...</span></div>';
+
+            fetch('/api/code-engine/compile-and-execute', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ code, language, input: '', debugMode: false })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    outputEl.innerHTML = `
+                        <div class="terminal-line">
+                            <span class="terminal-prefix">$</span>
+                            <span class="output-text">${data.output || 'Program executed successfully'}</span>
+                        </div>
+                    `;
+                } else {
+                    document.getElementById('error').innerHTML = `
+                        <div class="terminal-line">
+                            <span class="terminal-prefix">❌</span>
+                            <span class="output-error">${data.error || 'Execution failed'}</span>
+                        </div>
+                    `;
+                }
+            })
+            .catch(err => {
+                outputEl.innerHTML = `<div class="terminal-line"><span class="terminal-prefix">❌</span><span class="output-error">${err.message}</span></div>`;
+            });
+        }
+
+        function debugCode() {
+            const debugEl = document.getElementById('debug');
+            debugEl.innerHTML = '<div class="terminal-line"><span class="terminal-prefix">🔍</span><span class="output-warning">Debug mode activated. Click line numbers to set breakpoints.</span></div>';
+            switchTab(document.querySelector('[data-tab="debug"]'));
+        }
+
+        function stopCode() {
+            alert('Code execution stopped');
+        }
+
+        function shareCode() {
+            const code = codeEditor.value;
+            console.log('Share code:', code);
+            alert('Share feature coming soon!');
+        }
+
+        function saveCode() {
+            const code = codeEditor.value;
+            localStorage.setItem('xenithra-code', code);
+            alert('Code saved locally!');
+        }
+
+        function formatCode() {
+            // Simple formatting
+            let code = codeEditor.value;
+            code = code.replace(/  +/g, '    '); // Standardize indentation
+            codeEditor.value = code;
+            updateLineNumbers();
+        }
+
+        function setBreakpoint(lineNum) {
+            const lineEl = document.querySelectorAll('.line-number')[lineNum - 1];
+            if (lineEl) {
+                lineEl.classList.toggle('breakpoint');
+            }
+        }
+
+        function setActive(el) {
+            document.querySelectorAll('.sidebar-item').forEach(item => item.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        function switchTab(el) {
+            // Hide all tabs
+            document.querySelectorAll('.panel-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.panel-tab').forEach(tab => tab.classList.remove('active'));
+            
+            // Show selected tab
+            el.classList.add('active');
+            const tabName = el.getAttribute('data-tab');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        // ==================== KEYBOARD SHORTCUTS ==================== 
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                runCode();
+            }
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                saveCode();
+            }
+        });
+
+        // Initialize
+        updateLineNumbers();
+
+        // Load saved code if exists
+        const saved = localStorage.getItem('xenithra-code');
+        if (saved) {
+            codeEditor.value = saved;
+            updateLineNumbers();
+        }
+    </script>
+</body>
+</html>

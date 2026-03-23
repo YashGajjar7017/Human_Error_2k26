@@ -1,3 +1,12 @@
+/* VSCode-like theme variables */
+:root {
+    --vscode-bg: #1e1e1e;
+    --vscode-sidebar-bg: #252526;
+    --vscode-topnav-bg: linear-gradient(90deg, #007acc, #005a9e);
+    --vscode-accent: #007acc;
+    --vscode-text: #d4d4d4;
+}
+
 /* navbar */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Alkatra&display=swap');
@@ -252,7 +261,7 @@ body.dark .search-field i {
     margin-top: 0.5%;
     margin-left: 0.5vw;
     padding: 10px 0;
-    height: 61vh;
+    height: calc(100vh - 60px);
     border-radius: 0;
     resize: none;
     font-size: 16px;
@@ -277,6 +286,46 @@ body.dark .search-field i {
     color: #928869;
 }
 
+/* Gutter for breakpoints */
+.gutter {
+    position: absolute;
+    width: 1.4rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    top: 0;
+    left: 0;
+    pointer-events: auto;
+}
+
+.gutter-line {
+    display: block;
+    width: 0.9rem;
+    height: 1.2rem;
+    box-sizing: border-box;
+}
+
+.gutter-line.breakpoint::before {
+    content: '';
+    display: inline-block;
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 50%;
+    background-color: #e74c3c;
+    margin-top: 0.25rem;
+}
+
+.gutter-line:not(.breakpoint)::before {
+    content: '';
+    display: inline-block;
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 50%;
+    background-color: transparent;
+    margin-top: 0.25rem;
+}
+
 #lineCounter:focus-visible,
 #source:focus-visible {
     outline: none;
@@ -287,7 +336,7 @@ body.dark .search-field i {
     font-family: 'Roboto Condensed', sans-serif;
     /* margin: 0; */
     padding: 10px 0;
-    height: 62vh;
+    height: calc(100vh - 60px);
     width: 100vw; /*--changed : 97vw*/
     /* border-radius: 11px; */
     resize: none;
@@ -300,11 +349,76 @@ body.dark .search-field i {
     /* margin-top: 0.5%; */
     margin-right: 0.5vw;
     margin-left: 0.5vw;
-    padding-left: calc(2.5rem + 5px);
-    background-color: #333;
+    padding-left: calc(2.5rem + 1.4rem + 10px);
+    background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
     border-color: #272822;
     color: rgb(255, 255, 240);
     overflow: auto;
+}
+
+/* VSCode-like layout */
+body.vscode-theme {
+    background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+    color: var(--vscode-text);
+}
+
+/* hide original bootstrap navbar when using vscode theme */
+body.vscode-theme .navbar {
+    display: none !important;
+}
+
+
+.vscode-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 48px;
+    height: 100vh;
+    background: linear-gradient(180deg, #252526 0%, #1c1c1c 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 10px;
+    gap: 20px;
+    z-index: 200;
+}
+
+.vscode-sidebar a {
+    color: var(--vscode-text);
+    font-size: 24px;
+    text-decoration: none;
+}
+.vscode-sidebar a:hover {
+    color: var(--vscode-accent);
+}
+
+.vscode-topnav {
+    position: fixed;
+    top: 0;
+    left: 48px;
+    right: 0;
+    height: 40px;
+    background: var(--vscode-topnav-bg);
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    z-index: 150;
+}
+
+.vscode-topnav .vscode-logo {
+    color: #fff;
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.vscode-main {
+    margin-left: 48px;
+    margin-top: 40px;
+}
+
+/* make editor container full area */
+.editor-container {
+    position: relative;
 }
 
 #source:focus-visible {
