@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VulkanKT - Code to Machine Compiler</title>
+    <link rel="stylesheet" href="/CSS/vulkan-style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body data-theme="dark">
+    <div class="container">
+        <!-- NAVBAR -->
+        <nav class="navbar">
+            <div class="navbar-brand">
+                <i class="fas fa-code"></i>
+                <span>XENITHRA Technology</span>
+            </div>
+
+            <!-- NAVBAR - CENTER CONTROLS -->
+            <div class="navbar-center">
+                <button id="runBtn" class="btn btn-icon btn-run" title="Run Code">
+                    <i class="fas fa-play"></i> <span>Run</span>
+                </button>
+                <button id="stopBtn" class="btn btn-icon btn-stop" title="Stop Execution">
+                    <i class="fas fa-stop"></i> <span>Stop</span>
+                </button>
+                <button id="debugModeBtn" class="btn btn-icon btn-debug" title="Debug Mode">
+                    <i class="fas fa-bug"></i> <span>Debug</span>
+                </button>
+                <div class="navbar-separator"></div>
+                <button id="buildBtn" class="btn btn-icon" title="Build Project">
+                    <i class="fas fa-hammer"></i> <span>Build</span>
+                </button>
+                <button id="cleanBtn" class="btn btn-icon" title="Clean Build">
+                    <i class="fas fa-broom"></i> <span>Clean</span>
+                </button>
+                <div class="navbar-separator"></div>
+                <button id="saveBtn" class="btn btn-icon" title="Save File">
+                    <i class="fas fa-floppy-disk"></i> <span>Save</span>
+                </button>
+                <button id="formatBtn" class="btn btn-icon" title="Format Code">
+                    <i class="fas fa-align-left"></i> <span>Format</span>
+                </button>
+            </div>
+
+            <!-- NAVBAR - RIGHT CONTROLS -->
+            <div class="navbar-controls">
+                <button id="themeToggleBtn" class="btn btn-icon" title="Toggle Dark/Light Mode">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button id="settingsBtn" class="btn btn-icon" title="Settings">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <button id="shareBtn" class="btn btn-icon" title="Share Code">
+                    <i class="fas fa-share"></i>
+                </button>
+                <div class="navbar-separator"></div>
+                <button id="loginBtn" class="btn btn-authenticate" title="Login">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+                <button id="signupBtn" class="btn btn-authenticate btn-signup" title="Sign Up">
+                    <i class="fas fa-user-plus"></i> Sign Up
+                </button>
+            </div>
+        </nav>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content" id="mainContent">
+            <!-- LEFT PANEL - FILE EXPLORER -->
+            <div class="panel left-panel" id="leftPanel">
+                <div class="panel-header">
+                    <h3><i class="fas fa-folder-tree"></i> Explorer</h3>
+                    <button class="btn-panel-action" title="New File"><i class="fas fa-plus"></i></button>
+                </div>
+                <div class="panel-content">
+                    <div class="file-explorer" id="fileExplorer">
+                        <div class="folder-item">
+                            <span class="folder-toggle">▼</span>
+                            <i class="fas fa-folder-open"></i>
+                            <span class="folder-name">Projects</span>
+                        </div>
+                        <div class="folder-items" style="display: block;">
+                            <div class="file-item" data-file="example.c">
+                                <i class="fas fa-file-code"></i>
+                                <span>example.c</span>
+                                <button class="btn-close"><i class="fas fa-times"></i></button>
+                            </div>
+                            <div class="file-item" data-file="hello.cpp">
+                                <i class="fas fa-file-code"></i>
+                                <span>hello.cpp</span>
+                                <button class="btn-close"><i class="fas fa-times"></i></button>
+                            </div>
+                            <div class="file-item" data-file="test.rs" style="display: none;">
+                                <i class="fas fa-file-code"></i>
+                                <span>test.rs</span>
+                                <button class="btn-close"><i class="fas fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="folder-item">
+                            <span class="folder-toggle">▶</span>
+                            <i class="fas fa-folder"></i>
+                            <span class="folder-name">Compiled</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LANGUAGE SELECTOR -->
+                <div class="panel-section">
+                    <label>Language</label>
+                    <select id="languageSelect" class="form-control">
+                        <option value="c">C</option>
+                        <option value="cpp">C++</option>
+                        <option value="rust">Rust</option>
+                        <option value="go">Go</option>
+                        <option value="java">Java</option>
+                        <option value="python">Python</option>
+                    </select>
+                </div>
+
+                <!-- ARCHITECTURE SELECTOR -->
+                <div class="panel-section">
+                    <label>Architecture</label>
+                    <select id="architectureSelect" class="form-control">
+                        <option value="x64" selected>x64 (64-bit)</option>
+                        <option value="x86">x86 (32-bit)</option>
+                        <option value="arm">ARM (32-bit)</option>
+                        <option value="arm64">ARM64 (64-bit)</option>
+                        <option value="mips">MIPS</option>
+                    </select>
+                </div>
+
+                <!-- OPTIMIZATION LEVEL -->
+                <div class="panel-section">
+                    <label>Optimization</label>
+                    <div class="optimization-control">
+                        <input type="range" id="optimizationLevel" min="0" max="3" value="2" class="slider">
+                        <span id="optimizationValue">O2</span>
+                    </div>
+                </div>
+
+                <!-- ACTION BUTTONS -->
+                <div class="panel-section">
+                    <button id="analyzeBtn" class="btn btn-secondary btn-block">
+                        <i class="fas fa-magnifying-glass"></i> Analyze
+                    </button>
+                    <button id="compileBtn" class="btn btn-primary btn-block">
+                        <i class="fas fa-play"></i> Compile
+                    </button>
+                </div>
+            </div>
+
+            <!-- RESIZE HANDLE - LEFT/MIDDLE -->
+            <div class="resize-handle" id="resizeHandleLeft"></div>
+
+            <!-- MIDDLE PANEL - CODE EDITOR -->
+            <div class="panel middle-panel" id="middlePanel">
+                <div class="editor-tabs" id="editorTabs">
+                    <div class="editor-tab active" data-file="example.c">
+                        <i class="fas fa-file-code"></i>
+                        <span>example.c</span>
+                        <button class="btn-close-tab"><i class="fas fa-times"></i></button>
+                    </div>
+                </div>
+
+                <div class="editor-container">
+                    <div class="line-numbers" id="lineNumbers"></div>
+                    <div class="editor-wrapper">
+                        <textarea id="codeEditor" class="code-editor" spellcheck="false" placeholder="// Write your code here... or drag files here to open">int main() {
+    printf("Hello, World!");
+    return 0;
+}</textarea>
+                        <div class="breakpoints-column" id="breakpointsColumn"></div>
+                    </div>
+                    <div class="drag-drop-area" id="dragDropArea">
+                        <i class="fas fa-cloud-arrow-up"></i>
+                        <p>Drag files here to open</p>
+                    </div>
+                </div>
+
+                <div class="editor-status-bar">
+                    <span id="cursorPosition">Ln 1, Col 1</span>
+                    <span id="fileInfo">C • 4 lines</span>
+                </div>
+            </div>
+
+            <!-- RESIZE HANDLE - MIDDLE/RIGHT -->
+            <div class="resize-handle" id="resizeHandleRight"></div>
+
+            <!-- RIGHT PANEL - OUTPUT/CONSOLE -->
+            <div class="panel right-panel" id="rightPanel">
+                <div class="output-tabs">
+                    <button class="tab-btn active" data-tab="output">
+                        <i class="fas fa-terminal"></i> Output
+                    </button>
+                    <button class="tab-btn" data-tab="console">
+                        <i class="fas fa-code"></i> Console
+                    </button>
+                    <button class="tab-btn" data-tab="debug">
+                        <i class="fas fa-bug"></i> Debug
+                    </button>
+                </div>
+
+                <div class="output-content">
+                    <!-- OUTPUT TAB -->
+                    <div class="tab-content active" id="outputTab">
+                        <div class="output-box" id="outputBox">
+                            <p class="output-info">📋 Ready to compile. Select code and click "Compile"</p>
+                        </div>
+                    </div>
+
+                    <!-- CONSOLE TAB -->
+                    <div class="tab-content" id="consoleTab">
+                        <div class="console-box" id="consoleBox">
+                            <div class="console-item info">
+                                <span class="console-time">[10:30:25]</span>
+                                <span class="console-text">Console ready</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- DEBUG TAB -->
+                    <div class="tab-content" id="debugTab">
+                        <div class="debug-box" id="debugBox">
+                            <div class="debug-section">
+                                <h4>Variables</h4>
+                                <div id="debugVariables" class="debug-variables"></div>
+                            </div>
+                            <div class="debug-section">
+                                <h4>Breakpoints</h4>
+                                <div id="debugBreakpoints" class="debug-breakpoints"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="output-controls">
+                    <button id="clearOutputBtn" class="btn btn-sm">
+                        <i class="fas fa-trash"></i> Clear
+                    </button>
+                    <button id="copyOutputBtn" class="btn btn-sm">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- STATUS BAR & FOOTER -->
+        <div class="status-bar">
+            <div class="status-left">
+                <span id="statusMessage">Ready</span>
+                <span id="compilationTime">⏱️ 0ms</span>
+            </div>
+            <div class="status-center">
+                <span id="tokenCount">🔷 Tokens: 0</span>
+            </div>
+            <div class="status-right">
+                <span id="debugStatus">Debug: OFF</span>
+                <span id="userInfo">👤 Guest</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOADING SPINNER -->
+    <div class="loading-spinner" id="loadingSpinner">
+        <div class="spinner"></div>
+        <p>Compiling...</p>
+    </div>
+
+    <!-- SETTINGS MODAL - COMPREHENSIVE -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content modal-settings">
+            <div class="modal-header">
+                <h2><i class="fas fa-cog"></i> VulkanKT Settings</h2>
+                <button class="btn-close-modal" onclick="closeModal('settingsModal')">×</button>
+            </div>
+            
+            <!-- SETTINGS TABS -->
+            <div class="settings-tabs">
+                <button class="settings-tab-btn active" data-tab="editor">
+                    <i class="fas fa-edit"></i> Editor
+                </button>
+                <button class="settings-tab-btn" data-tab="compiler">
+                    <i class="fas fa-hammer"></i> Compiler
+                </button>
+                <button class="settings-tab-btn" data-tab="appearance">
+                    <i class="fas fa-palette"></i> Appearance
+                </button>
+                <button class="settings-tab-btn" data-tab="general">
+                    <i class="fas fa-sliders-h"></i> General
+                </button>
+            </div>
+            
+            <div class="modal-body settings-body">
+                <!-- EDITOR TAB -->
+                <div class="settings-tab-content active" data-tab="editor">
+                    <div class="settings-group">
+                        <h3><i class="fas fa-keyboard"></i> Editor Settings</h3>
+                        
+                        <div class="settings-item">
+                            <label>Font Family</label>
+                            <select id="fontFamilySelect" class="form-input">
+                                <option value="'Courier New'">Courier New</option>
+                                <option value="'Jetbrains Mono'" selected>Jetbrains Mono</option>
+                                <option value="'Roboto Mono'">Roboto Mono</option>
+                                <option value="'Consolas'">Consolas</option>
+                                <option value="'Monaco'">Monaco</option>
+                                <option value="'Fira Code'">Fira Code</option>
+                            </select>
+                        </div>
+
+                        <div class="settings-item">
+                            <label>Font Size <span id="fontSizeValue">13px</span></label>
+                            <input type="range" id="fontSizeInput" min="10" max="24" value="13" class="slider-input">
+                        </div>
+
+                        <div class="settings-item">
+                            <label>Line Height <span id="lineHeightValue">1.6</span></label>
+                            <input type="range" id="lineHeightInput" min="1" max="2.5" step="0.1" value="1.6" class="slider-input">
+                        </div>
+
+                        <div class="settings-item">
+                            <label>Tab Size</label>
+                            <select id="tabSizeSelect" class="form-input">
+                                <option value="2">2 spaces</option>
+                                <option value="4" selected>4 spaces</option>
+                                <option value="8">8 spaces</option>
+                            </select>
+                        </div>
+
+                        <div class="settings-checkboxes">
+                            <label class="settings-checkbox">
+                                <input type="checkbox" id="autoSaveCheckbox" checked>
+                                <span>Auto-save code</span>
+                            </label>
+                            <label class="settings-checkbox">
+                                <input type="checkbox" id="wordWrapCheckbox" checked>
+                                <span>Word wrap</span>
+                            </label>
+                            <label class="settings-checkbox">
+                                <input type="checkbox" id="minimapCheckbox">
+                                <span>Show minimap</span>
+                            </label>
+                            <label class="settings-checkbox">
+                                <input type="checkbox" id="lineNumbersCheckbox" checked>
+                                <span>Show line numbers</span>
+                            </label>
+                            <label class="settings-checkbox">
+                                <input type="checkbox" id="bracketHighlightCheckbox" checked>
+                                <span>Bracket highlighting</span>
+                            </label>
+                            <label class="settings-checkbox">
+                                <input type="checkbox" id="scrollBeyondCheckbox">
+                                <span>Scroll beyond end</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- COMPILER TAB -->
+                <div class="settings-tab-content" data-tab="compiler">
+                    <div class="settings-group">
+                        <h3><i class="fas fa-cogs"></i> Compiler Options</h3>
+                        
+                        <div class="settings-item">
+                            <label>Default Language</label>
+                            <select id="defaultLanguageSelect" class="form-input">
+                                <option value="c">C</option>
+                                <option value="cpp" selected>C++</option>
+                                <option value="rust">Rust</option>
+                                <option value="go">Go</option>
+                            </select>
+                        </div>
+
+                        <div class="settings-item">
+                            <label>Default Architecture</label>
+                            <select id="defaultArchitectureSelect" class="form-input">
+                                <option value="x64" selected>x64 (64-bit)</option>
+                                <option value="x86">x86 (32-bit)</option>
+                                <option value="arm">ARM</option>
+                            </select>
+                        </div>
+
+                        <div class="settings-item">
+                            <label>Default Optimization <span id="optimValueDisplay">O2</span></label>
+                            <input type="range" id="optimizationSlider" min="0" max="3" value="2" class="slider-input">
+                        </div>
+
+                        <div class="settings-checkboxes">
+                            <label class="settings-checkbox">
+                                <input type="checkbox" id="strictModeCheckbox">
+                                <span>Strict mode compilation</span>
+                            </label>
+                            <label class="settings-checkbox">
+                                <input type="checkbox" id="warningsCheckbox" checked>
+                                <span>Show compilation warnings</span>
+                            </label>
+                            <label class="settings-checkbox">
+                                <input type="checkbox" id="errorCheckingCheckbox" checked>
+                                <span>Error checking</span>
+                            </label>
+                            <label class="settings-checkbox">
+                                <input type="checkbox" id="parallelBuildCheckbox">
+                                <span>Parallel compilation</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- APPEARANCE TAB -->
+                <div class="settings-tab-content" data-tab="appearance">
+                    <div class="settings-group">
+                        <h3><i class="fas fa-paint-brush"></i> Theme & Appearance</h3>
+                        
+                        <div class="settings-item">
+                            <label>Color Theme</label>
+                            <div class="theme-selector">
+                                <button class="theme-btn active" data-theme="dark" onclick="setTheme('dark')">
+                                    <i class="fas fa-moon"></i> Dark
+                                </button>
+                                <button class="theme-btn" data-theme="light" onclick="setTheme('light')">
+                                    <i class="fas fa-sun"></i> Light
+                                </button>
+                                <button class="theme-btn" data-theme="system" onclick="setTheme('system')">
+                                    <i class="fas fa-laptop"></i> System
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="settings-item">
+                            <label>Accent Color</label>
+                            <div class="color-picker">
+                                <button class="color-btn active" data-color="cyan" title="Cyan">
+                                    <span style="background: #00d4ff;"></span>
+                                </button>
+                                <button class="color-btn" data-color="blue" title="Blue">
+                                    <span style="background: #0088cc;"></span>
+                                </button>
+                                <button class="color-btn" data-color="green" title="Green">
+                                    <span style="background: #4ade80;"></span>
+                                </button>
+                                <button class="color-btn" data-color="purple" title="Purple">
+                                    <span style="background: #a855f7;"></span>
+                                </button>
+                                <button class="color-btn" data-color="pink" title="Pink">
+                                    <span style="background: #ec4899;"></span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="settings-checkboxes">
+                            <label class="settings-checkbox">
+                                <input type="checkbox" id="animationsCheckbox" checked>
+                                <span>Enable animations</span>
+                            </label>
+                            <label class="settings-checkbox">
+                                <input type="checkbox" id="glassMorphismCheckbox" checked>
+                                <span>Glass morphism effect</span>
+                            </label>
+                            <label class="settings-checkbox">
+                                <input type="checkbox" id="particlesCheckbox">
+                                <span>Animated particles</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GENERAL TAB -->
+                <div class="settings-tab-content" data-tab="general">
+                    <div class="settings-group">
+                        <h3><i class="fas fa-cog"></i> General Settings</h3>
+                        
+                        <div class="settings-item">
+                            <label>Auto-Save Interval (seconds)</label>
+                            <input type="number" id="autoSaveInput" min="5" max="300" value="30" class="form-input">
+                        </div>
+
+                        <div class="settings-item">
+                            <label>Undo Limit</label>
+                            <input type="number" id="undoLimitInput" min="10" max="1000" value="100" class="form-input">
+                        </div>
+
+                        <div class="settings-checkboxes">
+                            <label class="settings-checkbox">
+                                <input type="checkbox" id="notificationsCheckbox" checked>
+                                <span>Show notifications</span>
+                            </label>
+                            <label class="settings-checkbox">
+                                <input type="checkbox" id="soundEffectsCheckbox">
+                                <span>Sound effects</span>
+                            </label>
+                            <label class="settings-checkbox">
+                                <input type="checkbox" id="updateCheckCheckbox" checked>
+                                <span>Check for updates</span>
+                            </label>
+                            <label class="settings-checkbox">
+                                <input type="checkbox" id="analyticsCheckbox" checked>
+                                <span>Send analytics</span>
+                            </label>
+                        </div>
+
+                        <div class="settings-item">
+                            <label>Keyboard Shortcuts</label>
+                            <button class="btn btn-secondary" onclick="openKeybindingsModal()">
+                                <i class="fas fa-keyboard"></i> Edit Keybindings
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer settings-footer">
+                <button class="btn btn-secondary" onclick="resetSettings()">
+                    <i class="fas fa-undo"></i> Reset to Defaults
+                </button>
+                <div>
+                    <button class="btn btn-secondary" onclick="closeModal('settingsModal')">
+                        <i class="fas fa-times"></i> Close
+                    </button>
+                    <button class="btn btn-primary" onclick="saveSettings()">
+                        <i class="fas fa-check"></i> Save Settings
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOGIN MODAL -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content modal-auth">
+            <div class="modal-header">
+                <h2>Login to VulkanKT</h2>
+                <button class="btn-close-modal" onclick="closeModal('loginModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <input type="email" id="loginEmail" class="form-input" placeholder="Email address">
+                <input type="password" id="loginPassword" class="form-input" placeholder="Password">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="rememberMe">
+                    Remember me
+                </label>
+                <p class="form-link">
+                    Don't have an account? <a href="#" onclick="switchToSignup()">Sign up here</a>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('loginModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="handleLogin()">Login</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SIGNUP MODAL -->
+    <div class="modal" id="signupModal">
+        <div class="modal-content modal-auth">
+            <div class="modal-header">
+                <h2>Sign Up for VulkanKT</h2>
+                <button class="btn-close-modal" onclick="closeModal('signupModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="signupName" class="form-input" placeholder="Full name">
+                <input type="email" id="signupEmail" class="form-input" placeholder="Email address">
+                <input type="password" id="signupPassword" class="form-input" placeholder="Password">
+                <input type="password" id="signupConfirmPassword" class="form-input" placeholder="Confirm password">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="agreeTerms">
+                    I agree to the terms and conditions
+                </label>
+                <p class="form-link">
+                    Already have an account? <a href="#" onclick="switchToLogin()">Login here</a>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('signupModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="handleSignup()">Sign Up</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="/JS/vulkan-main.js"></script>
+    <script src="/JS/vulkan-settings.js"></script>
+</body>
+</html>

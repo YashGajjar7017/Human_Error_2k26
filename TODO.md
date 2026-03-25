@@ -1,19 +1,25 @@
-# TODO: Add Clock/Timer and GitHub Features
+# Console Error Fixes - Progress Tracker
 
-## Backend Implementation
-- [x] Create Frontend/Routes/clock.routes.js
-- [x] Create Frontend/Routes/github.routes.js
-- [x] Create Frontend/controller/clock.controller.js
-- [x] Create Frontend/controller/github.controller.js
-- [x] Update Frontend/index.js to register new routes
+## Status: [IN PROGRESS] (1/5 complete)
 
-## Frontend Implementation
-- [x] Create Frontend/views/clock.html
-- [x] Create Frontend/views/github.html
-- [x] Create Public/JS/clock.js
-- [x] Create Public/JS/github.js
+### 1. ✅ Create TODO.md [DONE]
 
-## Testing
-- [x] Test clock route and functionality
-- [x] Test GitHub integration (may need API token)
-- [x] Run server and verify routes work
+### 2. ✅ Fix Frontend/views/index.html
+   - Remove duplicate `<head>` and `<body>` sections
+   - Fix `/Public/CSS/neon.css` loading (keep + ensure path)
+   - Remove conflicting `<script src="js/Boxicons/boxicons.js">` 
+   - Consolidate dashboard script to run once
+   - Clean module script loads
+
+### 3. 📁 Verify/Adjust Assets
+   - Confirm neon.css serves correctly post-fix
+   - Check if Frontend/js/Boxicons/ exists/needed
+
+### 4. 🧪 Test in Browser
+   - Reload index.html → no 404s, no boxicons errors
+   - Single dashboard log execution
+   - Icons render, neon styling applies
+
+### 5. ✅ Final Validation & Completion [PENDING]
+
+**Next Action:** Edit index.html

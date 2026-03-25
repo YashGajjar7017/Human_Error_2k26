@@ -52,6 +52,7 @@ const sessionTrackingRoutes = require('./Routes/session-tracking.routes');
 const userPreferencesRoutes = require('./Routes/user-preferences.routes');
 const challengesRoutes = require('./Routes/challenges.routes');
 const gamificationRoutes = require('./Routes/gamification.routes');
+const vulkanRoutes = require('./Routes/vulkan.routes');
 const { auth, authorize } = require('./middleware/auth.middleware');
 
 // Import clock and github routes
@@ -280,6 +281,7 @@ app.use('/api/payments', paymentRoutes);
 app.use('/api/preferences', userPreferencesRoutes);
 app.use('/api/challenges', challengesRoutes);
 app.use('/api/gamification', gamificationRoutes);
+app.use('/api/vulkan', vulkanRoutes);
 app.use('/api/clock', clockRoutes);
 app.use('/api/github', githubRoutes);
 // Mode management route (web/electron)
@@ -327,6 +329,20 @@ app.get('/health', (req, res) => {
         message: 'Server is running',
         timestamp: new Date().toISOString()
     });
+});
+
+// VulkanKT Compiler UI route
+app.get('/vulkan', (req, res) => {
+    try {
+        const vulkanPath = path.join(__dirname, '../Frontend/index-vulkan.html');
+        if (fs.existsSync(vulkanPath)) {
+            return res.sendFile(vulkanPath);
+        }
+        res.status(404).json({ error: 'VulkanKT UI not found' });
+    } catch (err) {
+        console.error('Error serving VulkanKT UI:', err);
+        res.status(500).json({ error: 'Error serving VulkanKT UI' });
+    }
 });
 
 // Serve React production build (if present) and fallback to index.html for client-side routing
