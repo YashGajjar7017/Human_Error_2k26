@@ -14,6 +14,9 @@ This is latest version of complier 2026 & it was only beta 1.1.0 testing priview
 ## Xenithra Technology Pvt Ltd
 
 <img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/e629cb93-eee9-413a-938c-b95253443da6" />
+# Beta Release 25-03-2026
+<img width="1919" height="913" alt="image" src="https://github.com/user-attachments/assets/baf40384-2827-4c70-8454-922b0a2e9c20" />
+
 <hr>
 
 > _ Complier is web-page that hold's user data into machine language without required lot of tools on your local device. just need a intenet & a computer that you can right the code for you ..!_/
