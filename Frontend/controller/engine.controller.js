@@ -245,4 +245,28 @@ const uploadFile = (req, res) => {
 //     sessionUtils,
 //     generateToken
 // };
-module.exports = {ComplierPage,startPage,features,session,sessionToken,sessionShare,fileupload,account,accountNumber,uploadFile,cryptoUtils,jwtUtils,sessionUtils}
+// Logout handler
+const logout = (req, res) => {
+    // Destroy session
+    if (req.session) {
+        req.session.destroy((err) => {
+            if (err) {
+                console.error('Session destroy error:', err);
+                return res.json({ success: false, message: 'Logout error' });
+            }
+        });
+    }
+
+    // Clear cookies
+    res.clearCookie('connect.sid');
+    res.clearCookie('navbar');
+    
+    // Check if it's an API request or page request
+    if (req.accepts(['json', 'html']) === 'json') {
+        res.json({ success: true, message: 'Logged out successfully' });
+    } else {
+        res.redirect('/');
+    }
+};
+
+module.exports = {ComplierPage,startPage,features,session,sessionToken,sessionShare,fileupload,account,accountNumber,uploadFile,logout,cryptoUtils,jwtUtils,sessionUtils}

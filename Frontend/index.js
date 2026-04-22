@@ -89,7 +89,7 @@ app.use(mailServer);
 
 // Home page route with dashboard access link
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'index.html'));
+    res.sendFile(path.join(__dirname, 'views', 'index-vulkan.html'));
 });
 
 // Membership page route

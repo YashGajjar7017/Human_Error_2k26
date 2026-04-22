@@ -15,4 +15,7 @@ router.get('/Account/:userState/:NO', WebHandler.accountNumber);
 router.get('/Account/user/:userState/:NO', WebHandler.accountNumber);
 router.get('/Account/complier/user/:NO', WebHandler.ComplierPage);
 
+// === LOGOUT ROUTE ===
+router.get('/logout', WebHandler.logout);
+
 module.exports = router;
