@@ -1,6 +1,7 @@
 <!-- Old File name : index-vulkan.html -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
     <link rel="stylesheet" href="/CSS/vulkan-style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body data-theme="dark">
     <div class="container">
         <!-- NAVBAR -->
@@ -138,7 +140,20 @@
                         <span id="optimizationValue">O2</span>
                     </div>
                 </div>
-
+                <div class="panel-section">
+                    <label>Quantization</label>
+                    <div class="optimization-control">
+                        <input type="range" id="quantizationLevel" min="0" max="10" value="9" class="slider">
+                        <span id="quantizationValue">Q2</span>
+                    </div>
+                </div>
+                <div class="panel-section">
+                    <label>Matrix Optimization</label>
+                    <div class="optimization-control">
+                        <input type="range" id="matrixOptimizationLevel" min="0" max="10" value="1" class="slider">
+                        <span id="matrixOptimizationValue">M2</span>
+                    </div>
+                </div>
                 <!-- ACTION BUTTONS -->
                 <div class="panel-section">
                     <button id="analyzeBtn" class="btn btn-secondary btn-block">
@@ -166,7 +181,8 @@
                 <div class="editor-container">
                     <div class="line-numbers" id="lineNumbers"></div>
                     <div class="editor-wrapper">
-                        <textarea id="codeEditor" class="code-editor" spellcheck="false" placeholder="// Write your code here... or drag files here to open">int main() {
+                        <textarea id="codeEditor" class="code-editor" spellcheck="false"
+                            placeholder="// Write your code here... or drag files here to open">int main() {
     printf("Hello, World!");
     return 0;
 }</textarea>
@@ -274,7 +290,7 @@
                 <h2><i class="fas fa-cog"></i> VulkanKT Settings</h2>
                 <button class="btn-close-modal" onclick="closeModal('settingsModal')">×</button>
             </div>
-            
+
             <!-- SETTINGS TABS -->
             <div class="settings-tabs">
                 <button class="settings-tab-btn active" data-tab="editor">
@@ -290,13 +306,13 @@
                     <i class="fas fa-sliders-h"></i> General
                 </button>
             </div>
-            
+
             <div class="modal-body settings-body">
                 <!-- EDITOR TAB -->
                 <div class="settings-tab-content active" data-tab="editor">
                     <div class="settings-group">
                         <h3><i class="fas fa-keyboard"></i> Editor Settings</h3>
-                        
+
                         <div class="settings-item">
                             <label>Font Family</label>
                             <select id="fontFamilySelect" class="form-input">
@@ -316,7 +332,8 @@
 
                         <div class="settings-item">
                             <label>Line Height <span id="lineHeightValue">1.6</span></label>
-                            <input type="range" id="lineHeightInput" min="1" max="2.5" step="0.1" value="1.6" class="slider-input">
+                            <input type="range" id="lineHeightInput" min="1" max="2.5" step="0.1" value="1.6"
+                                class="slider-input">
                         </div>
 
                         <div class="settings-item">
@@ -361,7 +378,7 @@
                 <div class="settings-tab-content" data-tab="compiler">
                     <div class="settings-group">
                         <h3><i class="fas fa-cogs"></i> Compiler Options</h3>
-                        
+
                         <div class="settings-item">
                             <label>Default Language</label>
                             <select id="defaultLanguageSelect" class="form-input">
@@ -411,7 +428,7 @@
                 <div class="settings-tab-content" data-tab="appearance">
                     <div class="settings-group">
                         <h3><i class="fas fa-paint-brush"></i> Theme & Appearance</h3>
-                        
+
                         <div class="settings-item">
                             <label>Color Theme</label>
                             <div class="theme-selector">
@@ -469,7 +486,7 @@
                 <div class="settings-tab-content" data-tab="general">
                     <div class="settings-group">
                         <h3><i class="fas fa-cog"></i> General Settings</h3>
-                        
+
                         <div class="settings-item">
                             <label>Auto-Save Interval (seconds)</label>
                             <input type="number" id="autoSaveInput" min="5" max="300" value="30" class="form-input">
@@ -581,4 +598,5 @@
     <script src="/JS/vulkan-main.js"></script>
     <script src="/JS/vulkan-settings.js"></script>
 </body>
+
 </html>
