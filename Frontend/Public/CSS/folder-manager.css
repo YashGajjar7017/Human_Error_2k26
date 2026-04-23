@@ -1,0 +1,199 @@
+/* ===================================
+   FOLDER MANAGER & FILE OPERATIONS
+   =================================== */
+
+/* FOLDER INFO DISPLAY */
+.folder-info {
+    padding: 12px;
+    margin: 8px 0;
+    background: rgba(0, 212, 255, 0.08);
+    border: 1px solid rgba(0, 212, 255, 0.3);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.folder-path {
+    font-size: 11px;
+    color: var(--accent-color);
+    word-break: break-all;
+    margin: 0;
+    opacity: 0.9;
+}
+
+/* FILE TREE STYLES */
+.file-tree-container {
+    max-height: 300px;
+    overflow-y: auto;
+    border-top: 1px solid var(--glass-border);
+    padding-top: 8px;
+    margin-top: 8px;
+}
+
+.file-tree-item {
+    display: flex;
+    align-items: center;
+    padding: 6px 8px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text-primary);
+    transition: all 0.2s ease;
+    user-select: none;
+    margin-left: 0;
+}
+
+.file-tree-item.folder {
+    padding-left: 0;
+    font-weight: 500;
+}
+
+.file-tree-item.file {
+    padding-left: 24px;
+    opacity: 0.85;
+}
+
+.file-tree-item .tree-icon {
+    width: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 6px;
+    font-size: 11px;
+}
+
+.file-tree-item:hover {
+    background: rgba(0, 212, 255, 0.1);
+    color: var(--accent-color);
+    border-radius: 4px;
+    padding-left: 10px;
+}
+
+.file-tree-item.active {
+    background: rgba(0, 212, 255, 0.2);
+    color: var(--accent-color);
+    border-left: 3px solid var(--accent-color);
+}
+
+.file-tree-item .file-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.file-tree-item .file-size {
+    font-size: 11px;
+    opacity: 0.6;
+    margin-left: 8px;
+}
+
+/* NESTED FILES */
+.file-tree-nested {
+    display: none;
+    padding-left: 16px;
+}
+
+.file-tree-nested.open {
+    display: block;
+}
+
+.file-tree-item.expanded .tree-icon::before {
+    content: '▼';
+}
+
+.file-tree-item.collapsed .tree-icon::before {
+    content: '▶';
+}
+
+/* SMOOTH BUTTON ANIMATIONS */
+.btn-panel-action {
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.2) 0%, rgba(0, 136, 204, 0.2) 100%);
+    border: 1px solid rgba(0, 212, 255, 0.3);
+    color: var(--accent-color);
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-panel-action::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s;
+}
+
+.btn-panel-action:hover {
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.4) 0%, rgba(0, 136, 204, 0.4) 100%);
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+    border-color: rgba(0, 212, 255, 0.6);
+    transform: translateY(-2px);
+}
+
+.btn-panel-action:hover::before {
+    left: 100%;
+}
+
+.btn-panel-action:active {
+    transform: translateY(0);
+    box-shadow: 0 0 10px rgba(0, 212, 255, 0.2), inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* CLOSE FOLDER BUTTON */
+#closeFolderBtn {
+    width: 100%;
+    background: linear-gradient(135deg, rgba(255, 107, 107, 0.2) 0%, rgba(204, 51, 51, 0.2) 100%);
+    border: 1px solid rgba(255, 107, 107, 0.3);
+    color: var(--error-color);
+    transition: all 0.3s ease;
+}
+
+#closeFolderBtn:hover {
+    background: linear-gradient(135deg, rgba(255, 107, 107, 0.35) 0%, rgba(204, 51, 51, 0.35) 100%);
+    box-shadow: 0 0 15px rgba(255, 107, 107, 0.2);
+}
+
+/* FILE OPEN/EDIT ANIMATION */
+@keyframes slideInFile {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.file-tree-item.new {
+    animation: slideInFile 0.3s ease;
+}
+
+/* SCROLLBAR STYLES */
+.file-tree-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.file-tree-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.file-tree-container::-webkit-scrollbar-thumb {
+    background: rgba(0, 212, 255, 0.3);
+    border-radius: 3px;
+}
+
+.file-tree-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 212, 255, 0.5);
+}

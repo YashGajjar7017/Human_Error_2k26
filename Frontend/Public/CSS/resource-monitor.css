@@ -1,0 +1,217 @@
+/* ===================================
+   CLOUD RESOURCES MONITOR
+   =================================== */
+
+/* CLOUD RESOURCES CONTAINER */
+.cloud-resources {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex: 1;
+    justify-content: center;
+    padding: 0 20px;
+}
+
+.resource-monitor {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+/* RESOURCE ITEM STYLING */
+.resource-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    transition: all 0.3s ease;
+    padding: 4px 8px;
+    border-radius: 6px;
+    background: rgba(0, 212, 255, 0.05);
+    border: 1px solid rgba(0, 212, 255, 0.1);
+}
+
+.resource-item i {
+    color: var(--accent-color);
+    font-size: 13px;
+}
+
+.resource-label {
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.resource-value {
+    color: var(--accent-color);
+    font-weight: 600;
+    min-width: 45px;
+    text-align: right;
+    transition: all 0.2s ease;
+}
+
+.resource-item:hover {
+    background: rgba(0, 212, 255, 0.1);
+    border-color: rgba(0, 212, 255, 0.2);
+    color: var(--accent-color);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 212, 255, 0.1);
+}
+
+/* CPU USAGE INDICATOR */
+.resource-item:nth-child(1) .resource-value {
+    color: #fbbf24;
+}
+
+.resource-item:nth-child(1) i {
+    color: #fbbf24;
+}
+
+/* MEMORY USAGE INDICATOR */
+.resource-item:nth-child(2) .resource-value {
+    color: #4ade80;
+}
+
+.resource-item:nth-child(2) i {
+    color: #4ade80;
+}
+
+/* DISK USAGE INDICATOR */
+.resource-item:nth-child(3) .resource-value {
+    color: #a855f7;
+}
+
+.resource-item:nth-child(3) i {
+    color: #a855f7;
+}
+
+/* CLOUD STATUS INDICATOR */
+.resource-item:nth-child(4) .resource-value {
+    color: var(--accent-color);
+}
+
+.resource-item:nth-child(4) i {
+    color: var(--accent-color);
+}
+
+/* RESOURCE PULSE ANIMATION */
+@keyframes resourcePulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1.05);
+    }
+}
+
+.resource-item.active-update {
+    animation: resourcePulse 0.4s ease-in-out;
+}
+
+/* RESOURCE CHART (FUTURE EXPANSION) */
+.resource-chart {
+    display: inline-flex;
+    gap: 2px;
+    align-items: flex-end;
+    height: 16px;
+    margin-left: 4px;
+}
+
+.resource-bar {
+    width: 3px;
+    height: 100%;
+    background: linear-gradient(to top, var(--accent-color), rgba(0, 212, 255, 0.3));
+    border-radius: 2px;
+    transition: height 0.2s ease;
+}
+
+/* RESPONSIVE ADJUSTMENTS */
+@media (max-width: 1200px) {
+    .cloud-resources {
+        gap: 12px;
+        padding: 0 12px;
+    }
+
+    .resource-monitor {
+        gap: 10px;
+    }
+
+    .resource-item {
+        font-size: 11px;
+        padding: 3px 6px;
+    }
+
+    .resource-label {
+        display: none;
+    }
+
+    .resource-value {
+        min-width: 35px;
+    }
+}
+
+@media (max-width: 768px) {
+    .cloud-resources {
+        display: none;
+    }
+}
+
+/* GRADIENT BUTTON ANIMATIONS FOR RESOURCE STATUS */
+.resource-status-button {
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.15) 0%, rgba(0, 136, 204, 0.15) 100%);
+    border: 1px solid rgba(0, 212, 255, 0.2);
+    padding: 6px 12px;
+    border-radius: 6px;
+    color: var(--accent-color);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.resource-status-button:hover {
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.3) 0%, rgba(0, 136, 204, 0.3) 100%);
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.25);
+    border-color: rgba(0, 212, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+.resource-status-button:active {
+    transform: translateY(0);
+}
+
+/* STATUS INDICATOR DOT */
+.status-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #4ade80;
+    animation: statusPulse 2s ease-in-out infinite;
+    margin-right: 4px;
+}
+
+@keyframes statusPulse {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7);
+    }
+    50% {
+        box-shadow: 0 0 0 4px rgba(74, 222, 128, 0);
+    }
+}
+
+.status-indicator.offline {
+    background: #ff6b6b;
+    animation: statusPulseError 1.5s ease-in-out infinite;
+}
+
+@keyframes statusPulseError {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7);
+    }
+    50% {
+        box-shadow: 0 0 0 4px rgba(255, 107, 107, 0);
+    }
+}

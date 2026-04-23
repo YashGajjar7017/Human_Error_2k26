@@ -7,6 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home | Xenithra Technology</title>
     <link rel="stylesheet" href="/CSS/vulkan-style.css">
+    <link rel="stylesheet" href="/CSS/folder-manager.css">
+    <link rel="stylesheet" href="/CSS/resource-monitor.css">
+    <link rel="stylesheet" href="/CSS/enhanced-buttons.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
@@ -73,7 +76,17 @@
             <div class="panel left-panel" id="leftPanel">
                 <div class="panel-header">
                     <h3><i class="fas fa-folder-tree"></i> Explorer</h3>
+                    <button class="btn-panel-action" id="openFolderBtn" title="Open Folder"><i class="fas fa-folder-open"></i></button>
                     <button class="btn-panel-action" title="New File"><i class="fas fa-plus"></i></button>
+                </div>
+                <!-- Hidden folder input for File System Access API -->
+                <input type="file" id="folderInput" webkitdirectory directory multiple style="display: none;">
+                <!-- Folder info section -->
+                <div class="folder-info" id="folderInfo" style="display: none;">
+                    <p id="folderPath" class="folder-path"></p>
+                    <button class="btn btn-sm btn-secondary" id="closeFolderBtn" title="Close Folder">
+                        <i class="fas fa-times"></i> Close
+                    </button>
                 </div>
                 <div class="panel-content">
                     <div class="file-explorer" id="fileExplorer">
@@ -117,6 +130,9 @@
                         <option value="go">Go</option>
                         <option value="java">Java</option>
                         <option value="python">Python</option>
+                        <option value="javascript">Javascript</option>
+                        <option value="html">HTML/CSS/JS(V8)</option>
+                        <option value="angular">Angular</option>
                     </select>
                 </div>
 
@@ -269,6 +285,30 @@
             </div>
             <div class="status-center">
                 <span id="tokenCount">🔷 Tokens: 0</span>
+            </div>
+            <div class="cloud-resources">
+                <div class="resource-monitor">
+                    <span class="resource-item">
+                        <i class="fas fa-microchip"></i>
+                        <span class="resource-label">CPU:</span>
+                        <span class="resource-value" id="cpuUsage">0%</span>
+                    </span>
+                    <span class="resource-item">
+                        <i class="fas fa-memory"></i>
+                        <span class="resource-label">Memory:</span>
+                        <span class="resource-value" id="memoryUsage">0 MB</span>
+                    </span>
+                    <span class="resource-item">
+                        <i class="fas fa-disk"></i>
+                        <span class="resource-label">Disk:</span>
+                        <span class="resource-value" id="diskUsage">0 MB</span>
+                    </span>
+                    <span class="resource-item">
+                        <i class="fas fa-cloud"></i>
+                        <span class="resource-label">Cloud:</span>
+                        <span class="resource-value" id="cloudStatus">Connected</span>
+                    </span>
+                </div>
             </div>
             <div class="status-right">
                 <span id="debugStatus">Debug: OFF</span>
@@ -597,6 +637,9 @@
     <!-- SCRIPTS -->
     <script src="/JS/vulkan-main.js"></script>
     <script src="/JS/vulkan-settings.js"></script>
+    <script src="/JS/folder-manager.js"></script>
+    <script src="/JS/file-operations.js"></script>
+    <script src="/JS/resource-monitor.js"></script>
 </body>
 
 </html>
