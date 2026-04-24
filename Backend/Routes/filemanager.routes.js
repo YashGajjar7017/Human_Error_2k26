@@ -467,4 +467,249 @@ router.post('/:fileId/duplicate', auth, fileLimiter, async (req, res) => {
     }
 });
 
+// List directories and files from a path
+router.post('/list', async (req, res) => {
+    try {
+        const { path: requestPath } = req.body;
+
+        if (!requestPath) {
+            return res.status(400).json({
+                error: 'Path is required'
+            });
+        }
+
+        // Security: prevent path traversal
+        if (requestPath.includes('..')) {
+            return res.status(400).json({
+                error: 'Invalid path'
+            });
+        }
+
+        // Build the absolute path from workspace root
+        const projectRoot = path.join(__dirname, '../../');
+        const fullPath = path.join(projectRoot, requestPath.replace(/^\//, ''));
+
+        // Verify the path is within the project root
+        if (!fullPath.startsWith(projectRoot)) {
+            return res.status(403).json({
+                error: 'Access denied'
+            });
+        }
+
+        try {
+            await fs.access(fullPath);
+        } catch (err) {
+            return res.status(404).json({
+                error: 'Path not found'
+            });
+        }
+
+        const stats = await fs.stat(fullPath);
+
+        if (!stats.isDirectory()) {
+            return res.status(400).json({
+                error: 'Path is not a directory'
+            });
+        }
+
+        const entries = await fs.readdir(fullPath, { withFileTypes: true });
+
+        const files = [];
+        const directories = [];
+
+        for (const entry of entries) {
+            // Skip hidden files and node_modules
+            if (entry.name.startsWith('.') || entry.name === 'node_modules') {
+                continue;
+            }
+
+            if (entry.isDirectory()) {
+                directories.push(entry.name);
+            } else {
+                // Only include readable file types
+                const ext = path.extname(entry.name).toLowerCase();
+                const readableExtensions = [
+                    '.js', '.py', '.c', '.cpp', '.java', '.txt', '.json',
+                    '.html', '.css', '.md', '.xml', '.yaml', '.yml', '.sh',
+                    '.ts', '.tsx', '.jsx', '.sql', '.go', '.rs', '.rb', '.php'
+                ];
+                if (readableExtensions.includes(ext)) {
+                    files.push(entry.name);
+                }
+            }
+        }
+
+        res.json({
+            success: true,
+            path: requestPath,
+            files: files.sort(),
+            directories: directories.sort()
+        });
+    } catch (error) {
+        console.error('Error listing directory:', error);
+        res.status(500).json({
+            error: 'Failed to list directory'
+        });
+    }
+});
+
+// Read file content from a path
+router.post('/read', async (req, res) => {
+    try {
+        const { filepath } = req.body;
+
+        if (!filepath) {
+            return res.status(400).json({
+                error: 'Filepath is required'
+            });
+        }
+
+        // Security: prevent path traversal
+        if (filepath.includes('..')) {
+            return res.status(400).json({
+                error: 'Invalid filepath'
+            });
+        }
+
+        // Build the absolute path from workspace root
+        const projectRoot = path.join(__dirname, '../../');
+        const fullPath = path.join(projectRoot, filepath.replace(/^\//, ''));
+
+        // Verify the path is within the project root
+        if (!fullPath.startsWith(projectRoot)) {
+            return res.status(403).json({
+                error: 'Access denied'
+            });
+        }
+
+        try {
+            await fs.access(fullPath);
+        } catch (err) {
+            return res.status(404).json({
+                error: 'File not found'
+            });
+        }
+
+        const stats = await fs.stat(fullPath);
+
+        if (!stats.isFile()) {
+            return res.status(400).json({
+                error: 'Path is not a file'
+            });
+        }
+
+        // Check file size (max 5MB for safety)
+        if (stats.size > 5 * 1024 * 1024) {
+            return res.status(413).json({
+                error: 'File too large (max 5MB)'
+            });
+        }
+
+        const content = await fs.readFile(fullPath, 'utf8');
+
+        res.json({
+            success: true,
+            filepath: filepath,
+            content: content,
+            size: stats.size,
+            modified: stats.mtime
+        });
+    } catch (error) {
+        console.error('Error reading file:', error);
+        res.status(500).json({
+            error: 'Failed to read file'
+        });
+    }
+});
+
+// Save/Write file content to a path
+router.post('/save', async (req, res) => {
+    try {
+        const { filepath, content } = req.body;
+
+        if (!filepath || content === undefined) {
+            return res.status(400).json({
+                error: 'Filepath and content are required'
+            });
+        }
+
+        // Security: prevent path traversal
+        if (filepath.includes('..')) {
+            return res.status(400).json({
+                error: 'Invalid filepath'
+            });
+        }
+
+        // Build the absolute path from workspace root
+        const projectRoot = path.join(__dirname, '../../');
+        const fullPath = path.join(projectRoot, filepath.replace(/^\//, ''));
+
+        // Verify the path is within the project root
+        if (!fullPath.startsWith(projectRoot)) {
+            return res.status(403).json({
+                error: 'Access denied'
+            });
+        }
+
+        // Check file size (max 5MB for safety)
+        if (content.length > 5 * 1024 * 1024) {
+            return res.status(413).json({
+                error: 'File too large (max 5MB)'
+            });
+        }
+
+        // Create directory if it doesn't exist
+        const dir = path.dirname(fullPath);
+        await fs.mkdir(dir, { recursive: true });
+
+        // Write file
+        await fs.writeFile(fullPath, content, 'utf8');
+        const stats = await fs.stat(fullPath);
+
+        res.json({
+            success: true,
+            message: 'File saved successfully',
+            filepath: filepath,
+            size: stats.size,
+            saved: new Date().toISOString()
+        });
+    } catch (error) {
+        console.error('Error saving file:', error);
+        res.status(500).json({
+            error: 'Failed to save file'
+        });
+    }
+});
+
+// Check for updates
+router.get('/check-update', async (req, res) => {
+    try {
+        // Read package.json to get current version
+        const packageJsonPath = path.join(__dirname, '../../package.json');
+        const packageJson = await fs.readFile(packageJsonPath, 'utf8');
+        const pkg = JSON.parse(packageJson);
+        const currentVersion = pkg.version;
+
+        // In a real app, you would check against a remote server or GitHub
+        // For now, we'll just return a mock update check
+        const latestVersion = currentVersion; // Can be set to a newer version for testing
+        
+        const updateAvailable = latestVersion > currentVersion;
+
+        res.json({
+            success: true,
+            currentVersion,
+            latestVersion,
+            updateAvailable,
+            downloadUrl: updateAvailable ? 'https://github.com/yourname/project/releases/latest' : null,
+            changelog: updateAvailable ? 'Bug fixes and improvements' : 'You are up to date!'
+        });
+    } catch (error) {
+        console.error('Error checking for updates:', error);
+        res.status(500).json({
+            error: 'Failed to check for updates'
+        });
+    }
+});
+
 module.exports = router;
