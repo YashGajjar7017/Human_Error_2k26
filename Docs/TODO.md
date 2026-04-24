@@ -1,7 +1,13 @@
-# TODO: Add Login Route and Controller
+# Frontend Error Fixes - Progress Tracker
 
-## Steps to Complete:
-- [x] Create Backend/Routes/login.routes.js with login route
-- [x] Implement login function in Backend/controller/login.controller.js
-- [x] Update Backend/server.js to mount the new login routes
-- [x] Test the implementation (run server and verify no errors)
+## Approved Plan Steps:
+1. [x] Read Backend/Routes/login.routes.js for 500 diagnosis
+2. [x] Edit Frontend/views/login.html to remove duplicate navToggleBtn declarations and fix paths
+3. [x] Add Poppins font family to Frontend/Public/fonts/
+4. [ ] Fix neon.js/css 404 paths if referenced
+5. [ ] Test /login endpoint
+6. [ ] Clear SW/cache, verify console clean
+7. [ ] attempt_completion
+
+**Status: Starting step 1**
+
